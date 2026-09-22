@@ -1,0 +1,34 @@
+[
+ {
+  "tarefa": "marcadores",
+  "ok": true,
+  "seg": 9.6,
+  "detalhe": "MARCADOR_INICIO=ZEBRA MARCADOR_MEIO=TUCANO MARCADOR_FIM=GIRAFA",
+  "suite": "doc",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "tabela_valor_pagina",
+  "ok": true,
+  "seg": 9.6,
+  "detalhe": "O BLEU EN-DE do Transformer (big) na tabela que compara BLEU e custo de treinamento é 28.4",
+  "suite": "doc",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "figura_pagina",
+  "ok": false,
+  "seg": 1.6,
+  "detalhe": "A legenda da Figura 1, que mostra a arquitetura do modelo, está na página 2.  <!-- pagina ",
+  "suite": "doc",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "texto_valor_pagina",
+  "ok": true,
+  "seg": 1.3,
+  "detalhe": "A taxa de dropout residual do modelo base é de \\( P_{drop} = 0.1 \\). Esta informação é enc",
+  "suite": "doc",
+  "modelo": "qwen2.5:14b"
+ }
+]

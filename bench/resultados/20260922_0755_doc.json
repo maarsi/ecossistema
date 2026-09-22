@@ -1,0 +1,34 @@
+[
+ {
+  "tarefa": "marcadores",
+  "ok": true,
+  "seg": 14.1,
+  "detalhe": "The user wants me to list the values of all lines that start with MARCADOR_. Let me look a",
+  "suite": "doc",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "tabela_valor_pagina",
+  "ok": false,
+  "seg": 7.8,
+  "detalhe": "The question asks about the BLEU EN-DE of the Transformer (big) in the table that compares",
+  "suite": "doc",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "figura_pagina",
+  "ok": true,
+  "seg": 5.0,
+  "detalhe": "The user is asking about which page contains the caption/legend of Figure 1, which shows t",
+  "suite": "doc",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "texto_valor_pagina",
+  "ok": true,
+  "seg": 5.0,
+  "detalhe": "The user is asking about the residual dropout rate of the base model and on which page thi",
+  "suite": "doc",
+  "modelo": "ornith-1.5:9b"
+ }
+]

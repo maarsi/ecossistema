@@ -1,0 +1,34 @@
+[
+ {
+  "tarefa": "marcadores",
+  "ok": true,
+  "seg": 10.6,
+  "detalhe": "Okay, let's see. The user provided a content block that starts with \"=== CONTEUDO ===\" and",
+  "suite": "doc",
+  "modelo": "granite4.2:latest"
+ },
+ {
+  "tarefa": "tabela_valor_pagina",
+  "ok": false,
+  "seg": 10.4,
+  "detalhe": "Okay, let's tackle this query. The user is asking for the BLEU EN-DE value of the Transfor",
+  "suite": "doc",
+  "modelo": "granite4.2:latest"
+ },
+ {
+  "tarefa": "figura_pagina",
+  "ok": false,
+  "seg": 5.7,
+  "detalhe": "Okay, let's tackle this query. The user is asking: \"Em que pagina esta a legenda da Figura",
+  "suite": "doc",
+  "modelo": "granite4.2:latest"
+ },
+ {
+  "tarefa": "texto_valor_pagina",
+  "ok": true,
+  "seg": 5.7,
+  "detalhe": "Okay, the user is asking: \"Qual a taxa de dropout residual do modelo base e em que pagina ",
+  "suite": "doc",
+  "modelo": "granite4.2:latest"
+ }
+]

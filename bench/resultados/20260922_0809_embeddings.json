@@ -1,0 +1,162 @@
+[
+ {
+  "tarefa": "q00",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q03",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q07",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q04",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q06",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q09",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q10",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q02",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q05",
+  "ok": false,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 3",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q11",
+  "ok": true,
+  "seg": 1.83,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "bge-m3:latest"
+ },
+ {
+  "tarefa": "q00",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q03",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q07",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q04",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q06",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q09",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q10",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q02",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q05",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ },
+ {
+  "tarefa": "q11",
+  "ok": true,
+  "seg": 0.71,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "qwen3-embedding:4b"
+ }
+]

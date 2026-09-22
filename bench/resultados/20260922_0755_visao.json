@@ -1,0 +1,42 @@
+[
+ {
+  "tarefa": "barras",
+  "ok": true,
+  "seg": 4.4,
+  "detalhe": "The user wants to identify which line has the highest demand and its value.  Loo",
+  "suite": "visao",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": true,
+  "seg": 1.8,
+  "detalhe": "The user wants to know at what hour the maximum volume occurs.  Looking at the g",
+  "suite": "visao",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "tabela",
+  "ok": true,
+  "seg": 0.9,
+  "detalhe": "The question asks for the fleet (frota) of lot C. Looking at the table, for lot ",
+  "suite": "visao",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "rede",
+  "ok": true,
+  "seg": 1.0,
+  "detalhe": "The image shows a network with travel times between segments. I need to find the",
+  "suite": "visao",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "mapa_contagem",
+  "ok": false,
+  "seg": 3.2,
+  "detalhe": "The user is asking how many terminals appear in the graph. I need to count the r",
+  "suite": "visao",
+  "modelo": "ornith-1.5:9b"
+ }
+]

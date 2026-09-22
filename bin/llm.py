@@ -165,6 +165,8 @@ def main():
         sys.exit(f"ERRO: papel '{a.papel}' inexistente. Use --listar.")
     else:
         cfg = PAPEIS[a.papel]
+    if cfg.get("embeddings"):
+        sys.exit(f"ERRO: '{a.papel}' e papel de embeddings (vetores), nao gera texto.")
     max_tokens = a.max_tokens or cfg.get("max_tokens", 2048)
     if a.imagem:
         if not cfg.get("visao"):

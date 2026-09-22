@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 23.8,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 4.3,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": false,
+  "seg": 11.3,
+  "detalhe": "AttributeError: 'dict' object has no attribute 'index'",
+  "suite": "codigo",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 28.3,
+  "detalhe": "KeyError: 0     420.0",
+  "suite": "codigo",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 5.1,
+  "detalhe": "TypeError: query(): incompatible function arguments. The following argument types are supported:",
+  "suite": "codigo",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 6.9,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "ornith-1.5:9b"
+ }
+]

@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "SyntaxError: invalid syntax. Perhaps you forgot a comma?",
+  "suite": "codigo",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "SyntaxError: invalid syntax. Perhaps you forgot a comma?",
+  "suite": "codigo",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "logit",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "SyntaxError: invalid syntax. Perhaps you forgot a comma?",
+  "suite": "codigo",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "SyntaxError: invalid syntax. Perhaps you forgot a comma?",
+  "suite": "codigo",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "SyntaxError: invalid syntax. Perhaps you forgot a comma?",
+  "suite": "codigo",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "SyntaxError: invalid syntax. Perhaps you forgot a comma?",
+  "suite": "codigo",
+  "modelo": "glm-5.3-flash:latest"
+ }
+]

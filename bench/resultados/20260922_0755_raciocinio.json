@@ -1,0 +1,66 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 8.0,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 36.7,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 13.1,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 8.8,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 13.1,
+  "detalhe": "resposta=[13.73] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 3.3,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": false,
+  "seg": 6.7,
+  "detalhe": "resposta=[20000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 5.5,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "ornith-1.5:9b"
+ }
+]

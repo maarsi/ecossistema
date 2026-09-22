@@ -1,0 +1,82 @@
+[
+ {
+  "tarefa": "q00",
+  "ok": false,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 4",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q03",
+  "ok": false,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 5",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q07",
+  "ok": false,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 6",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q04",
+  "ok": true,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q06",
+  "ok": false,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 4",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q09",
+  "ok": true,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q10",
+  "ok": true,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q02",
+  "ok": false,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 2",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q05",
+  "ok": false,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 10",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ },
+ {
+  "tarefa": "q11",
+  "ok": true,
+  "seg": 1.21,
+  "detalhe": "posicao do trecho certo: 1",
+  "suite": "embeddings",
+  "modelo": "nomic-embed-text:latest"
+ }
+]

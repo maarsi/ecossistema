@@ -1,0 +1,66 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "little",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "resposta=[-5.3] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "glm-5.3-flash:latest"
+ }
+]

@@ -209,10 +209,88 @@ def suite_visao(m, lim):
         out.append({"tarefa": t["id"], "ok": bool(t["checar"](txt)), "seg": round(s, 1), "detalhe": txt.strip().replace("\n", " ")[:80]})
     return out
 
+
+# ------------------------------------------------------------------ DOCUMENTOS (texto variado + PDF real com citacao de pagina)
+def _doc_marcadores():
+    import random; random.seed(11)
+    temas = ["frota", "tarifa", "demanda", "headway", "terminal", "garagem", "bilhetagem", "subsidio", "corredor", "reajuste"]
+    L = [f"Item {i}: a {random.choice(temas)} do lote {random.randint(1, 9)} sera revista em {random.randint(2027, 2035)} "
+         f"conforme o anexo {random.choice('ABCDEFG')}." for i in range(1, 330)]
+    L.insert(0, "MARCADOR_INICIO=ZEBRA"); L.insert(165, "MARCADOR_MEIO=TUCANO"); L.append("MARCADOR_FIM=GIRAFA")
+    return "\n".join(L)
+
+def _doc_artigo():
+    import converter
+    md, _ = converter.converter(RAIZ / "bench" / "dados" / "artigo_transformer.pdf")
+    return md.read_text(encoding="utf-8")
+
+def _tem_pagina(r, n):
+    return bool(re.search(rf"p[aá]g(?:ina|\.)?\s*{n}\b", r.lower()))
+
+DOC = [
+ {"id": "marcadores", "doc": _doc_marcadores, "pergunta": "Liste os valores de todas as linhas que comecam com MARCADOR_.",
+  "checar": lambda r: all(x in r.upper() for x in ("ZEBRA", "TUCANO", "GIRAFA"))},
+ {"id": "tabela_valor_pagina", "doc": _doc_artigo, "pergunta": "Qual o BLEU EN-DE do Transformer (big) na tabela que compara BLEU e custo de treinamento? Informe valor e pagina.",
+  "checar": lambda r: "28.4" in r.replace(",", ".") and _tem_pagina(r, 8)},
+ {"id": "figura_pagina", "doc": _doc_artigo, "pergunta": "Em que pagina esta a legenda da Figura 1, que mostra a arquitetura do modelo? Informe a pagina.",
+  "checar": lambda r: _tem_pagina(r, 3)},
+ {"id": "texto_valor_pagina", "doc": _doc_artigo, "pergunta": "Qual a taxa de dropout residual do modelo base e em que pagina isso e informado?",
+  "checar": lambda r: "0.1" in r.replace(",", ".") and _tem_pagina(r, 8)},
+]
+
+def suite_doc(m, lim):
+    out = []
+    for t in DOC[:lim]:
+        txt, s = gerar(m, llm.montar_prompt(t["pergunta"], t["doc"]()), 300, ctx=16384)
+        out.append({"tarefa": t["id"], "ok": bool(t["checar"](txt)), "seg": round(s, 1), "detalhe": txt.strip().replace("\n", " ")[:90]})
+    return out
+
+# ------------------------------------------------------------------ EMBEDDINGS (busca semantica com parafrase)
+TRECHOS = [
+ "O reajuste tarifario anual sera calculado pela variacao do IPCA acumulado nos doze meses anteriores a data-base do contrato.",
+ "A frota operacional minima exigida e de 120 veiculos, com idade media maxima de cinco anos.",
+ "Os veiculos deverao dispor de ar-condicionado e piso baixo para acessibilidade de pessoas com mobilidade reduzida.",
+ "O descumprimento das partidas programadas sujeita a concessionaria a multa de 0,5% da receita diaria por viagem nao realizada.",
+ "A pesquisa de origem e destino domiciliar tera amostra de 3% dos domicilios, estratificada por zona de trafego.",
+ "O modelo de alocacao utilizara equilibrio do usuario com funcoes de desempenho do tipo BPR calibradas por contagens.",
+ "A integracao tarifaria permitira ate duas transferencias gratuitas em um intervalo de noventa minutos.",
+ "O prazo da concessao e de quinze anos, prorrogavel uma unica vez por igual periodo mediante reequilibrio.",
+ "Os terminais de integracao deverao ter cobertura, bicicletario e sanitarios acessiveis.",
+ "A remuneracao da concessionaria sera por passageiro transportado equivalente, com fator de ajuste pela qualidade do servico.",
+ "As contagens volumetricas classificadas serao realizadas em dias uteis tipicos, de terca a quinta-feira, das 6h as 20h.",
+ "A garantia de execucao contratual corresponde a 5% do valor estimado do contrato.",
+]
+CONSULTAS = [("Como o preco da passagem e corrigido todo ano?", 0), ("Qual a penalidade quando a empresa nao cumpre as viagens?", 3),
+             ("Quanto tempo dura o contrato de operacao?", 7), ("Qual o tamanho da amostra do levantamento em domicilios?", 4),
+             ("Quantas baldeacoes sem pagar o usuario pode fazer?", 6), ("Como a empresa operadora e paga?", 9),
+             ("Em que dias e horarios sao feitas as contagens de trafego?", 10), ("Que exigencias existem para cadeirantes nos onibus?", 2),
+             ("Qual o metodo de carregamento da rede viaria?", 5), ("Qual o valor da caucao do contrato?", 11)]
+
+def suite_embeddings(m, lim):
+    def emb(textos):
+        r = requests.post(f"{llm.OLLAMA}/api/embed", json={"model": m, "input": textos, "keep_alive": "30m"}, timeout=300).json()
+        if r.get("error"): raise RuntimeError(r["error"][:120])
+        return r["embeddings"]
+    def cos(a, b):
+        return sum(x * y for x, y in zip(a, b)) / (math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(y * y for y in b)))
+    t0 = time.time()
+    try:
+        E = emb(TRECHOS); Q = emb([q for q, _ in CONSULTAS[:lim]])
+    except Exception as e:
+        return [{"tarefa": "embed", "ok": False, "seg": 0, "detalhe": str(e)}]
+    seg = (time.time() - t0) / max(1, len(Q)); out = []
+    for (q, alvo), vq in zip(CONSULTAS, Q):
+        ordem = sorted(range(len(E)), key=lambda i: -cos(vq, E[i]))
+        out.append({"tarefa": f"q{alvo:02d}", "ok": ordem[0] == alvo, "seg": round(seg, 2),
+                    "detalhe": f"posicao do trecho certo: {ordem.index(alvo) + 1}"})
+    return out
+
 SUITES = {"codigo": (suite_codigo, ["qwen2.5-coder:14b-fast", "qwen2.5:14b", "deepseek-r1:14b-fast", "glm4:9b"]),
           "raciocinio": (suite_raciocinio, ["deepseek-r1:14b-fast", "qwen2.5:14b", "glm4:9b", "qwen2.5-coder:14b-fast",
                                             "nuvem:nvidia/nemotron-3-ultra-550b-a55b"]),
-          "visao": (suite_visao, ["qwen2.5vl:7b", "llava:13b", "llama3.2-vision:latest"])}
+          "visao": (suite_visao, ["qwen2.5vl:7b"]),
+          "doc": (suite_doc, ["qwen2.5:14b"]),
+          "embeddings": (suite_embeddings, ["nomic-embed-text:latest"])}
 
 def autoteste():
     falhas = 0
@@ -225,6 +303,10 @@ def autoteste():
     for t in VIS:
         (IMG / f"{t['id']}.png").write_bytes(_fig_png(t["img"]))
     print(f"  visao: {len(VIS)} imagens geradas em {IMG}")
+    assert len(_doc_marcadores()) > 20000; art = _doc_artigo(); ok = "28.4" in art and "Figure 1" in art; falhas += not ok
+    print(f"  doc: texto de marcadores e artigo convertido ({len(art)} caracteres) {'OK' if ok else 'FALHOU'}")
+    ok = len(TRECHOS) == 12 and all(0 <= a < 12 for _, a in CONSULTAS); falhas += not ok
+    print(f"  embeddings: {len(TRECHOS)} trechos, {len(CONSULTAS)} consultas {'OK' if ok else 'FALHOU'}")
     for s, esp in [("RESPOSTA: 40000", 40000), ("RESPOSTA: 40.000", 40000), ("RESPOSTA: 0,4013", 0.4013),
                    ("RESPOSTA: **-0.538**", -0.538), ("RESPOSTA: 15.73", 15.73), ("RESPOSTA: 1.234,5", 1234.5)]:
         v = ler_numeros(s); ok = esp in v; falhas += not ok; print(f"  leitor '{s}' -> {v} {'OK' if ok else 'FALHOU'}")

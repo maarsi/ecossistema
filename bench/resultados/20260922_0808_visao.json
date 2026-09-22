@@ -1,0 +1,42 @@
+[
+ {
+  "tarefa": "barras",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "visao",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "visao",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "tabela",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "visao",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "rede",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "visao",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "mapa_contagem",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "visao",
+  "modelo": "glm-5.3-flash:latest"
+ }
+]

@@ -58,3 +58,5 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
 - Bateria de avaliacao: `bench/bench.py --autoteste` antes de qualquer rodada (valida testes e gabaritos);
   resultado zerado ou vazio e suspeita de medicao ate prova em contrario (llama3.2-vision: erro 500, nao carrega
   no Ollama 0.34). Diferenca de 1 tarefa entre modelos e empate tecnico.
+- Modelo novo so entra por bateria: candidato baixado, testado e removido se nao vencer (rodada 2, 22/09: ornith-1.5,
+  granite4.2 e bge-m3 removidos; qwen3-embedding:4b adotado). Etiqueta `:cloud` no Ollama nao e modelo local.

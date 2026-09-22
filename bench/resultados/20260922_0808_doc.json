@@ -1,0 +1,34 @@
+[
+ {
+  "tarefa": "marcadores",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "doc",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "tabela_valor_pagina",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "doc",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "figura_pagina",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "doc",
+  "modelo": "glm-5.3-flash:latest"
+ },
+ {
+  "tarefa": "texto_valor_pagina",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "[ERRO API: model 'glm-5.3-flash:latest' not found]",
+  "suite": "doc",
+  "modelo": "glm-5.3-flash:latest"
+ }
+]

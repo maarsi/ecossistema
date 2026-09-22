@@ -5,7 +5,7 @@
     "ctx_max": 32768,
     "max_tokens": 2048,
     "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos (acima de ~30 paginas, usar --partes)",
-    "teste": "2026-09-22: 20.398 tokens em chamada unica, marcadores de inicio, meio e fim encontrados, 26 s, 100% GPU (12,5 GB com KV q8_0). mistral-nemo:12b reprovado no mesmo tipo de teste."
+    "teste": "2026-09-22: 20.398 tokens em chamada unica, marcadores de inicio, meio e fim encontrados, 26 s, 100% GPU (12,5 GB com KV q8_0). mistral-nemo:12b reprovado no mesmo tipo de teste. | rodada 2: bench 22/09 (suite doc): 3/4; ornith-1.5:9b 3/4, granite4.2 2/4"
   },
   "codigo": {
     "onde": "local",
@@ -13,7 +13,7 @@
     "ctx_max": 16384,
     "max_tokens": 2048,
     "uso": "Rotinas longas e repetitivas que serao executadas em seguida",
-    "teste": "bench 22/09: 5/6, 4,4 s por tarefa (qwen2.5:14b 4/6, deepseek-r1 4/6 em 22,7 s, glm4 1/6)"
+    "teste": "bench 22/09: 5/6, 4,4 s por tarefa (qwen2.5:14b 4/6, deepseek-r1 4/6 em 22,7 s, glm4 1/6) | rodada 2: bench 22/09: 5/6; ornith-1.5:9b 3/6"
   },
   "raciocinio-local": {
     "onde": "local",
@@ -21,7 +21,7 @@
     "ctx_max": 16384,
     "max_tokens": 4096,
     "uso": "Segunda opiniao sobre derivacao ja feita, quando o dado e sigiloso",
-    "teste": "bench 22/09: 7/8 em 8,9 s; deepseek-r1:14b-fast 6/8 em 13,8 s (trocou alternativas no logit). Diferenca de 1 tarefa = empate tecnico; decisao pela vantagem operacional (mesmo modelo do papel doc, sem recarga)"
+    "teste": "bench 22/09: 7/8 em 8,9 s; deepseek-r1:14b-fast 6/8 em 13,8 s (trocou alternativas no logit). Diferenca de 1 tarefa = empate tecnico; decisao pela vantagem operacional (mesmo modelo do papel doc, sem recarga) | rodada 2: bench 22/09: 7/8; ornith-1.5:9b 7/8 (empate), granite4.2 3/8 em 45,6 s"
   },
   "raciocinio-nuvem": {
     "onde": "nuvem",
@@ -44,6 +44,13 @@
     "max_tokens": 400,
     "visao": true,
     "uso": "Leitura de graficos, tabelas, pranchas e mapas em imagem, inclusive sigilosos",
-    "teste": "bench 22/09: 5/5 em 2,4 s (barras, curva, tabela, rede, contagem); llava:13b 0/5 com respostas erradas"
+    "teste": "bench 22/09: 5/5 em 2,4 s (barras, curva, tabela, rede, contagem); llava:13b 0/5 com respostas erradas | rodada 2: bench 22/09: 5/5; ornith-1.5:9b 4/5"
+  },
+  "embeddings": {
+    "onde": "local",
+    "modelo": "qwen3-embedding:4b",
+    "embeddings": true,
+    "uso": "Vetores para busca semantica no acervo (indice local); nao gera texto",
+    "teste": "bench 22/09: 10/10 buscas por parafrase em portugues, 0,7 s; bge-m3 9/10 em 1,8 s; nomic-embed-text 4/10"
   }
 }
