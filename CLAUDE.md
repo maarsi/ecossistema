@@ -39,3 +39,11 @@ projecao continental ou SIRGAS 2000 geografico, conforme a analise.
 ## Manutencao
 Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel: editar
 `config/papeis.json` registrando o resultado do teste que justificou a mudanca.
+
+## Licoes registradas (22/09/2026)
+- NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
+  descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
+- `mistral-nemo:12b` reprovado em extracao (perdeu marcador mesmo com o texto inteiro visivel).
+- Extracao em documento longo: `--partes` com consolidacao `concatenar` (padrao). A fusao por modelo
+  apaga ocorrencias raras por "maioria" das partes vazias.
+- Pergunta de avaliacao de modelo precisa ter resposta unica (evitar ambiguidade como ciclo com ou sem terminal).

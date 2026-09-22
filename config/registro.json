@@ -1,19 +1,19 @@
 {
-  "gerado_em": "2026-09-22 00:52",
+  "gerado_em": "2026-09-22 01:03",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
-    "usada_mib": 7834
+    "usada_mib": 12037
   },
   "ollama": [
     {
-      "nome": "qwen2.5-coder:14b-fast",
+      "nome": "deepseek-r1:14b-fast",
       "gb": 8.4,
       "cabe_vram": true,
       "num_ctx": "8192"
     },
     {
-      "nome": "deepseek-r1:14b-fast",
+      "nome": "qwen2.5-coder:14b-fast",
       "gb": 8.4,
       "cabe_vram": true,
       "num_ctx": "8192"
@@ -55,14 +55,14 @@
       "num_ctx": null
     },
     {
-      "nome": "deepseek-r1:14b",
-      "gb": 8.4,
+      "nome": "llama3.1:8b",
+      "gb": 4.6,
       "cabe_vram": true,
       "num_ctx": null
     },
     {
-      "nome": "llama3.1:8b",
-      "gb": 4.6,
+      "nome": "deepseek-r1:14b",
+      "gb": 8.4,
       "cabe_vram": true,
       "num_ctx": null
     },
@@ -183,11 +183,11 @@
   "papeis": {
     "doc": {
       "onde": "local",
-      "modelo": "mistral-nemo:12b",
-      "ctx_max": 32768,
+      "modelo": "qwen2.5:14b",
+      "ctx_max": 16384,
       "max_tokens": 2048,
-      "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos",
-      "teste": "2026-09-22: 16.387 tokens lidos integralmente com num_ctx 32768"
+      "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos (usar --partes acima de ~15 paginas)",
+      "teste": "2026-09-22: achou marcador na 1a linha e repetiu a linha literalmente; mistral-nemo:12b reprovado no mesmo teste. ctx 16384 ate aplicar OLLAMA_KV_CACHE_TYPE=q8_0 (com q8, subir para 32768)"
     },
     "codigo": {
       "onde": "local",
@@ -203,14 +203,6 @@
       "ctx_max": 16384,
       "max_tokens": 4096,
       "uso": "Segunda opiniao sobre derivacao ja feita, quando o dado e sigiloso",
-      "teste": "pendente de bateria"
-    },
-    "geral": {
-      "onde": "local",
-      "modelo": "qwen2.5:14b",
-      "ctx_max": 16384,
-      "max_tokens": 2048,
-      "uso": "Classificacao e formatacao de texto em volume",
       "teste": "pendente de bateria"
     },
     "raciocinio-nuvem": {

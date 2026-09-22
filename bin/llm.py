@@ -23,8 +23,10 @@ PAPEIS = json.loads((RAIZ / "config" / "papeis.json").read_text(encoding="utf-8"
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
 NVIDIA = "https://integrate.api.nvidia.com/v1/chat/completions"
 DEGRAUS_CTX = [4096, 8192, 16384, 32768, 65536, 131072]
-CHARS_POR_TOKEN = 4.0  # estimativa central; a decisao final usa a contagem real devolvida pelo Ollama
-FOLGA_ESTIMATIVA = 1.6  # insumo estimado ate 1,6x o ctx_max ainda e tentado (a estimativa pode exagerar)
+# Estimativa PESSIMISTA de tokens (limite superior plausivel para portugues com numeros e acentos).
+# Motivo: quando o prompt excede num_ctx, o Ollama descarta ~metade do contexto e guarda o FINAL,
+# e o prompt_eval_count devolvido nao permite detectar isso de forma confiavel. Logo, prevenir.
+CHARS_POR_TOKEN = 2.5
 FORMATOS_TEXTO = {".txt", ".md", ".csv", ".json", ".tsv", ".xml", ".html"}
 
 
@@ -41,6 +43,14 @@ def chave_nvidia():
                 if l.startswith("NVIDIA_API_KEY="):
                     return l.split("=", 1)[1].strip().strip('"')
     sys.exit("ERRO: NVIDIA_API_KEY nao encontrada (ambiente, ~/ecossistema/.env ou ~/TransportMCP/.env).")
+
+
+def montar_prompt(instrucao, conteudo):
+    """Conteudo primeiro, tarefa por ultimo: modelos pequenos perdem a instrucao depois de texto longo."""
+    if not conteudo:
+        return instrucao
+    return (f"=== CONTEUDO ===\n{conteudo}\n=== FIM DO CONTEUDO ===\n\n"
+            f"TAREFA (responder apenas com base no conteudo acima): {instrucao}")
 
 
 def limpar_raciocinio(txt):
@@ -93,26 +103,24 @@ def dividir(texto, orcamento):
 
 
 def executar_local(cfg, instrucao, conteudo, max_tokens, temperatura):
-    """Tenta no contexto estimado; se o Ollama sinalizar truncamento, sobe de degrau ate ctx_max.
-    Retorna (None, estimativa) quando o insumo real nao cabe no ctx_max do papel."""
-    prompt = f"{instrucao}\n\n=== CONTEUDO ===\n{conteudo}" if conteudo else instrucao
+    """Contexto FIXO no ctx_max do papel (evita recarga do modelo a cada chamada).
+    Recusa (None) se a estimativa pessimista nao couber: nunca envia prompt que possa ser truncado."""
+    prompt = montar_prompt(instrucao, conteudo)
     est = estimar_tokens(prompt)
-    if est > FOLGA_ESTIMATIVA * cfg["ctx_max"]:
+    ctx = cfg["ctx_max"]
+    if est + max_tokens + 256 > ctx:
         return None, est
-    ctx = escolher_ctx(est, max_tokens, cfg["ctx_max"]) or cfg["ctx_max"]
     t = time.time()
-    while True:
-        resp, tin, tout = chamar_local(cfg["modelo"], prompt, ctx, max_tokens, temperatura)
-        truncou = tin >= 0.95 * ctx
-        if not truncou:
-            return {"texto": resp, "tin": tin, "tout": tout, "ctx": ctx, "seg": time.time() - t}, est
-        if ctx >= cfg["ctx_max"]:
-            print(f"[llm] insumo real excede ctx_max {cfg['ctx_max']} (Ollama leu {tin} tokens e truncou)", file=sys.stderr)
-            return None, max(est, tin)
-        prox = escolher_ctx(int(tin * 1.3), max_tokens, cfg["ctx_max"]) or cfg["ctx_max"]
-        print(f"[llm] truncamento detectado em num_ctx {ctx}; nova tentativa com {prox}", file=sys.stderr)
-        ctx = max(prox, ctx * 2) if prox <= ctx else prox
-        ctx = min(ctx, cfg["ctx_max"])
+    resp, tin, tout = chamar_local(cfg["modelo"], prompt, ctx, max_tokens, temperatura)
+    return {"texto": resp, "tin": tin, "tout": tout, "ctx": ctx, "seg": time.time() - t}, est
+
+
+VAZIAS = ("nenhum", "nenhuma", "nao ha", "não há", "nao foram encontrad", "não foram encontrad", "sem ocorrencia")
+
+
+def resposta_vazia(txt):
+    t = txt.strip().lower()
+    return (not t) or any(t.startswith(v) for v in VAZIAS)
 
 
 def main():
@@ -120,8 +128,12 @@ def main():
     ap.add_argument("--papel"); ap.add_argument("--listar", action="store_true")
     ap.add_argument("--instrucao", default=""); ap.add_argument("--texto"); ap.add_argument("--arquivo")
     ap.add_argument("--saida"); ap.add_argument("--partes", action="store_true")
+    ap.add_argument("--tam-parte", type=int, default=6000,
+                    help="tokens estimados por parte no modo --partes (padrao 6000; extracao rende mais em partes curtas)")
     ap.add_argument("--nuvem", action="store_true"); ap.add_argument("--max-tokens", type=int)
     ap.add_argument("--temperatura", type=float, default=0.2)
+    ap.add_argument("--consolidar", choices=["concatenar", "llm"], default="concatenar",
+                    help="modo partes: concatenar (extracao, deterministico) ou llm (sintese/resumo)")
     ap.add_argument("--manter-raciocinio", action="store_true")
     a = ap.parse_args()
 
@@ -152,32 +164,37 @@ def main():
         if not a.nuvem:
             sys.exit("ERRO: papel de NUVEM exige --nuvem explicito. O conteudo sai da workstation: "
                      "nao usar com dado de cliente, pesquisa bruta ou material sob NDA.")
-        prompt = f"{instrucao}\n\n=== CONTEUDO ===\n{conteudo}" if conteudo else instrucao
+        prompt = montar_prompt(instrucao, conteudo)
         texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura)
         modo = "nuvem"
     else:
-        res, est = executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)
+        res, est = (None, estimar_tokens(conteudo)) if a.partes else executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)
         modo = "local"
         if res is None:
             if not a.partes:
                 sys.exit(f"ERRO: insumo de ~{est} tokens excede ctx_max {cfg['ctx_max']} do papel '{a.papel}'. "
                          f"Usar --partes (divide e consolida) ou papel de nuvem se o material nao for sigiloso.")
-            orc = cfg["ctx_max"] - max_tokens - estimar_tokens(instrucao) - 768
+            orc = min(a.tam_parte, cfg["ctx_max"] - max_tokens - estimar_tokens(instrucao) - 768)
             blocos = dividir(conteudo, orc)
             print(f"[llm] modo partes: {len(blocos)} blocos de ate ~{orc} tokens", file=sys.stderr)
             parciais, tin, tout = [], 0, 0
             for i, b in enumerate(blocos, 1):
-                r, _ = executar_local(cfg, f"{instrucao}\n(Parte {i} de {len(blocos)} do documento. "
-                                           f"Responder apenas com base nesta parte.)", b, max_tokens, a.temperatura)
-                parciais.append(f"--- PARTE {i} ---\n{limpar_raciocinio(r['texto'])}")
+                r, _ = executar_local(cfg, instrucao, b, max_tokens, a.temperatura)
+                txt = limpar_raciocinio(r["texto"])
                 tin += r["tin"]; tout += r["tout"]
-            final, _ = executar_local(cfg, "Consolidar as respostas parciais abaixo em resposta unica, sem repeticao, "
-                                           f"preservando todos os itens. Instrucao original: {instrucao}",
-                                      "\n\n".join(parciais), max_tokens, a.temperatura)
-            if final is None:
-                texto = "[consolidacao excedeu o contexto; seguem as respostas parciais]\n\n" + "\n\n".join(parciais)
+                if not resposta_vazia(txt):
+                    parciais.append(f"[parte {i}/{len(blocos)}] {txt}")
+            if not parciais:
+                texto = "NENHUM (nenhuma parte retornou ocorrencia)"
+            elif a.consolidar == "concatenar" or len(parciais) == 1:
+                texto = "\n".join(parciais)
             else:
-                texto = final["texto"]; tin += final["tin"]; tout += final["tout"]
+                final, _ = executar_local(cfg, "Consolidar as respostas parciais acima em resposta unica, sem repeticao, "
+                                               f"preservando TODOS os itens. Instrucao original: {instrucao}",
+                                          "\n\n".join(parciais), max_tokens, a.temperatura)
+                texto = final["texto"] if final else "\n".join(parciais)
+                if final:
+                    tin += final["tin"]; tout += final["tout"]
             modo = f"local/{len(blocos)} partes"
         else:
             texto, tin, tout = res["texto"], res["tin"], res["tout"]
