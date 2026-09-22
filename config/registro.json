@@ -1,0 +1,231 @@
+{
+  "gerado_em": "2026-09-22 00:52",
+  "gpu": {
+    "nome": "NVIDIA GeForce RTX 5060 Ti",
+    "vram_mib": 16311,
+    "usada_mib": 7834
+  },
+  "ollama": [
+    {
+      "nome": "qwen2.5-coder:14b-fast",
+      "gb": 8.4,
+      "cabe_vram": true,
+      "num_ctx": "8192"
+    },
+    {
+      "nome": "deepseek-r1:14b-fast",
+      "gb": 8.4,
+      "cabe_vram": true,
+      "num_ctx": "8192"
+    },
+    {
+      "nome": "mistral-nemo:12b",
+      "gb": 6.6,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "nomic-embed-text:latest",
+      "gb": 0.3,
+      "cabe_vram": true,
+      "num_ctx": "8192"
+    },
+    {
+      "nome": "llava:13b",
+      "gb": 7.5,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "qwen2.5vl:7b",
+      "gb": 5.6,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "qwen2.5-coder:14b",
+      "gb": 8.4,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "qwen2.5:14b",
+      "gb": 8.4,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "deepseek-r1:14b",
+      "gb": 8.4,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "llama3.1:8b",
+      "gb": 4.6,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "llama3.2-vision:latest",
+      "gb": 7.3,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "nemotron-mini:latest",
+      "gb": 2.5,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "nemotron-3.5-lightning:latest",
+      "gb": 23.7,
+      "cabe_vram": false,
+      "num_ctx": null
+    },
+    {
+      "nome": "glm4:9b",
+      "gb": 5.1,
+      "cabe_vram": true,
+      "num_ctx": null
+    }
+  ],
+  "ambientes": {
+    "~/TransportMCP/.venv": {
+      "python": "3.14.4",
+      "pacotes": {
+        "duckdb": "1.5.5",
+        "geopandas": "1.1.4",
+        "pyogrio": "0.13.0",
+        "shapely": "2.1.2",
+        "pyproj": "3.7.2",
+        "osmnx": "2.1.1",
+        "networkx": "3.6.1",
+        "scipy": "1.18.0",
+        "pandas": "3.0.5",
+        "aequilibrae": "1.7.0",
+        "fastmcp": "3.4.7"
+      }
+    },
+    "~/env_cuopt": {
+      "python": "3.14.4",
+      "pacotes": {
+        "scipy": "1.18.1",
+        "pandas": "3.0.3",
+        "cudf-cu13": "26.8.1",
+        "cuopt-cu13": "26.8.0",
+        "cuopt-server-cu13": "26.8.0"
+      }
+    },
+    "~/env_rapids": {
+      "python": "3.12.14",
+      "pacotes": {
+        "geopandas": "1.1.4",
+        "pyogrio": "0.13.0",
+        "shapely": "2.1.2",
+        "pyproj": "3.8.0",
+        "pandas": "2.2.3",
+        "cudf-cu12": "25.4.0"
+      }
+    },
+    "~/env_transporte": {
+      "python": "3.14.4",
+      "pacotes": {
+        "duckdb": "1.5.5",
+        "geopandas": "1.1.4",
+        "pyogrio": "0.13.0",
+        "shapely": "2.1.2",
+        "pyproj": "3.8.0",
+        "osmnx": "2.1.1",
+        "networkx": "3.6.1",
+        "biogeme": "3.3.5",
+        "ortools": "9.15.6755",
+        "scipy": "1.18.1",
+        "statsmodels": "0.15.0",
+        "pymc": "6.3.2",
+        "docling": "2.126.0",
+        "torch": "2.14.0+cu130",
+        "openai": "3.16.2",
+        "pandas": "2.3.3"
+      }
+    },
+    "~/env_trtllm": {
+      "python": "3.12.14",
+      "pacotes": {
+        "networkx": "3.6.1",
+        "scipy": "1.17.1",
+        "torch": "2.9.1",
+        "openai": "3.13.0",
+        "pandas": "3.0.5"
+      }
+    },
+    "~/venv": {
+      "python": "3.14.4",
+      "pacotes": {}
+    }
+  },
+  "servicos": {
+    "ollama": "active",
+    "docker": "active",
+    "postgresql@18-main": "active",
+    "tailscaled": "active"
+  },
+  "docker": [
+    "perplexica-search-engine-ai-master-vane-1",
+    "open-webui"
+  ],
+  "discos_livres_gb": {
+    "/mnt/nvme_lexar": 770,
+    "/media/mateus/DADOS_01": 3280,
+    "/": 572
+  },
+  "papeis": {
+    "doc": {
+      "onde": "local",
+      "modelo": "mistral-nemo:12b",
+      "ctx_max": 32768,
+      "max_tokens": 2048,
+      "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos",
+      "teste": "2026-09-22: 16.387 tokens lidos integralmente com num_ctx 32768"
+    },
+    "codigo": {
+      "onde": "local",
+      "modelo": "qwen2.5-coder:14b-fast",
+      "ctx_max": 16384,
+      "max_tokens": 2048,
+      "uso": "Rotinas longas e repetitivas que serao executadas em seguida",
+      "teste": "pendente de bateria"
+    },
+    "raciocinio-local": {
+      "onde": "local",
+      "modelo": "deepseek-r1:14b-fast",
+      "ctx_max": 16384,
+      "max_tokens": 4096,
+      "uso": "Segunda opiniao sobre derivacao ja feita, quando o dado e sigiloso",
+      "teste": "pendente de bateria"
+    },
+    "geral": {
+      "onde": "local",
+      "modelo": "qwen2.5:14b",
+      "ctx_max": 16384,
+      "max_tokens": 2048,
+      "uso": "Classificacao e formatacao de texto em volume",
+      "teste": "pendente de bateria"
+    },
+    "raciocinio-nuvem": {
+      "onde": "nuvem",
+      "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+      "max_tokens": 4096,
+      "uso": "Segunda opiniao conceitual SEM dado sigiloso",
+      "teste": "2026-09-22: resposta correta no problema de frota, 10 s"
+    },
+    "redacao-nuvem": {
+      "onde": "nuvem",
+      "modelo": "mistralai/mistral-nemotron",
+      "max_tokens": 4096,
+      "uso": "Sintese de texto publico longo; nao para redacao final de entregavel",
+      "teste": "2026-09-22: resposta defensavel sob leitura alternativa (ciclo incluindo terminal)"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "doc": {"onde": "local", "modelo": "mistral-nemo:12b", "ctx_max": 32768, "max_tokens": 2048,
+          "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos",
+          "teste": "2026-09-22: 16.387 tokens lidos integralmente com num_ctx 32768"},
+  "codigo": {"onde": "local", "modelo": "qwen2.5-coder:14b-fast", "ctx_max": 16384, "max_tokens": 2048,
+             "uso": "Rotinas longas e repetitivas que serao executadas em seguida",
+             "teste": "pendente de bateria"},
+  "raciocinio-local": {"onde": "local", "modelo": "deepseek-r1:14b-fast", "ctx_max": 16384, "max_tokens": 4096,
+                       "uso": "Segunda opiniao sobre derivacao ja feita, quando o dado e sigiloso",
+                       "teste": "pendente de bateria"},
+  "geral": {"onde": "local", "modelo": "qwen2.5:14b", "ctx_max": 16384, "max_tokens": 2048,
+            "uso": "Classificacao e formatacao de texto em volume",
+            "teste": "pendente de bateria"},
+  "raciocinio-nuvem": {"onde": "nuvem", "modelo": "nvidia/nemotron-3-ultra-550b-a55b", "max_tokens": 4096,
+                       "uso": "Segunda opiniao conceitual SEM dado sigiloso",
+                       "teste": "2026-09-22: resposta correta no problema de frota, 10 s"},
+  "redacao-nuvem": {"onde": "nuvem", "modelo": "mistralai/mistral-nemotron", "max_tokens": 4096,
+                    "uso": "Sintese de texto publico longo; nao para redacao final de entregavel",
+                    "teste": "2026-09-22: resposta defensavel sob leitura alternativa (ciclo incluindo terminal)"}
+}
