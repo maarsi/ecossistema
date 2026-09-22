@@ -2,7 +2,7 @@
   "doc": {
     "onde": "local",
     "modelo": "qwen2.5:14b",
-    "ctx_max": 16384,
+    "ctx_max": 32768,
     "max_tokens": 2048,
     "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos (usar --partes acima de ~15 paginas)",
     "teste": "2026-09-22: achou marcador na 1a linha e repetiu a linha literalmente; mistral-nemo:12b reprovado no mesmo teste. ctx 16384 ate aplicar OLLAMA_KV_CACHE_TYPE=q8_0 (com q8, subir para 32768)"

@@ -1,0 +1,99 @@
+{
+  "mcpServers": {
+    "tomtom-transport": {
+      "command": "D:\\TransportMCP\\.venv\\Scripts\\python.exe",
+      "args": [
+        "D:\\TransportMCP\\tomtom_network_server.py"
+      ],
+      "env": {
+        "TOMTOM_API_KEY": "<TOMTOM_API_KEY: definir localmente, nunca versionar>",
+        "PYTHONPATH": "D:\\TransportMCP",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "transport-modeling": {
+      "command": "C:\\TransportMCP\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\TransportMCP\\transport_server.py"
+      ],
+      "env": {
+        "NVIDIA_API_KEY": "<NVIDIA_API_KEY: definir localmente, nunca versionar>",
+        "PYTHONPATH": "C:\\TransportMCP",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+        "CROSSREF_MAILTO": "DEFINIR_EMAIL_DE_CONTATO"
+      }
+    },
+    "assistente-juridico": {
+      "command": "C:\\TransportMCP\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\JuridicoMCP\\mcp_juridico.py"
+      ],
+      "env": {
+        "PYTHONPATH": "C:\\JuridicoMCP",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "perplexity": {
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "perplexity-mcp"
+      ],
+      "env": {
+        "PERPLEXITY_API_KEY": "<PERPLEXITY_API_KEY: definir localmente, nunca versionar>"
+      }
+    },
+    "memory": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\mateu\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-memory\\dist\\index.js"
+      ],
+      "env": {
+        "MEMORY_FILE_PATH": "D:\\91 - CLAUDE\\memory.json"
+      }
+    },
+    "ollama-remote": {
+      "command": "C:\\TransportMCP\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\TransportMCP\\ollama_remote_server.py"
+      ],
+      "env": {
+        "UBUNTU_IP": "100.66.93.31",
+        "UBUNTU_USER": "mateus",
+        "SSH_KEY_PATH": "<SSH_KEY_PATH: definir localmente, nunca versionar>",
+        "OLLAMA_HOST": "http://100.66.93.31:11434",
+        "NIM_HOST": "http://100.66.93.31:8000/v1",
+        "NGC_API_KEY": "<NGC_API_KEY: definir localmente, nunca versionar>",
+        "PYTHONPATH": "C:\\TransportMCP",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+        "UBUNTU_JOBS_DIR": "/home/mateus/.claude_jobs",
+        "SSH_TIMEOUT_S": "170",
+        "MAX_SAIDA_CHARS": "12000"
+      }
+    },
+    "kimi-assistant": {
+      "command": "C:\\TransportMCP\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\TransportMCP\\kimi_server.py"
+      ],
+      "env": {
+        "MOONSHOT_API_KEY": "<MOONSHOT_API_KEY: definir localmente, nunca versionar>",
+        "PYTHONPATH": "C:\\TransportMCP",
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "coworkUserFilesPath": "D:\\91 - CLAUDE"
+}
