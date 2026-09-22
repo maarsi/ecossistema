@@ -62,10 +62,17 @@ def limpar_raciocinio(txt):
     return re.sub(r"<think>.*?</think>", "", txt, flags=re.S).strip()
 
 
+IMAGENS = []  # caminhos de imagem para papeis de visao (preenchido por --imagem)
+
+
 def chamar_local(modelo, prompt, ctx, max_tokens, temperatura):
-    r = requests.post(f"{OLLAMA}/api/generate", timeout=1800, json={
+    j = {
         "model": modelo, "prompt": prompt, "stream": False, "keep_alive": "30m",
-        "options": {"num_ctx": ctx, "num_predict": max_tokens, "temperature": temperatura}})
+        "options": {"num_ctx": ctx, "num_predict": max_tokens, "temperature": temperatura}}
+    if IMAGENS:
+        import base64
+        j["images"] = [base64.b64encode(Path(i).read_bytes()).decode() for i in IMAGENS]
+    r = requests.post(f"{OLLAMA}/api/generate", timeout=1800, json=j)
     r.raise_for_status()
     d = r.json()
     return d.get("response", ""), d.get("prompt_eval_count", 0), d.get("eval_count", 0)
@@ -139,6 +146,7 @@ def main():
     ap.add_argument("--temperatura", type=float, default=0.2)
     ap.add_argument("--modelo", help="modelo Ollama avulso, sem papel (uso legado)")
     ap.add_argument("--ocr", action="store_true", help="PDF digitalizado: aplicar OCRmyPDF antes do Docling")
+    ap.add_argument("--imagem", action="append", default=[], help="imagem (PNG/JPG) para papel de visao; repetivel")
     ap.add_argument("--ctx", type=int, default=16384, help="num_ctx fixo para --modelo")
     ap.add_argument("--consolidar", choices=["concatenar", "llm"], default="concatenar",
                     help="modo partes: concatenar (extracao, deterministico) ou llm (sintese/resumo)")
@@ -158,6 +166,10 @@ def main():
     else:
         cfg = PAPEIS[a.papel]
     max_tokens = a.max_tokens or cfg.get("max_tokens", 2048)
+    if a.imagem:
+        if not cfg.get("visao"):
+            sys.exit(f"ERRO: papel '{a.papel}' nao le imagem. Usar o papel 'visao'.")
+        IMAGENS.extend(a.imagem)
 
     conteudo = ""
     if a.arquivo:

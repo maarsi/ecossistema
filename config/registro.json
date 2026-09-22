@@ -1,9 +1,9 @@
 {
-  "gerado_em": "2026-09-22 01:54",
+  "gerado_em": "2026-09-22 07:09",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
-    "usada_mib": 12234
+    "usada_mib": 7185
   },
   "ollama": [
     {
@@ -195,15 +195,15 @@
       "ctx_max": 16384,
       "max_tokens": 2048,
       "uso": "Rotinas longas e repetitivas que serao executadas em seguida",
-      "teste": "pendente de bateria"
+      "teste": "bench 22/09: 5/6, 4,4 s por tarefa (qwen2.5:14b 4/6, deepseek-r1 4/6 em 22,7 s, glm4 1/6)"
     },
     "raciocinio-local": {
       "onde": "local",
-      "modelo": "deepseek-r1:14b-fast",
+      "modelo": "qwen2.5:14b",
       "ctx_max": 16384,
       "max_tokens": 4096,
       "uso": "Segunda opiniao sobre derivacao ja feita, quando o dado e sigiloso",
-      "teste": "pendente de bateria"
+      "teste": "bench 22/09: 7/8 em 8,9 s; deepseek-r1:14b-fast 6/8 em 13,8 s (trocou alternativas no logit). Diferenca de 1 tarefa = empate tecnico; decisao pela vantagem operacional (mesmo modelo do papel doc, sem recarga)"
     },
     "raciocinio-nuvem": {
       "onde": "nuvem",
@@ -218,6 +218,15 @@
       "max_tokens": 4096,
       "uso": "Sintese de texto publico longo; nao para redacao final de entregavel",
       "teste": "2026-09-22: resposta defensavel sob leitura alternativa (ciclo incluindo terminal)"
+    },
+    "visao": {
+      "onde": "local",
+      "modelo": "qwen2.5vl:7b",
+      "ctx_max": 8192,
+      "max_tokens": 400,
+      "visao": true,
+      "uso": "Leitura de graficos, tabelas, pranchas e mapas em imagem, inclusive sigilosos",
+      "teste": "bench 22/09: 5/5 em 2,4 s (barras, curva, tabela, rede, contagem); llava:13b 0/5 com respostas erradas"
     }
   }
 }

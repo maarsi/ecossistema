@@ -1,0 +1,634 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 7.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 1.2,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 3.9,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 7.0,
+  "detalhe": "    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": true,
+  "seg": 2.5,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 4.0,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 6.2,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 1.2,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 2.8,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 6.3,
+  "detalhe": "    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.",
+  "suite": "codigo",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 2.3,
+  "detalhe": "Did you mean \"parquet_scan\"?",
+  "suite": "codigo",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 3.0,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 24.1,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 12.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 13.7,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 54.8,
+  "detalhe": "    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 9.7,
+  "detalhe": "Invoked with: kwargs: database=':memory:', driver='parquet'",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 21.1,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 6.1,
+  "detalhe": "AssertionError",
+  "suite": "codigo",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 0.8,
+  "detalhe": "AssertionError",
+  "suite": "codigo",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": false,
+  "seg": 1.4,
+  "detalhe": "TypeError: unsupported operand type(s) for -: 'dict' and 'float'",
+  "suite": "codigo",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 2.2,
+  "detalhe": "    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.",
+  "suite": "codigo",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 1.3,
+  "detalhe": "unable to rollback",
+  "suite": "codigo",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 0.7,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 13.7,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": false,
+  "seg": 11.7,
+  "detalhe": "resposta=[0.6031] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 19.6,
+  "detalhe": "resposta=[-0.539] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 14.0,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 16.0,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 11.6,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 10.3,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": false,
+  "seg": 13.3,
+  "detalhe": "resposta=[3.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek-r1:14b-fast"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 11.2,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 7.5,
+  "detalhe": "resposta=[0.4014] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 12.1,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 9.1,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": false,
+  "seg": 14.2,
+  "detalhe": "resposta=[16.19] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 5.3,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 4.6,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 7.2,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5:14b"
+ },
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 7.1,
+  "detalhe": "resposta=[24.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 3.7,
+  "detalhe": "resposta=[0.4005] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": false,
+  "seg": 5.6,
+  "detalhe": "resposta=[-530.5] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 4.1,
+  "detalhe": "resposta=[1.75] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": false,
+  "seg": 6.0,
+  "detalhe": "resposta=[23.07] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 3.1,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": false,
+  "seg": 2.2,
+  "detalhe": "resposta=[40.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": false,
+  "seg": 2.7,
+  "detalhe": "resposta=[0.75] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "glm4:9b"
+ },
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 4.8,
+  "detalhe": "resposta=[20.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "resposta=[0.3077] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "resposta=[-0.111] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "resposta=[15.6] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 6.7,
+  "detalhe": "resposta=[13.76] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "little",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "resposta=[12.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "resposta=[10000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "resposta=[30.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "qwen2.5-coder:14b-fast"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 43.3,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": false,
+  "seg": 0.6,
+  "detalhe": "resposta=[55.0] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 27.2,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 34.5,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 117.4,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 52.8,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 20.3,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 51.7,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "barras",
+  "ok": true,
+  "seg": 8.6,
+  "detalhe": "L3, 1530",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": true,
+  "seg": 0.8,
+  "detalhe": "7",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ },
+ {
+  "tarefa": "tabela",
+  "ok": true,
+  "seg": 0.8,
+  "detalhe": "57",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ },
+ {
+  "tarefa": "rede",
+  "ok": true,
+  "seg": 0.8,
+  "detalhe": "14",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ },
+ {
+  "tarefa": "mapa_contagem",
+  "ok": true,
+  "seg": 0.8,
+  "detalhe": "3",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ },
+ {
+  "tarefa": "barras",
+  "ok": false,
+  "seg": 8.3,
+  "detalhe": "A linha com a maior demanda é a linha que está no topo da imagem, e o valor mais",
+  "suite": "visao",
+  "modelo": "llava:13b"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": false,
+  "seg": 1.5,
+  "detalhe": "A imagem mostra um gráfico de volume de água em um determinado período de tempo.",
+  "suite": "visao",
+  "modelo": "llava:13b"
+ },
+ {
+  "tarefa": "tabela",
+  "ok": false,
+  "seg": 0.8,
+  "detalhe": "A frota do lote C é composta por 55 veículos.",
+  "suite": "visao",
+  "modelo": "llava:13b"
+ },
+ {
+  "tarefa": "rede",
+  "ok": false,
+  "seg": 4.4,
+  "detalhe": "Para determinar o tempo indicado no trecho entre B e D, vamos analisar cada segm",
+  "suite": "visao",
+  "modelo": "llava:13b"
+ },
+ {
+  "tarefa": "mapa_contagem",
+  "ok": false,
+  "seg": 0.9,
+  "detalhe": "Desculpe, não posso fornecer ajuda com essa imagem.",
+  "suite": "visao",
+  "modelo": "llava:13b"
+ },
+ {
+  "tarefa": "barras",
+  "ok": false,
+  "seg": 2.8,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "llama3.2-vision:latest"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": false,
+  "seg": 1.6,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "llama3.2-vision:latest"
+ },
+ {
+  "tarefa": "tabela",
+  "ok": false,
+  "seg": 1.3,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "llama3.2-vision:latest"
+ },
+ {
+  "tarefa": "rede",
+  "ok": false,
+  "seg": 1.6,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "llama3.2-vision:latest"
+ },
+ {
+  "tarefa": "mapa_contagem",
+  "ok": false,
+  "seg": 1.3,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "llama3.2-vision:latest"
+ }
+]

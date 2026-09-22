@@ -55,3 +55,6 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
 - Documentos: `bin/llm.py --arquivo` aceita PDF, DOCX, PPTX, XLSX e HTML (Docling, cache por hash em cache/docling).
   PDF digitalizado e recusado sem `--ocr` (evita responder sobre pagina vazia). Marcadores de pagina com inicio E fim:
   com marcador unico o modelo citava a pagina seguinte (erro de uma pagina, 22/09).
+- Bateria de avaliacao: `bench/bench.py --autoteste` antes de qualquer rodada (valida testes e gabaritos);
+  resultado zerado ou vazio e suspeita de medicao ate prova em contrario (llama3.2-vision: erro 500, nao carrega
+  no Ollama 0.34). Diferenca de 1 tarefa entre modelos e empate tecnico.
