@@ -1,9 +1,9 @@
 {
-  "gerado_em": "2026-09-22 01:45",
+  "gerado_em": "2026-09-22 01:54",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
-    "usada_mib": 9467
+    "usada_mib": 12234
   },
   "ollama": [
     {
@@ -55,14 +55,14 @@
       "num_ctx": null
     },
     {
-      "nome": "deepseek-r1:14b",
-      "gb": 8.4,
+      "nome": "llama3.1:8b",
+      "gb": 4.6,
       "cabe_vram": true,
       "num_ctx": null
     },
     {
-      "nome": "llama3.1:8b",
-      "gb": 4.6,
+      "nome": "deepseek-r1:14b",
+      "gb": 8.4,
       "cabe_vram": true,
       "num_ctx": null
     },

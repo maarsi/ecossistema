@@ -51,8 +51,11 @@ def montar_prompt(instrucao, conteudo):
         return instrucao
     if not instrucao:
         return conteudo  # prompt bruto: o proprio conteudo ja traz a solicitacao
+    citar = (" Ao usar uma informacao, indicar a pagina de origem: o texto de cada pagina N fica entre"
+             " <!-- pagina N: inicio --> e <!-- pagina N: fim -->."
+             if "<!-- pagina " in conteudo else "")
     return (f"=== CONTEUDO ===\n{conteudo}\n=== FIM DO CONTEUDO ===\n\n"
-            f"TAREFA (responder apenas com base no conteudo acima): {instrucao}")
+            f"TAREFA (responder apenas com base no conteudo acima): {instrucao}{citar}")
 
 
 def limpar_raciocinio(txt):
@@ -135,6 +138,7 @@ def main():
     ap.add_argument("--nuvem", action="store_true"); ap.add_argument("--max-tokens", type=int)
     ap.add_argument("--temperatura", type=float, default=0.2)
     ap.add_argument("--modelo", help="modelo Ollama avulso, sem papel (uso legado)")
+    ap.add_argument("--ocr", action="store_true", help="PDF digitalizado: aplicar OCRmyPDF antes do Docling")
     ap.add_argument("--ctx", type=int, default=16384, help="num_ctx fixo para --modelo")
     ap.add_argument("--consolidar", choices=["concatenar", "llm"], default="concatenar",
                     help="modo partes: concatenar (extracao, deterministico) ou llm (sintese/resumo)")
@@ -158,9 +162,19 @@ def main():
     conteudo = ""
     if a.arquivo:
         p = Path(a.arquivo)
-        if p.suffix.lower() not in FORMATOS_TEXTO:
-            sys.exit(f"ERRO: formato {p.suffix} nao suportado direto. Converter antes para .md (PDF/DOCX via Docling).")
-        conteudo = p.read_text(encoding="utf-8", errors="replace")
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import converter as conv
+        if p.suffix.lower() in conv.FORMATOS:
+            md, info = conv.converter(p, ocr=a.ocr)
+            print(f"[llm] conversao: {info['paginas']} pag, {info['tabelas']} tabelas, {info['seg']} s"
+                  f"{' (cache)' if info['cache'] else ''}", file=sys.stderr)
+            if info.get("suspeita_digitalizado"):
+                sys.exit(f"ERRO: {p.name} parece digitalizado (quase sem texto extraivel). Repetir com --ocr.")
+            conteudo = md.read_text(encoding="utf-8")
+        elif p.suffix.lower() in FORMATOS_TEXTO:
+            conteudo = p.read_text(encoding="utf-8", errors="replace")
+        else:
+            sys.exit(f"ERRO: formato {p.suffix} nao suportado.")
     elif a.texto == "-":
         conteudo = sys.stdin.read()
     elif a.texto:

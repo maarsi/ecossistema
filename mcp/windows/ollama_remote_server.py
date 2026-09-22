@@ -117,13 +117,16 @@ def _comando_llm(args: list, texto: str = "") -> str:
 @mcp.tool()
 async def consultar_papel(papel: str, instrucao: str, caminho_arquivo: str = "", texto: str = "",
                           partes: bool = False, nuvem: bool = False, caminho_saida: str = "",
-                          consolidar: str = "concatenar", max_tokens: int = 0, background: bool = False) -> str:
+                          consolidar: str = "concatenar", max_tokens: int = 0, background: bool = False,
+                          ocr: bool = False) -> str:
     """VIA PREFERENCIAL para acionar modelos: chama ~/ecossistema/bin/llm.py na Ubuntu pelo PAPEL.
     Papeis vigentes: ver obter_catalogo_e_diretrizes_modelos (ex.: doc, codigo, raciocinio-local,
     raciocinio-nuvem, redacao-nuvem). O gateway usa contexto fixo por papel, RECUSA em vez de truncar,
     divide documento longo com partes=True e exige nuvem=True para papel de nuvem
     (o conteudo sai da workstation: nunca com dado sigiloso).
-    - caminho_arquivo: texto na Ubuntu (.txt/.md/.csv/.json); caminho D:\\ e convertido. Alternativa: texto inline.
+    - caminho_arquivo: PDF, DOCX, PPTX, XLSX, HTML (convertidos via Docling, com cache e marcadores de pagina)
+      ou texto (.txt/.md/.csv/.json); caminho D:\\ e convertido. Alternativa: texto inline.
+    - ocr=True: PDF digitalizado (OCRmyPDF por 300 DPI antes do Docling). Sem ele, PDF sem texto e recusado.
     - caminho_saida: grava a resposta em arquivo e devolve so estatisticas (economia de contexto).
     - consolidar: concatenar (extracao, padrao) ou llm (sintese) no modo partes.
     - background=True para documento longo com partes; acompanhar com consultar_job_ubuntu.
@@ -135,6 +138,8 @@ async def consultar_papel(papel: str, instrucao: str, caminho_arquivo: str = "",
         args.append("--partes")
     if nuvem:
         args.append("--nuvem")
+    if ocr:
+        args.append("--ocr")
     if caminho_saida:
         args += ["--saida", _caminho_ubuntu(caminho_saida)]
     if max_tokens:

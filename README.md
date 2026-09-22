@@ -7,4 +7,6 @@
     mcp/                servidores MCP (a unificar com as copias do Windows)
     CLAUDE.md           regras de orquestracao para qualquer agente
 
-Pendentes: suporte a PDF/DOCX no llm.py via Docling; papel de visao; bateria de avaliacao de modelos.
+    bin/converter.py    PDF/DOCX/PPTX/XLSX/HTML -> Markdown (Docling, receita do lote L20, cache por hash, marcadores de pagina)
+
+Pendentes: papel de visao; bateria de avaliacao de modelos.
