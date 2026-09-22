@@ -1,9 +1,9 @@
 {
-  "gerado_em": "2026-09-22 07:09",
+  "gerado_em": "2026-09-22 07:32",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
-    "usada_mib": 7185
+    "usada_mib": 7148
   },
   "ollama": [
     {
@@ -19,22 +19,10 @@
       "num_ctx": "8192"
     },
     {
-      "nome": "mistral-nemo:12b",
-      "gb": 6.6,
-      "cabe_vram": true,
-      "num_ctx": null
-    },
-    {
       "nome": "nomic-embed-text:latest",
       "gb": 0.3,
       "cabe_vram": true,
       "num_ctx": "8192"
-    },
-    {
-      "nome": "llava:13b",
-      "gb": 7.5,
-      "cabe_vram": true,
-      "num_ctx": null
     },
     {
       "nome": "qwen2.5vl:7b",
@@ -67,26 +55,8 @@
       "num_ctx": null
     },
     {
-      "nome": "llama3.2-vision:latest",
-      "gb": 7.3,
-      "cabe_vram": true,
-      "num_ctx": null
-    },
-    {
       "nome": "nemotron-mini:latest",
       "gb": 2.5,
-      "cabe_vram": true,
-      "num_ctx": null
-    },
-    {
-      "nome": "nemotron-3.5-lightning:latest",
-      "gb": 23.7,
-      "cabe_vram": false,
-      "num_ctx": null
-    },
-    {
-      "nome": "glm4:9b",
-      "gb": 5.1,
       "cabe_vram": true,
       "num_ctx": null
     }
@@ -176,7 +146,7 @@
     "open-webui"
   ],
   "discos_livres_gb": {
-    "/mnt/nvme_lexar": 770,
+    "/mnt/nvme_lexar": 820,
     "/media/mateus/DADOS_01": 3280,
     "/": 572
   },
