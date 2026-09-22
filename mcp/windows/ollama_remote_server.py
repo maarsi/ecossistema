@@ -26,6 +26,8 @@ OLLAMA_HOST = os.environ.get("OLLAMA_HOST", f"http://{UBUNTU_IP}:11434").rstrip(
 # ou de variavel de ambiente do sistema.
 NGC_KEY = os.environ.get("NGC_API_KEY") or os.environ.get("NVIDIA_API_KEY") or ""
 NGC_ENDPOINT = "https://integrate.api.nvidia.com/v1/chat/completions"
+# Repositorio do ecossistema na Ubuntu: fonte unica de papeis, regras e inventario.
+ECOSSISTEMA = os.environ.get("UBUNTU_ECOSSISTEMA", f"/home/{UBUNTU_USER}/ecossistema")
 
 mcp = FastMCP("UbuntuWorkstationOrchestrator")
 
@@ -41,8 +43,9 @@ def _ngc_indisponivel() -> str:
 # 1. CATÁLOGO, DIRETRIZES OPERACIONAIS E GOVERNANÇA
 # ----------------------------------------------------------------------
 @mcp.tool()
-def obter_catalogo_e_diretrizes_modelos() -> str:
-    """Retorna o catálogo de ferramentas da Workstation e a regra de decisão sobre quando delegar.
+async def obter_catalogo_e_diretrizes_modelos() -> str:
+    """Retorna o ESTADO VIVO do ecossistema (inventario, papeis vigentes) e a regra de decisao.
+    Chamar no inicio de tarefa relevante: a fonte e ~/ecossistema na Ubuntu, nao este texto.
 
     REGRA DE DECISÃO (CONDICIONAL AO TIPO DE TAREFA, NÃO CATEGÓRICA):
 
@@ -86,65 +89,71 @@ def obter_catalogo_e_diretrizes_modelos() -> str:
        critério (b) de confidencialidade. Para dado sensível, usar apenas modelos locais
        do Ollama, OR-Tools e 'analisar_mapa_local_llava'.
     """
-    return """
-=== CATÁLOGO INTEGRADO DE INTELIGÊNCIA COMPUTACIONAL ===
+    cmd = (f"{ECOSSISTEMA}/bin/inventario.py --resumo; echo; {ECOSSISTEMA}/bin/llm.py --listar; echo; "
+           f"echo 'Via preferencial para modelos: consultar_papel. Regras completas: {ECOSSISTEMA}/CLAUDE.md'")
+    return await _executar_async(cmd, timeout=60)
 
-[REGRA DE USO]
-Delegar por VOLUME, CONFIDENCIALIDADE, PROCESSAMENTO, REPETIÇÃO ou EXECUÇÃO.
-Não delegar derivação de formulação, escolha metodológica, crítica de premissas,
-interpretação de resultado nem redação técnica: nesses casos o raciocínio é o produto.
-Modelos locais entram como segunda opinião sobre derivação já feita, não como fonte primária.
 
-[FRONTEIRA DE DADOS]
-Local (Ollama, OR-Tools, llava): dado sensível PODE ser processado, nada sai da Workstation.
-Nuvem (NVIDIA NGC, Moonshot): o conteúdo SAI para API externa. Não usar com dado de cliente,
-pesquisa bruta ou material sob NDA.
+def _caminho_ubuntu(caminho: str) -> str:
+    """Converte caminho do Windows em D: para o ponto de montagem na Ubuntu."""
+    c = caminho.replace("\\", "/")
+    return "/media/mateus/DADOS_01/" + c[3:] if c.lower().startswith("d:/") else caminho
 
-[MODELOS LOCAIS - WORKSTATION UBUNTU / RTX 5060 Ti 16GB]
-1. qwen2.5-coder:14b: Código avançado, SIG (GeoPandas, OSMnx, Shapely, PyQGIS), rotinas de automação e SQL.
-2. deepseek-r1:14b: Raciocínio dedutivo via Chain of Thought (CoT), intervalos de tráfego, capacidade e teoria de filas.
-3. mistral-nemo:12b: Janela de contexto de até 128.000 tokens para memoriais descritivos, cadernos de encargos e editais.
-4. nomic-embed-text: Vetorização semântica (768 dimensões) para RAG local e recuperação de trechos normativos.
-5. llava:13b: Visão computacional 100% offline para conferência geométrica e inspeção cartográfica local.
-6. Google OR-Tools: Solver local de otimização combinatória para roteamento de veículos (VRP/TSP) e frotas.
-7. qwen2.5:14b / llama3.1:8b: Processamento textual geral e formatação estruturada.
 
-[APIS DE ALTA PERFORMANCE - NUVEM NVIDIA NGC] (DADOS TRAFEGAM PARA FORA DA WORKSTATION)
-1. moonshotai/kimi-k3 (Texto / Raciocínio): Dedução analítica complexa com raciocínio profundo (reasoning_effort: high).
-2. moonshotai/kimi-k3 (Visão Multimodal): Visão computacional aliada a esforço analítico profundo sobre traçados e mapas.
-3. google/deplot: Conversão de curvas de carregamento, gráficos cartesianos e diagramas em tabelas Markdown/CSV.
-4. meta/llama-3.3-70b-instruct: Redação executiva de pareceres de engenharia, EVTEA e memoriais técnicos.
-5. meta/llama-3.2-11b-vision-instruct: Inspeção visual direta de mapas e plantas em alta resolução.
-"""
+def _comando_llm(args: list, texto: str = "") -> str:
+    """Monta o script bash que chama o gateway; texto inline vai por heredoc com marcador unico."""
+    linhas = []
+    if texto:
+        tmp = f"/tmp/llm_in_{uuid.uuid4().hex[:10]}.txt"
+        marca = f"__FIM_{uuid.uuid4().hex}__"
+        linhas.append(f"cat > {tmp} <<'{marca}'\n{texto}\n{marca}")
+        args = list(args) + ["--arquivo", tmp]
+    linhas.append(f"{ECOSSISTEMA}/bin/llm.py " + " ".join(shlex.quote(str(a)) for a in args))
+    if texto:
+        linhas.append(f"rc=$?; rm -f {tmp}; exit $rc")
+    return "\n".join(linhas)
 
-# ----------------------------------------------------------------------
-# 2. INFERÊNCIA TEXTUAL E RAG LOCAL (OLLAMA NA RTX 5060 Ti)
-# ----------------------------------------------------------------------
+
 @mcp.tool()
-def consultar_modelo_local(modelo: str, prompt: str) -> str:
-    """Executa consultas nos modelos locais carregados no Ollama na GPU RTX 5060 Ti.
-    Modelos disponíveis: 'qwen2.5-coder:14b', 'deepseek-r1:14b', 'mistral-nemo:12b', 'qwen2.5:14b', 'llama3.1:8b'.
-
-    USAR quando houver ganho real de delegação: volume (documento ou base extensa),
-    confidencialidade (dado que não deve sair da Workstation), processamento repetitivo
-    ou geração de rotina longa que será executada em seguida no Ubuntu.
-
-    NÃO USAR para derivação de formulação, escolha metodológica, crítica de premissas,
-    interpretação de resultado ou redação técnica: nesses casos resolver diretamente.
-    'deepseek-r1:14b' serve como segunda opinião sobre uma derivação já feita, não como
-    fonte primária dela.
+async def consultar_papel(papel: str, instrucao: str, caminho_arquivo: str = "", texto: str = "",
+                          partes: bool = False, nuvem: bool = False, caminho_saida: str = "",
+                          consolidar: str = "concatenar", max_tokens: int = 0, background: bool = False) -> str:
+    """VIA PREFERENCIAL para acionar modelos: chama ~/ecossistema/bin/llm.py na Ubuntu pelo PAPEL.
+    Papeis vigentes: ver obter_catalogo_e_diretrizes_modelos (ex.: doc, codigo, raciocinio-local,
+    raciocinio-nuvem, redacao-nuvem). O gateway usa contexto fixo por papel, RECUSA em vez de truncar,
+    divide documento longo com partes=True e exige nuvem=True para papel de nuvem
+    (o conteudo sai da workstation: nunca com dado sigiloso).
+    - caminho_arquivo: texto na Ubuntu (.txt/.md/.csv/.json); caminho D:\\ e convertido. Alternativa: texto inline.
+    - caminho_saida: grava a resposta em arquivo e devolve so estatisticas (economia de contexto).
+    - consolidar: concatenar (extracao, padrao) ou llm (sintese) no modo partes.
+    - background=True para documento longo com partes; acompanhar com consultar_job_ubuntu.
     """
-    try:
-        payload = {
-            "model": modelo,
-            "prompt": prompt,
-            "stream": False
-        }
-        r = requests.post(f"{OLLAMA_HOST}/api/generate", json=payload, timeout=220)
-        r.raise_for_status()
-        return r.json().get("response", "Sem resposta gerada pelo modelo local.")
-    except Exception as e:
-        return f"Falha na inferência local com o modelo '{modelo}': {str(e)}"
+    args = ["--papel", papel, "--instrucao", instrucao, "--consolidar", consolidar]
+    if caminho_arquivo:
+        args += ["--arquivo", _caminho_ubuntu(caminho_arquivo)]
+    if partes:
+        args.append("--partes")
+    if nuvem:
+        args.append("--nuvem")
+    if caminho_saida:
+        args += ["--saida", _caminho_ubuntu(caminho_saida)]
+    if max_tokens:
+        args += ["--max-tokens", int(max_tokens)]
+    cmd = _comando_llm(args, "" if caminho_arquivo else texto)
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_POOL, _executar_job, cmd, "transporte", "bash",
+                                      f"llm_{papel}", "", background, SSH_TIMEOUT_S)
+
+@mcp.tool()
+async def consultar_modelo_local(modelo: str, prompt: str, num_ctx: int = 16384) -> str:
+    """[LEGADO] Consulta direta a um modelo local pelo nome. Preferir consultar_papel.
+    Agora passa pelo gateway llm.py com num_ctx fixo e RECUSA se o prompt nao couber.
+    Motivo: sem num_ctx, o Ollama descartava ~metade do contexto e guardava so o final do texto, sem aviso.
+    """
+    cmd = _comando_llm(["--modelo", modelo, "--ctx", int(num_ctx)], prompt)
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_POOL, _executar_job, cmd, "transporte", "bash",
+                                      f"llm_{modelo}", "", False, SSH_TIMEOUT_S)
 
 @mcp.tool()
 def buscar_similaridade_local(pergunta: str, trechos: list[str]) -> str:

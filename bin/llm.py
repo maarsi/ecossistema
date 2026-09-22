@@ -49,6 +49,8 @@ def montar_prompt(instrucao, conteudo):
     """Conteudo primeiro, tarefa por ultimo: modelos pequenos perdem a instrucao depois de texto longo."""
     if not conteudo:
         return instrucao
+    if not instrucao:
+        return conteudo  # prompt bruto: o proprio conteudo ja traz a solicitacao
     return (f"=== CONTEUDO ===\n{conteudo}\n=== FIM DO CONTEUDO ===\n\n"
             f"TAREFA (responder apenas com base no conteudo acima): {instrucao}")
 
@@ -132,19 +134,25 @@ def main():
                     help="tokens estimados por parte no modo --partes (padrao 6000; extracao rende mais em partes curtas)")
     ap.add_argument("--nuvem", action="store_true"); ap.add_argument("--max-tokens", type=int)
     ap.add_argument("--temperatura", type=float, default=0.2)
+    ap.add_argument("--modelo", help="modelo Ollama avulso, sem papel (uso legado)")
+    ap.add_argument("--ctx", type=int, default=16384, help="num_ctx fixo para --modelo")
     ap.add_argument("--consolidar", choices=["concatenar", "llm"], default="concatenar",
                     help="modo partes: concatenar (extracao, deterministico) ou llm (sintese/resumo)")
     ap.add_argument("--manter-raciocinio", action="store_true")
     a = ap.parse_args()
 
-    if a.listar or not a.papel:
+    if a.listar or not (a.papel or a.modelo):
         print(f"{'PAPEL':22} {'ONDE':6} {'MODELO':46} {'CTX':>7}  USO")
         for n, c in PAPEIS.items():
             print(f"{n:22} {c['onde']:6} {c['modelo']:46} {str(c.get('ctx_max', '-')):>7}  {c['uso']}")
         return
-    if a.papel not in PAPEIS:
+    if a.modelo:
+        cfg = {"onde": "local", "modelo": a.modelo, "ctx_max": a.ctx, "max_tokens": 2048, "uso": "avulso"}
+        a.papel = f"avulso:{a.modelo}"
+    elif a.papel not in PAPEIS:
         sys.exit(f"ERRO: papel '{a.papel}' inexistente. Use --listar.")
-    cfg = PAPEIS[a.papel]
+    else:
+        cfg = PAPEIS[a.papel]
     max_tokens = a.max_tokens or cfg.get("max_tokens", 2048)
 
     conteudo = ""
@@ -157,7 +165,9 @@ def main():
         conteudo = sys.stdin.read()
     elif a.texto:
         conteudo = a.texto
-    instrucao = a.instrucao or ("" if conteudo else sys.exit("ERRO: informar --instrucao e/ou conteudo."))
+    instrucao = a.instrucao
+    if not instrucao and not conteudo:
+        sys.exit("ERRO: informar --instrucao e/ou conteudo.")
 
     t0 = time.time()
     if cfg["onde"] == "nuvem":
