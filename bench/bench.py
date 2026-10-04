@@ -143,7 +143,10 @@ def gerar(modelo, prompt, max_tokens, ctx=8192, imagem=None):
          "options": {"num_ctx": ctx, "num_predict": max_tokens, "temperature": 0}}
     if imagem:
         j["images"] = [base64.b64encode(imagem).decode()]
-    r = requests.post(f"{llm.OLLAMA}/api/generate", json=j, timeout=900).json()
+    # Modelos com modo de pensamento gastariam o limite de tokens raciocinando; desliga quando suportado.
+    r = requests.post(f"{llm.OLLAMA}/api/generate", json={**j, "think": False}, timeout=900).json()
+    if r.get("error") and "think" in str(r.get("error")).lower():
+        r = requests.post(f"{llm.OLLAMA}/api/generate", json=j, timeout=900).json()
     if r.get("error"):
         return f"[ERRO API: {r['error'][:120]}]", time.time() - t
     return llm.limpar_raciocinio(r.get("response", "")), time.time() - t

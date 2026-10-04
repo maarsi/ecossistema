@@ -1,7 +1,18 @@
-.env
-*.log
-__pycache__/
-cache/
-*.tmp
+# Lista de PERMISSAO: a pasta é alvo de sincronizacao (Syncthing), entao tudo e ignorado
+# por padrao e apenas o que e do ecossistema entra no git.
+/*
+!/bin/
+!/bench/
+!/config/
+!/mcp/
+!/CLAUDE.md
+!/README.md
+!/.gitignore
+# exclusoes dentro do que foi permitido
 bench/imagens/
 bench/dados/
+cache/
+__pycache__/
+*.log
+*.tmp
+.env

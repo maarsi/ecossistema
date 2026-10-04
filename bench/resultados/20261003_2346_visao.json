@@ -1,0 +1,18 @@
+[
+ {
+  "tarefa": "barras",
+  "ok": true,
+  "seg": 12.0,
+  "detalhe": "L3, 1530",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": true,
+  "seg": 0.8,
+  "detalhe": "7",
+  "suite": "visao",
+  "modelo": "qwen2.5vl:7b"
+ }
+]

@@ -1,11 +1,11 @@
 {
   "doc": {
     "onde": "local",
-    "modelo": "qwen2.5:14b",
+    "modelo": "qwen3:14b",
     "ctx_max": 32768,
     "max_tokens": 2048,
     "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos (acima de ~30 paginas, usar --partes)",
-    "teste": "2026-09-22: 20.398 tokens em chamada unica, marcadores de inicio, meio e fim encontrados, 26 s, 100% GPU (12,5 GB com KV q8_0). mistral-nemo:12b reprovado no mesmo tipo de teste. | rodada 2: bench 22/09 (suite doc): 3/4; ornith-1.5:9b 3/4, granite4.2 2/4"
+    "teste": "bench 04/10: 4/4 na suite doc em 5,7 s (acertou valor e pagina nas tres citacoes); qwen2.5:14b 3/4. Promovido por decisao de Mateus."
   },
   "codigo": {
     "onde": "local",
@@ -17,11 +17,11 @@
   },
   "raciocinio-local": {
     "onde": "local",
-    "modelo": "qwen2.5:14b",
+    "modelo": "qwen3:14b",
     "ctx_max": 16384,
     "max_tokens": 4096,
     "uso": "Segunda opiniao sobre derivacao ja feita, quando o dado e sigiloso",
-    "teste": "bench 22/09: 7/8 em 8,9 s; deepseek-r1:14b-fast 6/8 em 13,8 s (trocou alternativas no logit). Diferenca de 1 tarefa = empate tecnico; decisao pela vantagem operacional (mesmo modelo do papel doc, sem recarga) | rodada 2: bench 22/09: 7/8; ornith-1.5:9b 7/8 (empate), granite4.2 3/8 em 45,6 s"
+    "teste": "bench 04/10: 7/8 em 4,8 s; qwen2.5:14b 7/8 em 8,9 s (empate tecnico, decisao pela velocidade e por ser o mesmo modelo do papel doc, sem recarga)"
   },
   "raciocinio-nuvem": {
     "onde": "nuvem",

@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 9.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:14b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 1.2,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:14b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 3.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:14b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": true,
+  "seg": 7.5,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:14b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 2.5,
+  "detalhe": "                     ^",
+  "suite": "codigo",
+  "modelo": "qwen3:14b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": false,
+  "seg": 3.6,
+  "detalhe": "ValueError: could not convert string to float: 'geometry'",
+  "suite": "codigo",
+  "modelo": "qwen3:14b"
+ }
+]
