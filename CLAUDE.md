@@ -66,3 +66,8 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   Ao buscar, ler os 5 primeiros: versoes gemeas (.docx e .md) e arquivos de processo (prompts) disputam o topo.
 - Jobs em segundo plano: nunca usar `grep` sem `--line-buffered` no pipe (segura a saida ate o fim), e ao
   interromper um job, matar o script-mae, nao so o processo filho (o proximo comando da fila segue rodando).
+- A pasta ~/ecossistema e pasta compartilhada do Syncthing (decisao de Mateus em 04/10: manter assim).
+  Risco aceito: exclusao em outro dispositivo apaga arquivos daqui. O .gitignore em lista de permissao
+  impede que o conteudo sincronizado entre no git; nunca relaxar essa lista.
+- Offload medido (04/10, doc de 29k tokens, ctx 32768): qwen3:30b-a3b com 29% na CPU faz prefill 28% mais
+  LENTO que um 14B denso, porem GERA 19% mais rapido (3B ativos). Offload penaliza leitura, nao escrita.
