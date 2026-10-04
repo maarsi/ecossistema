@@ -1,0 +1,34 @@
+[
+ {
+  "tarefa": "marcadores",
+  "ok": true,
+  "seg": 25.5,
+  "detalhe": "Okay, let's see. The user provided a content block with some markers: MARCADOR_INICIO, MAR",
+  "suite": "doc",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "tabela_valor_pagina",
+  "ok": true,
+  "seg": 22.4,
+  "detalhe": "Vou analisar o conteúdo fornecido para encontrar o BLEU EN-DE do Transformer (big) na tabe",
+  "suite": "doc",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "figura_pagina",
+  "ok": true,
+  "seg": 6.1,
+  "detalhe": "Vou analisar o conteúdo fornecido para encontrar onde está a legenda da Figura 1 que mostr",
+  "suite": "doc",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "texto_valor_pagina",
+  "ok": true,
+  "seg": 6.9,
+  "detalhe": "Vou analisar o conteúdo fornecido para encontrar a taxa de dropout residual do modelo base",
+  "suite": "doc",
+  "modelo": "qwen3:30b-a3b"
+ }
+]

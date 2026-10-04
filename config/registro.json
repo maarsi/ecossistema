@@ -1,11 +1,17 @@
 {
-  "gerado_em": "2026-10-04 00:20",
+  "gerado_em": "2026-10-04 00:52",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
-    "usada_mib": 10793
+    "usada_mib": 14811
   },
   "ollama": [
+    {
+      "nome": "qwen3:30b-a3b",
+      "gb": 17.3,
+      "cabe_vram": false,
+      "num_ctx": null
+    },
     {
       "nome": "qwen3:14b",
       "gb": 8.6,
@@ -17,12 +23,6 @@
       "gb": 2.3,
       "cabe_vram": true,
       "num_ctx": null
-    },
-    {
-      "nome": "deepseek-r1:14b-fast",
-      "gb": 8.4,
-      "cabe_vram": true,
-      "num_ctx": "8192"
     },
     {
       "nome": "qwen2.5-coder:14b-fast",
@@ -38,12 +38,6 @@
     },
     {
       "nome": "qwen2.5-coder:14b",
-      "gb": 8.4,
-      "cabe_vram": true,
-      "num_ctx": null
-    },
-    {
-      "nome": "qwen2.5:14b",
       "gb": 8.4,
       "cabe_vram": true,
       "num_ctx": null
@@ -158,9 +152,9 @@
     "open-webui"
   ],
   "discos_livres_gb": {
-    "/mnt/nvme_lexar": 794,
+    "/mnt/nvme_lexar": 798,
     "/media/mateus/DADOS_01": 3271,
-    "/": 498
+    "/": 497
   },
   "papeis": {
     "doc": {
@@ -216,6 +210,14 @@
       "embeddings": true,
       "uso": "Vetores para busca semantica no acervo (indice local); nao gera texto",
       "teste": "bench 22/09: 10/10 buscas por parafrase em portugues, 0,7 s; bge-m3 9/10 em 1,8 s; nomic-embed-text 4/10"
+    },
+    "conferencia": {
+      "onde": "local",
+      "modelo": "qwen3:30b-a3b",
+      "ctx_max": 16384,
+      "max_tokens": 4096,
+      "uso": "Conferencia de calculo ou rotina critica antes do entregavel, sob demanda. NAO usar no fluxo cotidiano: 3 a 7 vezes mais lento que o papel doc, por rodar ~29% na CPU (19 GB nao cabem na VRAM)",
+      "teste": "bench 04/10: raciocinio 8/8 (unico a gabaritar, acertou BPR), doc 4/4, codigo 5/6. Empate tecnico com qwen3:14b em tudo, mas falhas COMPLEMENTARES em codigo (acerta DuckDB e GeoPandas, erra GTFS pos-meia-noite), o que justifica a segunda opiniao"
     }
   }
 }

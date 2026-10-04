@@ -1,0 +1,66 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 24.8,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 16.7,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 41.5,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 19.7,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 19.0,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 8.5,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 22.9,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 35.5,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ }
+]

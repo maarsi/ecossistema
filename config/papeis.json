@@ -52,5 +52,13 @@
     "embeddings": true,
     "uso": "Vetores para busca semantica no acervo (indice local); nao gera texto",
     "teste": "bench 22/09: 10/10 buscas por parafrase em portugues, 0,7 s; bge-m3 9/10 em 1,8 s; nomic-embed-text 4/10"
+  },
+  "conferencia": {
+    "onde": "local",
+    "modelo": "qwen3:30b-a3b",
+    "ctx_max": 16384,
+    "max_tokens": 4096,
+    "uso": "Conferencia de calculo ou rotina critica antes do entregavel, sob demanda. NAO usar no fluxo cotidiano: 3 a 7 vezes mais lento que o papel doc, por rodar ~29% na CPU (19 GB nao cabem na VRAM)",
+    "teste": "bench 04/10: raciocinio 8/8 (unico a gabaritar, acertou BPR), doc 4/4, codigo 5/6. Empate tecnico com qwen3:14b em tudo, mas falhas COMPLEMENTARES em codigo (acerta DuckDB e GeoPandas, erra GTFS pos-meia-noite), o que justifica a segunda opiniao"
   }
 }

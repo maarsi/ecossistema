@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 33.3,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 15.1,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 27.4,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 69.3,
+  "detalhe": "SyntaxError: unterminated string literal (detected at line 1)",
+  "suite": "codigo",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": true,
+  "seg": 24.5,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 24.2,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen3:30b-a3b"
+ }
+]

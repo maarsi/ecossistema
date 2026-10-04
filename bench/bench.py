@@ -288,12 +288,12 @@ def suite_embeddings(m, lim):
                     "detalhe": f"posicao do trecho certo: {ordem.index(alvo) + 1}"})
     return out
 
-SUITES = {"codigo": (suite_codigo, ["qwen2.5-coder:14b-fast", "qwen2.5:14b", "deepseek-r1:14b-fast", "glm4:9b"]),
-          "raciocinio": (suite_raciocinio, ["deepseek-r1:14b-fast", "qwen2.5:14b", "glm4:9b", "qwen2.5-coder:14b-fast",
-                                            "nuvem:nvidia/nemotron-3-ultra-550b-a55b"]),
+SUITES = {"codigo": (suite_codigo, ["qwen2.5-coder:14b-fast", "qwen3:14b", "qwen3:30b-a3b"]),
+          "raciocinio": (suite_raciocinio, ["qwen3:14b", "qwen3:30b-a3b", "nuvem:nvidia/nemotron-3-ultra-550b-a55b"]),
           "visao": (suite_visao, ["qwen2.5vl:7b"]),
-          "doc": (suite_doc, ["qwen2.5:14b"]),
-          "embeddings": (suite_embeddings, ["nomic-embed-text:latest"])}
+          "doc": (suite_doc, ["qwen3:14b", "qwen3:30b-a3b"]),
+          "embeddings": (suite_embeddings, ["qwen3-embedding:4b"])}
+
 
 def autoteste():
     falhas = 0
