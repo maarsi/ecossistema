@@ -71,3 +71,13 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   impede que o conteudo sincronizado entre no git; nunca relaxar essa lista.
 - Offload medido (04/10, doc de 29k tokens, ctx 32768): qwen3:30b-a3b com 29% na CPU faz prefill 28% mais
   LENTO que um 14B denso, porem GERA 19% mais rapido (3B ativos). Offload penaliza leitura, nao escrita.
+
+## Rodada de 06/10/2026 (madrugada): papel doc-longo e limpeza de modelos
+- Novo papel `doc-longo` com gemma4:12b (4/4 na suite doc em 10,6 s; qwen3:14b tambem 4/4 em 5,7 s).
+  Razao do papel: janela declarada de 262k tokens. Para documento que cabe em 32k, usar `doc` (qwen3:14b), mais rapido.
+- Removidos por medicao na bateria, nenhum com papel:
+  - qwen3-vl:8b ....... visao 3/5 (errou barras e contagem); qwen2.5vl:7b faz 5/5 e continua no papel `visao`
+  - deepseek-r1:14b ... raciocinio 6/8 e codigo 4/6, 15 a 22 s por tarefa
+  - qwen2.5-coder:14b . codigo 5/6 em 4,5 s, identico a variante `-fast` ja em uso: redundante
+  - llama3.1:8b ....... raciocinio 1/8, codigo 2/6
+  - nemotron-mini ..... raciocinio 0/8, codigo 0/6

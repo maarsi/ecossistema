@@ -1,0 +1,66 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 7.9,
+  "detalhe": "resposta=[25.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": false,
+  "seg": 2.7,
+  "detalhe": "resposta=[0.5975] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": false,
+  "seg": 7.0,
+  "detalhe": "resposta=[-0.5] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 6.4,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": false,
+  "seg": 9.2,
+  "detalhe": "resposta=[555.37] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "little",
+  "ok": false,
+  "seg": 1.4,
+  "detalhe": "resposta=[10.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": false,
+  "seg": 3.3,
+  "detalhe": "resposta=[20000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": false,
+  "seg": 2.0,
+  "detalhe": "resposta=[300.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "llama3.1:8b"
+ }
+]

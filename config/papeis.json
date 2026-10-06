@@ -7,6 +7,14 @@
     "uso": "Leitura, extracao e sumarizacao de documentos extensos e sigilosos (acima de ~30 paginas, usar --partes)",
     "teste": "bench 04/10: 4/4 na suite doc em 5,7 s (acertou valor e pagina nas tres citacoes); qwen2.5:14b 3/4. Promovido por decisao de Mateus."
   },
+  "doc-longo": {
+    "onde": "local",
+    "modelo": "gemma4:12b",
+    "ctx_max": 262144,
+    "max_tokens": 2048,
+    "uso": "Documentos acima de ~32K tokens (relatorios de 100+ paginas) que estouram o contexto do papel doc. Segunda opiniao sob demanda; no fluxo cotidiano, doc continua com qwen3:14b",
+    "teste": "bench 06/10: 4/4 na suite doc em 10,6 s; empate tecnico com qwen3:14b (4/4 em 5,7 s), titular mantido pela velocidade; gemma4 fica com o nicho de contexto longo (256K, KV barato)"
+  },
   "codigo": {
     "onde": "local",
     "modelo": "qwen2.5-coder:14b-fast",

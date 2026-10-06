@@ -1,0 +1,66 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 5.1,
+  "detalhe": "resposta=[12.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[0.25] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[-0.4] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[18.0] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[130.0] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "little",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[1200.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[1200.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "resposta=[120.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "nemotron-mini"
+ }
+]

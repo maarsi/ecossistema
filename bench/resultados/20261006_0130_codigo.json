@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 0.9,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 2.3,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": false,
+  "seg": 2.6,
+  "detalhe": "AssertionError",
+  "suite": "codigo",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 3.8,
+  "detalhe": "ValueError: time data \"24:05:00\" doesn't match format \"%H:%M:%S\", at position 4. You might want to try:",
+  "suite": "codigo",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 1.7,
+  "detalhe": "_duckdb.IOException: IO Error: Cannot open file \"/home/mateus/parquet_file=/tmp/tmpzbt966io/v.parquet\": No such file or directory",
+  "suite": "codigo",
+  "modelo": "llama3.1:8b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": false,
+  "seg": 1.6,
+  "detalhe": "ValueError: could not convert string to float: 'geometry'",
+  "suite": "codigo",
+  "modelo": "llama3.1:8b"
+ }
+]

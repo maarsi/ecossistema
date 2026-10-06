@@ -1,0 +1,42 @@
+[
+ {
+  "tarefa": "barras",
+  "ok": false,
+  "seg": 8.3,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "qwen3-vl:8b"
+ },
+ {
+  "tarefa": "curva_pico",
+  "ok": true,
+  "seg": 2.8,
+  "detalhe": "7",
+  "suite": "visao",
+  "modelo": "qwen3-vl:8b"
+ },
+ {
+  "tarefa": "tabela",
+  "ok": true,
+  "seg": 3.7,
+  "detalhe": "57",
+  "suite": "visao",
+  "modelo": "qwen3-vl:8b"
+ },
+ {
+  "tarefa": "rede",
+  "ok": true,
+  "seg": 2.8,
+  "detalhe": "14",
+  "suite": "visao",
+  "modelo": "qwen3-vl:8b"
+ },
+ {
+  "tarefa": "mapa_contagem",
+  "ok": false,
+  "seg": 3.7,
+  "detalhe": "",
+  "suite": "visao",
+  "modelo": "qwen3-vl:8b"
+ }
+]

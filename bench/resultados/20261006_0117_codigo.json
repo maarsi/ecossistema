@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 17.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 12.7,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 14.0,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 55.8,
+  "detalhe": "ValueError: time data \"24:05:00\" doesn't match format \"%H:%M:%S\", at position 4. You might want to try:",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 9.9,
+  "detalhe": "TypeError: connect(): incompatible function arguments. The following argument types are supported:",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 21.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "deepseek-r1:14b"
+ }
+]

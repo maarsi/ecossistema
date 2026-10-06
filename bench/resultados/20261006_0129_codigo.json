@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 7.9,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 1.2,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b"
+ },
+ {
+  "tarefa": "logit",
+  "ok": true,
+  "seg": 4.0,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 7.2,
+  "detalhe": "ValueError: time data \"24:05:00\" doesn't match format \"%H:%M:%S\", at position 4. You might want to try:",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": true,
+  "seg": 2.6,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": true,
+  "seg": 4.0,
+  "detalhe": "",
+  "suite": "codigo",
+  "modelo": "qwen2.5-coder:14b"
+ }
+]

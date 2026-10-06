@@ -1,0 +1,50 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 1.4,
+  "detalhe": "AssertionError",
+  "suite": "codigo",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": false,
+  "seg": 2.4,
+  "detalhe": "IndexError: arrays used as indices must be of integer (or boolean) type",
+  "suite": "codigo",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "logit",
+  "ok": false,
+  "seg": 2.9,
+  "detalhe": "AssertionError",
+  "suite": "codigo",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "gtfs_headway",
+  "ok": false,
+  "seg": 0.3,
+  "detalhe": "IndentationError: expected an indented block after function definition on line 3",
+  "suite": "codigo",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "duckdb_receita",
+  "ok": false,
+  "seg": 2.1,
+  "detalhe": "_duckdb.InvalidInputException: Invalid Input Error: Parameter argument/count mismatch, identifiers of the excess parameters: parquet_file",
+  "suite": "codigo",
+  "modelo": "nemotron-mini"
+ },
+ {
+  "tarefa": "geo_comprimento",
+  "ok": false,
+  "seg": 2.5,
+  "detalhe": "ModuleNotFoundError: No module named 'osgeo'",
+  "suite": "codigo",
+  "modelo": "nemotron-mini"
+ }
+]
