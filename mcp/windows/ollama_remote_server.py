@@ -197,6 +197,41 @@ def buscar_similaridade_local(pergunta: str, trechos: list[str]) -> str:
         return f"Falha no RAG semântico local: {str(e)}"
 
 @mcp.tool()
+async def reranquear_trechos(pergunta: str, trechos: list[str], modelo: str = "Qwen/Qwen3-Reranker-0.6B") -> str:
+    """Reordena trechos recuperados por relevancia real para a pergunta (cross-encoder na RTX 5060 Ti
+    da Workstation Ubuntu, venv 'transporte'; 100% offline apos o primeiro download do modelo).
+    Complemento de buscar_similaridade_local: use quando houver quase-duplicatas (mesmo tema,
+    numeros parecidos) ou quando os scores de cosseno estiverem colados no topo.
+    Modelo padrao: Qwen3-Reranker-0.6B (0,6B, multilingue, campeao do teste de quase-duplicatas);
+    alternativa mais pesada: BAAI/bge-reranker-v2-m3.
+    Execucao remota via mecanismo de jobs (~/.claude_jobs), como as demais ferramentas do servidor."""
+    if not trechos:
+        return "Erro: nenhum trecho fornecido."
+    payload = json.dumps({"q": pergunta, "t": trechos, "m": modelo}, ensure_ascii=False)
+    codigo = (
+        "import json, sys\n"
+        "try:\n"
+        "    from sentence_transformers import CrossEncoder\n"
+        "except ImportError:\n"
+        "    print(\"Erro: sentence-transformers nao instalado no venv 'transporte'. \"\n"
+        "          \"Instale com: pip install sentence-transformers\"); sys.exit(0)\n"
+        f"dados = json.loads({payload!r})\n"
+        "try:\n"
+        "    ce = CrossEncoder(dados['m'], device='cuda')\n"
+        "    scores = ce.predict([(dados['q'], t) for t in dados['t']])\n"
+        "    ordenado = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)\n"
+        "    linhas = [f\"=== RERANQUEAMENTO ({dados['m']}; consulta: '{dados['q'][:80]}') ===\"]\n"
+        "    for rank, (i, s) in enumerate(ordenado, 1):\n"
+        "        linhas.append(f\"{rank}o [score {float(s):.4f}] trecho #{i+1}:\\n  {dados['t'][i]}\")\n"
+        "    print('\\n\\n'.join(linhas))\n"
+        "except Exception as e:\n"
+        "    print(f'Falha no reranking: {type(e).__name__}: {e}')\n"
+    )
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_POOL, _executar_job, codigo, "transporte", "python",
+                                      "reranquear_trechos", "", False, SSH_TIMEOUT_S)
+
+@mcp.tool()
 def otimizar_rotas_ortools(matriz_distancia: list[list[float]], demandas: list[float], capacidades_veiculos: list[float], num_veiculos: int, deposito: int = 0) -> str:
     """Resolve problemas de roteamento de veículos capacitados (CVRP) localmente via Google OR-Tools
     dentro do ambiente ~/env_transporte no Ubuntu.
