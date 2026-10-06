@@ -36,7 +36,7 @@ def _ngc_indisponivel() -> str:
     if not NGC_KEY:
         return ("Erro: NGC_API_KEY não configurada no ambiente. Defina-a no bloco 'env' do "
                 "servidor ollama-remote em claude_desktop_config.json. "
-                "Alternativa local sem chave: 'consultar_modelo_local' ou 'analisar_mapa_local_llava'.")
+                "Alternativa local sem chave: 'consultar_modelo_local' ou 'analisar_mapa_local_visao'.")
     return ""
 
 # ----------------------------------------------------------------------
@@ -54,10 +54,10 @@ async def obter_catalogo_e_diretrizes_modelos() -> str:
     técnico: um modelo de 12B a 14B produz insumo, não decisão metodológica.
 
     1. DELEGAR quando a tarefa atender pelo menos um critério:
-       a) VOLUME: edital, TR, memorial ou base extensa -> 'mistral-nemo:12b'
+       a) VOLUME: edital, TR, memorial ou relatorio extenso -> consultar_papel com papel 'doc' (qwen3:14b; acima de ~32K tokens, 'doc-longo' com gemma4:12b)
        b) CONFIDENCIALIDADE: dado de cliente, pesquisa bruta, material sob NDA -> SEMPRE local,
           independentemente do tamanho; devolver apenas agregados e conclusões
-       c) PROCESSAMENTO: SIG, ETL, cruzamento de bases, cálculo em lote -> 'qwen2.5-coder:14b'
+       c) PROCESSAMENTO: SIG, ETL, cruzamento de bases, cálculo em lote -> 'qwen2.5-coder:14b-fast'
           + 'executar_python_ubuntu'; roteirização e VRP -> 'otimizar_rotas_ortools'
        d) REPETIÇÃO: mesma operação sobre N arquivos, zonas, linhas ou cenários
        e) EXECUÇÃO E TESTE: sempre -> 'executar_python_ubuntu' no ambiente 'transporte'
@@ -70,7 +70,7 @@ async def obter_catalogo_e_diretrizes_modelos() -> str:
        - interpretação de resultado, diagnóstico de inconsistência, análise de sensibilidade
        - redação técnica de relatório, nota metodológica, proposta ou parecer
        - código curto (ordem de 50 linhas ou menos)
-       Nesses casos 'deepseek-r1:14b' e 'raciocinar_ngc_kimi_k3' entram como SEGUNDA OPINIÃO,
+       Nesses casos o papel 'conferencia' (qwen3:30b-a3b) e 'raciocinar_ngc_kimi_k3' entram como SEGUNDA OPINIÃO,
        para conferir uma derivação já feita, nunca como fonte primária dela.
 
     3. DESEMPATE: se a tarefa é pensar, resolver aqui; se é processar, delegar.
@@ -87,7 +87,7 @@ async def obter_catalogo_e_diretrizes_modelos() -> str:
        'analisar_mapa_sig_ngc', 'extrair_tabela_grafico_deplot', 'consultar_ngc_llama33_70b')
        ENVIAM O CONTEÚDO PARA FORA da Workstation, para APIs externas. Elas não atendem ao
        critério (b) de confidencialidade. Para dado sensível, usar apenas modelos locais
-       do Ollama, OR-Tools e 'analisar_mapa_local_llava'.
+       do Ollama, OR-Tools e 'analisar_mapa_local_visao'.
     """
     cmd = (f"{ECOSSISTEMA}/bin/inventario.py --resumo; echo; {ECOSSISTEMA}/bin/llm.py --listar; echo; "
            f"echo 'Via preferencial para modelos: consultar_papel. Regras completas: {ECOSSISTEMA}/CLAUDE.md'")
@@ -120,8 +120,7 @@ async def consultar_papel(papel: str, instrucao: str, caminho_arquivo: str = "",
                           consolidar: str = "concatenar", max_tokens: int = 0, background: bool = False,
                           ocr: bool = False) -> str:
     """VIA PREFERENCIAL para acionar modelos: chama ~/ecossistema/bin/llm.py na Ubuntu pelo PAPEL.
-    Papeis vigentes: ver obter_catalogo_e_diretrizes_modelos (ex.: doc, codigo, raciocinio-local,
-    raciocinio-nuvem, redacao-nuvem). O gateway usa contexto fixo por papel, RECUSA em vez de truncar,
+    Papeis vigentes: ver obter_catalogo_e_diretrizes_modelos (ex.: doc, doc-longo, codigo, raciocinio-local, conferencia, visao, embeddings, raciocinio-nuvem, redacao-nuvem). O gateway usa contexto fixo por papel, RECUSA em vez de truncar,
     divide documento longo com partes=True e exige nuvem=True para papel de nuvem
     (o conteudo sai da workstation: nunca com dado sigiloso).
     - caminho_arquivo: PDF, DOCX, PPTX, XLSX, HTML (convertidos via Docling, com cache e marcadores de pagina)
@@ -319,7 +318,7 @@ def extrair_tabela_grafico_deplot(caminho_imagem: str, prompt_instrucao: str = "
     Aceita caminhos do Windows (ex: 'D:\\...') ou do Ubuntu (ex: '/media/mateus/DADOS_01/...').
 
     ATENÇÃO: a imagem é enviada para API externa. Para figura de relatório sob NDA,
-    usar 'analisar_mapa_local_llava' ou digitalizar manualmente.
+    usar 'analisar_mapa_local_visao' ou digitalizar manualmente.
     """
     erro = _ngc_indisponivel()
     if erro:
@@ -432,7 +431,7 @@ def analisar_mapa_kimi_k3(caminho_imagem: str, prompt_analise: str = "", reasoni
     Combina visão em alta resolução com esforço analítico profundo (Chain of Thought).
 
     ATENÇÃO: a imagem é enviada para API externa. Para mapa de projeto sob NDA,
-    usar 'analisar_mapa_local_llava' (100% offline).
+    usar 'analisar_mapa_local_visao' (100% offline).
     """
     erro = _ngc_indisponivel()
     if erro:
@@ -511,8 +510,8 @@ except Exception as e:
     return _executar_ssh_paramiko(cmd, timeout=200)
 
 @mcp.tool()
-def analisar_mapa_local_llava(caminho_imagem: str, prompt_analise: str = "") -> str:
-    """Realiza análise visual de mapas e traçados usando o modelo local llava:13b (100% offline na GPU RTX 5060 Ti)."""
+def analisar_mapa_local_visao(caminho_imagem: str, prompt_analise: str = "") -> str:
+    """Realiza análise visual de mapas e traçados usando o modelo local qwen2.5vl:7b (100% offline; campeao do bench de visao 5/5)."""
     caminho_limpo = caminho_imagem.replace("\\", "/")
     if caminho_limpo.lower().startswith("d:/"):
         caminho_ubuntu = "/media/mateus/DADOS_01/" + caminho_limpo[3:]
@@ -536,7 +535,7 @@ with open(caminho, 'rb') as f:
     img_b64 = base64.b64encode(f.read()).decode('utf-8')
 
 payload = {{
-    'model': 'llava:13b',
+    'model': 'qwen2.5vl:7b',
     'prompt': {repr(prompt_analise)},
     'images': [img_b64],
     'stream': False
