@@ -85,8 +85,13 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
 ## Registro de 07/10/2026: ativos e politica de atualizacao
 - `qwen2.5-coder:14b-fast`: a tag sumiu do registro Ollama (re-pull falha; copia local intacta e funcional).
   ATIVO NAO-RECUPERAVEL: nunca executar `ollama rm` sobre este modelo — nao ha re-download ate surgir tag
-  equivalente. Qualquer limpeza de modelos passa por conferencia previa desta lista; considerar copia dos
-  blobs em disco antes de manutencao no Ollama.
-- Stack Docker vigente: changedetection (:latest), osrm (PINADO), portainer, open-webui (:main),
+  equivalente. Qualquer limpeza de modelos passa por conferencia previa desta lista.
+  BACKUP (07/10): manifest + 6 blobs (8,19 GiB, gzip integro, 7 entradas conferidas) em
+  `/media/mateus/DADOS_01/99 - BACKUPS/modelos/qwen2.5-coder-14b-fast_20261007.tar.gz`
+  (entra no restic noturno das 03h). Restauracao: extrair na raiz de OLLAMA_MODELS
+  (`/mnt/nvme_lexar/ia_models/ollama`), preservando os caminhos relativos manifests/ e blobs/.
+- Stack Docker vigente: changedetection (:latest), osrm (PINADO — imagem osrm/osrm-backend,
+  digest sha256:af5d4a83fb90086a43b1ae2ca22872e6768766ad5fcbb07a29ff90ec644ee409; recriar o container
+  sempre por osrm/osrm-backend@sha256:..., nunca pela tag :latest), portainer, open-webui (:main),
   perplexica "vane" (:latest). Politica: atualizacao MANUAL, um container por vez, com backup da
   configuracao antes; nunca atualizar em lote nem habilitar auto-update.
