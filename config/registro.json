@@ -1,26 +1,14 @@
 {
-  "gerado_em": "2026-10-06 09:32",
+  "gerado_em": "2026-10-07 20:36",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
-    "usada_mib": 723
+    "usada_mib": 653
   },
   "ollama": [
     {
-      "nome": "gemma4:12b",
-      "gb": 7.5,
-      "cabe_vram": true,
-      "num_ctx": null
-    },
-    {
-      "nome": "qwen3:30b-a3b",
-      "gb": 17.3,
-      "cabe_vram": false,
-      "num_ctx": null
-    },
-    {
-      "nome": "qwen3:14b",
-      "gb": 8.6,
+      "nome": "qwen2.5vl:7b",
+      "gb": 5.6,
       "cabe_vram": true,
       "num_ctx": null
     },
@@ -31,16 +19,28 @@
       "num_ctx": null
     },
     {
+      "nome": "qwen3:14b",
+      "gb": 8.6,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "qwen3:30b-a3b",
+      "gb": 17.3,
+      "cabe_vram": false,
+      "num_ctx": null
+    },
+    {
+      "nome": "gemma4:12b",
+      "gb": 7.5,
+      "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
       "nome": "qwen2.5-coder:14b-fast",
       "gb": 8.4,
       "cabe_vram": true,
       "num_ctx": "8192"
-    },
-    {
-      "nome": "qwen2.5vl:7b",
-      "gb": 5.6,
-      "cabe_vram": true,
-      "num_ctx": null
     }
   ],
   "ambientes": {
@@ -98,7 +98,7 @@
         "pymc": "6.3.2",
         "docling": "2.126.0",
         "torch": "2.14.0+cu130",
-        "openai": "3.16.2",
+        "openai": "1.109.1",
         "pandas": "2.3.3",
         "r5py": "1.1.7",
         "gtfs-kit": "13.0.1",
@@ -129,14 +129,16 @@
     "tailscaled": "active"
   },
   "docker": [
+    "changedetection",
+    "osrm",
     "portainer",
     "perplexica-search-engine-ai-master-vane-1",
     "open-webui"
   ],
   "discos_livres_gb": {
-    "/mnt/nvme_lexar": 806,
+    "/mnt/nvme_lexar": 800,
     "/media/mateus/DADOS_01": 3270,
-    "/": 580
+    "/": 570
   },
   "papeis": {
     "doc": {

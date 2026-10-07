@@ -81,3 +81,12 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   - qwen2.5-coder:14b . codigo 5/6 em 4,5 s, identico a variante `-fast` ja em uso: redundante
   - llama3.1:8b ....... raciocinio 1/8, codigo 2/6
   - nemotron-mini ..... raciocinio 0/8, codigo 0/6
+
+## Registro de 07/10/2026: ativos e politica de atualizacao
+- `qwen2.5-coder:14b-fast`: a tag sumiu do registro Ollama (re-pull falha; copia local intacta e funcional).
+  ATIVO NAO-RECUPERAVEL: nunca executar `ollama rm` sobre este modelo — nao ha re-download ate surgir tag
+  equivalente. Qualquer limpeza de modelos passa por conferencia previa desta lista; considerar copia dos
+  blobs em disco antes de manutencao no Ollama.
+- Stack Docker vigente: changedetection (:latest), osrm (PINADO), portainer, open-webui (:main),
+  perplexica "vane" (:latest). Politica: atualizacao MANUAL, um container por vez, com backup da
+  configuracao antes; nunca atualizar em lote nem habilitar auto-update.
