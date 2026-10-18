@@ -40,10 +40,10 @@
   },
   "redacao-nuvem": {
     "onde": "nuvem",
-    "modelo": "mistralai/mistral-nemotron",
+    "modelo": "google/gemma-4-31b-it",
     "max_tokens": 4096,
     "uso": "Sintese de texto publico longo; nao para redacao final de entregavel",
-    "teste": "2026-09-22: resposta defensavel sob leitura alternativa (ciclo incluindo terminal)"
+    "teste": "18/10: mistral-nemotron saiu do ar (HTTP 410, modelo descontinuado). Substituto escolhido em teste: gemma-4-31b-it deu a definicao mais precisa em PT-BR em 20,5 s; nemotron-3-nano-omni respondeu em 2,2 s porem vago; nemotron-3-super-120b voltou vazio; deepseek-v4.1-flash estourou 100 s"
   },
   "visao": {
     "onde": "local",
