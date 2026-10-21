@@ -106,3 +106,33 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   Depois de qualquer commit relevante: `git push`. Nunca versionar .env (a lista de permissao do .gitignore ja barra).
 - Copia secundaria: `git bundle create <destino>.bundle --all` em D:\TransportMCP\backup (reconstroi tudo offline).
 - Modelos (3,2 GB do embed-vl, Ollama) e indices do NVMe NAO entram no backup: sao reconstruiveis.
+
+## Rodada de 20/10/2026 (noite): anexos do Manus e bateria CVRP cuOpt x OR-Tools
+- Skills NVIDIA instaladas em `.claude/skills/` (escopo do projeto): cuopt-routing-api-python,
+  cuopt-numerical-optimization-api, cuopt-multi-objective-exploration, accelerated-computing-cudf.
+- Anexos do Manus: as 419 falhas da rodada de 20/10 22:07 sao TODAS o mesmo motivo, e o rotulo
+  "link expirado" em `bin/manus_export.py` esta ERRADO. O CloudFront devolve
+  `<Code>InvalidKey</Code><Message>Unknown Key</Message>`, que e Key-Pair-Id fora da lista de
+  signatarios confiaveis da distribuicao — nao expiracao. Provas: a Policy assinada vale ate
+  31/12/2026; uma URL intacta devolve o MESMO erro que um Key-Pair-Id inventado; sem parametro
+  nenhum o erro muda para MissingKey (ou seja, a camada de assinatura esta sendo avaliada, nao e
+  bloqueio de IP). Amostra estratificada de 114 URLs novas nos 19 projetos: 114/114 em 403, inclusive
+  arquivos que ja tinham baixado horas antes. E panne do lado do Manus, afeta 100% do acervo.
+  NAO adianta nova tentativa enquanto o teste de uma URL nao voltar 200; o download e incremental
+  (anexo em disco nao e refeito), entao repetir depois custa so os 1.008 ausentes de 4.580.
+- Diagnostico de URL assinada: 403 sozinho nao diz nada. Ler o <Code> do corpo e decodificar a
+  Policy base64 (substituicoes -_~ por +=/) antes de culpar expiracao ou chave de API.
+- cuOpt 26.10 nao expoe trace de incumbente no Python: `dump_best_results` cria o arquivo e grava
+  ZERO bytes, e `set_verbose_mode(True)` nao imprime nada. Perfil anytime so por varredura de
+  orcamentos (resolver de novo com limites menores). OR-Tools tem o instante real via
+  `AddAtSolutionCallback`. O solver do cuOpt e estocastico: repeticoes com o mesmo orcamento variam
+  alguns decimos de %.
+- Bateria CVRP (`bench/cvrp_cuopt_ortools.py`, mesma matriz inteira, capacidade 100, demanda 1-10,
+  semente 42, 30 s por instancia, RTX 5060 Ti). Distancia total, as 6 solucoes validadas por codigo
+  independente (cobertura, capacidade, distancia recalculada):
+  - 50 clientes ..... empate em 7.425 (3 veiculos); cuOpt ja chega la com 1 s, OR-Tools so aos 21 s
+  - 200 clientes .... cuOpt 20.950 x OR-Tools 23.126 (-9,4%); OR-Tools estaciona aos 5 s e nao sai mais
+  - 1000 clientes ... cuOpt 62.387 x OR-Tools 69.127 (-9,8%); os dois usam 55 veiculos (minimo teorico)
+  Leitura: abaixo de ~50 pontos o empate e esperado e o OR-Tools basta; de 200 para cima a GPU paga.
+- Dois ambientes cuOpt convivem por decisao de Mateus em 20/10: `~/env_cuopt` (26.8, com
+  cuopt-server) e `/mnt/nvme_lexar/envs/cuopt` (26.10 + ortools, usado pela bateria CVRP).
