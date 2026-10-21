@@ -231,85 +231,293 @@ async def reranquear_trechos(pergunta: str, trechos: list[str], modelo: str = "Q
     return await loop.run_in_executor(_POOL, _executar_job, codigo, "transporte", "python",
                                       "reranquear_trechos", "", False, SSH_TIMEOUT_S)
 
-@mcp.tool()
-def otimizar_rotas_ortools(matriz_distancia: list[list[float]], demandas: list[float], capacidades_veiculos: list[float], num_veiculos: int, deposito: int = 0) -> str:
-    """Resolve problemas de roteamento de veículos capacitados (CVRP) localmente via Google OR-Tools
-    dentro do ambiente ~/env_transporte no Ubuntu.
-    Aceita matrizes de tempo/distância reais com números decimais.
-    """
-    script_py = f"""
-from ortools.constraint_solver import routing_enums_pb2
-from ortools.constraint_solver import pywrapcp
+# ----------------------------------------------------------------------
+# ROTEIRIZACAO (CVRP)
+# Medicao de 21/10/2026 com bench/cvrp_cuopt_ortools.py, no desenho declarado
+# citavel: frota travada no minimo teorico nas duas pontas e cuOpt em
+# so_distancia. 200 pontos, frota 12, 10 s por solver: OR-Tools sem
+# metaheuristica 23.192; com GUIDED_LOCAL_SEARCH 22.809 (ganho de 1,7%);
+# cuOpt 21.023 (7,8% abaixo do OR-Tools). As tres solucoes passaram na
+# verificacao independente. Consolidado da bateria: ate ~50 pontos os dois
+# empatam (0,7%) e o OR-Tools basta; de 200 pontos para cima o cuOpt entrega
+# de 5% a 10% com a mesma frota.
+# Ressalva obrigatoria ao citar esses numeros: o teste e CVRP sintetico de
+# deposito unico. Operacao real tem janela de tempo, jornada, frota heterogenea
+# e multiplas garagens, e a vantagem pode ser outra.
+# As duas ferramentas devolvem verificacao independente da solucao, recalculada
+# a partir da matriz, sem usar nada interno do solver.
+# ----------------------------------------------------------------------
+
+_SCRIPT_CVRP_ORTOOLS = r'''
 import json
+from ortools.constraint_solver import routing_enums_pb2, pywrapcp
 
-# Converte entradas numéricas para inteiros escalados para compatibilidade com os solucionadores do OR-Tools
-matriz_bruta = {repr(matriz_distancia)}
-demandas_brutas = {repr(demandas)}
-capacidades_brutas = {repr(capacidades_veiculos)}
+matriz = __MATRIZ__
+demandas = __DEMANDAS__
+capacidades = __CAPACIDADES__
+num_veiculos = __NUM_VEICULOS__
+deposito = __DEPOSITO__
+orcamento = __ORCAMENTO__
 
-matriz_int = [[int(round(val * 100)) for val in linha] for linha in matriz_bruta]
-demandas_int = [int(round(d)) for d in demandas_brutas]
-capacidades_int = [int(round(c)) for c in capacidades_brutas]
+# Custos inteiros em centesimos da unidade de entrada: o OR-Tools so trabalha
+# com inteiros, e truncar para unidade perderia precisao em matrizes de tempo.
+matriz_int = [[int(round(v * 100)) for v in linha] for linha in matriz]
+demandas_int = [int(round(d)) for d in demandas]
+capacidades_int = [int(round(c)) for c in capacidades]
 
-dados = {{
-    'matriz_distancia': matriz_int,
-    'demandas': demandas_int,
-    'capacidades_veiculos': capacidades_int,
-    'num_veiculos': {num_veiculos},
-    'deposito': {deposito}
-}}
-
-manager = pywrapcp.RoutingIndexManager(len(dados['matriz_distancia']), dados['num_veiculos'], dados['deposito'])
+manager = pywrapcp.RoutingIndexManager(len(matriz_int), num_veiculos, deposito)
 routing = pywrapcp.RoutingModel(manager)
 
-def distancia_callback(from_index, to_index):
-    return dados['matriz_distancia'][manager.IndexToNode(from_index)][manager.IndexToNode(to_index)]
+def custo_arco(i, j):
+    return matriz_int[manager.IndexToNode(i)][manager.IndexToNode(j)]
 
-transit_callback_index = routing.RegisterTransitCallback(distancia_callback)
-routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+idx_custo = routing.RegisterTransitCallback(custo_arco)
+routing.SetArcCostEvaluatorOfAllVehicles(idx_custo)
 
-def demanda_callback(from_index):
-    return dados['demandas'][manager.IndexToNode(from_index)]
+def demanda_no(i):
+    return demandas_int[manager.IndexToNode(i)]
 
-demand_callback_index = routing.RegisterUnaryTransitCallback(demanda_callback)
-routing.AddDimensionWithVehicleCapacity(demand_callback_index, 0, dados['capacidades_veiculos'], True, 'Capacidade')
+idx_dem = routing.RegisterUnaryTransitCallback(demanda_no)
+routing.AddDimensionWithVehicleCapacity(idx_dem, 0, capacidades_int, True, "Capacidade")
 
-search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-search_parameters.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+p = pywrapcp.DefaultRoutingSearchParameters()
+p.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+# A primeira solucao viavel e apenas o ponto de partida. Sem as duas linhas
+# abaixo o solver para nela: em 200 pontos isso custou 1,7% de custo a mais.
+p.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
+p.time_limit.FromSeconds(orcamento)
 
-solucao = routing.SolveWithParameters(search_parameters)
+sol = routing.SolveWithParameters(p)
+if not sol:
+    print(json.dumps({"ok": False, "solver": "OR-Tools",
+                      "erro": "nenhuma solucao viavel para as restricoes informadas"}))
+    raise SystemExit(0)
 
-if solucao:
-    rotas = []
-    custo_total = 0.0
-    for veiculo_id in range(dados['num_veiculos']):
-        index = routing.Start(veiculo_id)
-        sequencia = []
-        custo_rota = 0
-        carga_rota = 0
-        while not routing.IsEnd(index):
-            no = manager.IndexToNode(index)
-            carga_rota += dados['demandas'][no]
-            sequencia.append(no)
-            previous_index = index
-            index = solucao.Value(routing.NextVar(index))
-            custo_rota += routing.GetArcCostForVehicle(previous_index, index, veiculo_id)
-        sequencia.append(manager.IndexToNode(index))
-        custo_real = custo_rota / 100.0
-        custo_total += custo_real
-        rotas.append({{
-            'veiculo': veiculo_id + 1,
-            'sequencia_nos': sequencia,
-            'custo_tempo_min': round(custo_real, 2),
-            'demanda_atendida': carga_rota
-        }})
-    print(json.dumps({{'custo_total_min': round(custo_total, 2), 'rotas': rotas}}, indent=2))
-else:
-    print(json.dumps({{'erro': 'Nenhuma solucao viavel encontrada para as restricoes informadas.'}}))
-"""
-    b64 = base64.b64encode(script_py.encode("utf-8")).decode("ascii")
-    cmd = f"/home/mateus/env_transporte/bin/python -c \"import base64; exec(compile(base64.b64decode('{b64}').decode('utf-8'), '<string>', 'exec'))\""
-    return _executar_ssh_paramiko(cmd, timeout=120)
+rotas, custo_total = [], 0.0
+for v in range(num_veiculos):
+    i = routing.Start(v)
+    seq, c, carga = [], 0, 0
+    while not routing.IsEnd(i):
+        no = manager.IndexToNode(i)
+        carga += demandas_int[no]
+        seq.append(no)
+        ant = i
+        i = sol.Value(routing.NextVar(i))
+        c += routing.GetArcCostForVehicle(ant, i, v)
+    seq.append(manager.IndexToNode(i))
+    custo_total += c / 100.0
+    if len(seq) > 2:
+        rotas.append({"veiculo": v + 1, "sequencia_nos": seq,
+                      "custo": round(c / 100.0, 2), "demanda_atendida": carga})
+
+# ---- verificacao independente, recalculada pela matriz original ----
+visitas = [n for r in rotas for n in r["sequencia_nos"][1:-1]]
+esperados = sorted(set(range(len(matriz))) - {deposito})
+dist = 0.0
+for r in rotas:
+    s = r["sequencia_nos"]
+    dist += sum(matriz[a][b] for a, b in zip(s, s[1:]))
+tolerancia = max(0.05, 0.001 * dist)
+
+print(json.dumps({
+    "ok": True,
+    "solver": "OR-Tools",
+    "custo_total": round(custo_total, 2),
+    "veiculos_usados": len(rotas),
+    "orcamento_s": orcamento,
+    "metaheuristica": "GUIDED_LOCAL_SEARCH",
+    "verificacao_independente": {
+        "custo_recalculado": round(dist, 2),
+        "confere": abs(dist - custo_total) <= tolerancia,
+        "cobertura_ok": sorted(visitas) == esperados,
+        "duplicados": len(visitas) - len(set(visitas)),
+        "nos_faltando": sorted(set(esperados) - set(visitas))[:10],
+        "capacidade_ok": all(r["demanda_atendida"] <= capacidades_int[r["veiculo"] - 1]
+                             for r in rotas),
+    },
+    "rotas": rotas,
+}, indent=2))
+'''
+
+_SCRIPT_CVRP_CUOPT = r'''
+import importlib.util, json, pathlib
+import numpy as np
+
+CAMINHO = pathlib.Path("__BENCH__")
+if not CAMINHO.exists():
+    print(json.dumps({"ok": False, "erro": "bench nao encontrado em %s" % CAMINHO}))
+    raise SystemExit(0)
+
+spec = importlib.util.spec_from_file_location("cvrp_bench", CAMINHO)
+bench = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(bench)
+
+matriz = np.asarray(__MATRIZ__, dtype=float)
+demandas = np.asarray(__DEMANDAS__, dtype=float)
+capacidade = __CAPACIDADE__
+frota = __NUM_VEICULOS__
+orcamento = __ORCAMENTO__
+
+# Mesma escala do OR-Tools quando a matriz tem decimais, para que os custos das
+# duas ferramentas fiquem na mesma unidade e sejam comparaveis.
+escala = 1 if np.allclose(matriz, np.rint(matriz)) else 100
+D = np.rint(matriz * escala).astype(np.int64)
+dem = np.rint(demandas).astype(np.int64)
+
+inst = dict(n=len(D) - 1, D=D, dem=dem, cap=int(round(capacidade)), frota=int(frota))
+
+# so_distancia=True iguala o objetivo ao do OR-Tools: o cuOpt minimiza numero de
+# veiculos ANTES do custo, e a frota travada em set_min_vehicles neutraliza isso.
+r = bench.rodar_cuopt(inst, orcamento, so_distancia=True)
+if not r.get("ok"):
+    print(json.dumps({"ok": False, "solver": "cuOpt", "erro": r.get("erro")}))
+    raise SystemExit(0)
+
+v = bench.validar(r["rotas"], inst, r["custo_reportado"])
+print(json.dumps({
+    "ok": True,
+    "solver": "cuOpt",
+    "custo_total": round(r["custo_reportado"] / escala, 2),
+    "veiculos_usados": v["veiculos_usados"],
+    "frota_travada_em": int(frota),
+    "orcamento_s": orcamento,
+    "escala_aplicada": escala,
+    "tempo_preparo_s": r["tempo_preparo_s"],
+    "tempo_solve_s": r["tempo_solve_s"],
+    "objetivo": r["objetivo"],
+    "nota": r["nota"],
+    "verificacao_independente": {
+        "valida": v["valida"],
+        "cobertura_ok": v["cobertura_ok"],
+        "duplicados": v["duplicados"],
+        "nos_faltando": v["faltando"],
+        "capacidade_ok": v["capacidade_ok"],
+        "carga_maxima": v["carga_maxima"],
+        "custo_recalculado": round(v["distancia_recalculada"] / escala, 2),
+        "confere": v["distancia_confere"],
+    },
+    "rotas": [{"veiculo": i + 1, "sequencia_clientes": rota}
+              for i, rota in enumerate(r["rotas"]) if rota],
+}, indent=2, default=str))
+'''
+
+
+def _conferir_entrada_cvrp(matriz, demandas, capacidades, num_veiculos, deposito) -> str:
+    """Devolve mensagem de erro, ou string vazia se a instancia e coerente."""
+    n = len(matriz)
+    if n < 2:
+        return "Erro: a matriz precisa ter pelo menos dois nos."
+    if any(len(linha) != n for linha in matriz):
+        return f"Erro: matriz nao quadrada ({n} linhas, larguras {sorted({len(l) for l in matriz})})."
+    if len(demandas) != n:
+        return f"Erro: {n} nos na matriz e {len(demandas)} demandas. O deposito tambem entra, com demanda zero."
+    if not (0 <= deposito < n):
+        return f"Erro: deposito {deposito} fora da faixa 0..{n - 1}."
+    if demandas[deposito] not in (0, 0.0):
+        return f"Erro: o deposito (indice {deposito}) tem demanda {demandas[deposito]}; deveria ser zero."
+    if num_veiculos < 1:
+        return "Erro: numero de veiculos deve ser ao menos 1."
+    if len(capacidades) != num_veiculos:
+        return (f"Erro: {num_veiculos} veiculos e {len(capacidades)} capacidades. "
+                "Informar uma capacidade por veiculo.")
+    if min(capacidades) <= 0:
+        return "Erro: capacidade de veiculo deve ser estritamente positiva."
+    if sum(demandas) > sum(capacidades):
+        return (f"Erro: demanda total {sum(demandas):.0f} excede a capacidade total da frota "
+                f"{sum(capacidades):.0f}. Instancia inviavel por construcao.")
+    return ""
+
+
+@mcp.tool()
+async def otimizar_rotas_ortools(matriz_distancia: list[list[float]], demandas: list[float],
+                                 capacidades_veiculos: list[float], num_veiculos: int,
+                                 deposito: int = 0, orcamento_s: int = 10,
+                                 background: bool = False) -> str:
+    """Resolve CVRP com Google OR-Tools no env_transporte da Ubuntu (CPU).
+
+    Aceita matriz de tempo ou distancia com decimais (convertida internamente
+    para centesimos) e capacidade por veiculo, inclusive frota heterogenea.
+
+    orcamento_s: tempo de busca em segundos (padrao 10). Usa PATH_CHEAPEST_ARC
+    para a primeira solucao e GUIDED_LOCAL_SEARCH para melhorar dentro do
+    orcamento. Orcamento maior melhora pouco e custa tempo de ponte.
+
+    Preferir esta ferramenta ate ~50 pontos e sempre que a frota for
+    heterogenea. Acima de ~200 pontos com frota homogenea, otimizar_rotas_cuopt
+    costuma ser melhor. Para instancias grandes com orcamento alto, usar
+    background=True e acompanhar com consultar_job_ubuntu.
+
+    A saida traz verificacao independente: custo recalculado pela matriz,
+    cobertura de todos os nos e respeito a capacidade por veiculo.
+    """
+    erro = _conferir_entrada_cvrp(matriz_distancia, demandas, capacidades_veiculos,
+                                  num_veiculos, deposito)
+    if erro:
+        return erro
+
+    script = (_SCRIPT_CVRP_ORTOOLS
+              .replace("__MATRIZ__", repr(matriz_distancia))
+              .replace("__DEMANDAS__", repr(demandas))
+              .replace("__CAPACIDADES__", repr(capacidades_veiculos))
+              .replace("__NUM_VEICULOS__", repr(int(num_veiculos)))
+              .replace("__DEPOSITO__", repr(int(deposito)))
+              .replace("__ORCAMENTO__", repr(int(orcamento_s))))
+
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_POOL, _executar_job, script, "transporte", "python",
+                                      "cvrp_ortools", "", background, int(orcamento_s) + 60)
+
+
+@mcp.tool()
+async def otimizar_rotas_cuopt(matriz_distancia: list[list[float]], demandas: list[float],
+                               capacidades_veiculos: list[float], num_veiculos: int,
+                               deposito: int = 0, orcamento_s: int = 10,
+                               background: bool = False) -> str:
+    """Resolve CVRP com NVIDIA cuOpt na GPU, no ambiente /mnt/nvme_lexar/envs/cuopt.
+
+    PADRAO acima de ~200 pontos com frota homogenea. Reaproveita rodar_cuopt e
+    validar de bench/cvrp_cuopt_ortools.py, funcoes que passaram pela bateria,
+    em vez de reimplementar a chamada ao solver.
+
+    Limites do que a funcao testada modela, recusados aqui com mensagem em vez
+    de aproximacao silenciosa: frota homogenea (uma capacidade unica) e deposito
+    no indice 0. Frota heterogenea ou deposito em outro indice vao para
+    otimizar_rotas_ortools.
+
+    O objetivo e igualado ao do OR-Tools (so distancia, frota travada em
+    set_min_vehicles), para que os custos das duas ferramentas sejam
+    comparaveis na mesma instancia. Custos nao comparaveis entre as duas
+    indicam objetivo nao igualado, e nesse caso o resultado nao vale.
+
+    O cuOpt e estocastico: repeticoes com o mesmo orcamento variam alguns
+    decimos de por cento, e uma unica execucao nao e resultado.
+    """
+    erro = _conferir_entrada_cvrp(matriz_distancia, demandas, capacidades_veiculos,
+                                  num_veiculos, deposito)
+    if erro:
+        return erro
+
+    caps = sorted({int(round(c)) for c in capacidades_veiculos})
+    if len(caps) > 1:
+        return ("Erro: frota heterogenea. A funcao testada do cuOpt modela capacidade unica "
+                f"(add_capacity_dimension), e foram informadas as capacidades {caps}. "
+                "Usar otimizar_rotas_ortools, que aceita capacidade por veiculo.")
+    if deposito != 0:
+        return (f"Erro: deposito informado no indice {deposito}. A instancia do bench supoe o "
+                "deposito no indice 0. Reordenar a matriz ou usar otimizar_rotas_ortools.")
+
+    script = (_SCRIPT_CVRP_CUOPT
+              .replace("__BENCH__", f"{ECOSSISTEMA}/bench/cvrp_cuopt_ortools.py")
+              .replace("__MATRIZ__", repr(matriz_distancia))
+              .replace("__DEMANDAS__", repr(demandas))
+              .replace("__CAPACIDADE__", repr(caps[0]))
+              .replace("__NUM_VEICULOS__", repr(int(num_veiculos)))
+              .replace("__ORCAMENTO__", repr(int(orcamento_s))))
+
+    loop = asyncio.get_running_loop()
+    # Inicializacao de contexto CUDA mais o orcamento do solver.
+    return await loop.run_in_executor(_POOL, _executar_job, script, "cuopt", "python",
+                                      "cvrp_cuopt", "", background, int(orcamento_s) + 120)
 
 # ----------------------------------------------------------------------
 # 3. APIS DE ALTO DESEMPENHO (NVIDIA NGC)
@@ -636,7 +844,9 @@ JOBS_DIR = os.environ.get("UBUNTU_JOBS_DIR", f"/home/{UBUNTU_USER}/.claude_jobs"
 SSH_TIMEOUT_S = int(os.environ.get("SSH_TIMEOUT_S", "170"))      # < 240 s do Claude Desktop
 SSH_TIMEOUT_MAX = 200                                              # teto absoluto em primeiro plano
 MAX_SAIDA_CHARS = int(os.environ.get("MAX_SAIDA_CHARS", "12000"))
-VENVS = {"transporte": f"/home/{UBUNTU_USER}/env_transporte", "trtllm": f"/home/{UBUNTU_USER}/env_trtllm"}
+VENVS = {"transporte": f"/home/{UBUNTU_USER}/env_transporte",
+         "trtllm": f"/home/{UBUNTU_USER}/env_trtllm",
+         "cuopt": os.environ.get("UBUNTU_CUOPT_ENV", "/mnt/nvme_lexar/envs/cuopt")}
 _POOL = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 
 

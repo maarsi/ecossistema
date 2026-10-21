@@ -188,3 +188,47 @@ capacidade 100, demanda 1-10, RTX 5060 Ti. As 8 solucoes passaram na validacao i
 - `sondar_anexos()`: baixa UMA url de anexo antes de comecar e aborta com mensagem clara se nao
   vier 200/206, em vez de marcar milhares de falhas. `--sem-anexos` pula a sonda. Testado em 21/10
   contra a panne em curso: aborta com "HTTP 403 (InvalidKey)" sem escrever nada em disco.
+
+## Rodada de 21/10/2026 (tarde): roteirizacao no MCP, chave NVIDIA e licoes de processo
+
+- ARQUIVO DO CHAT NAO E FONTE. Os cinco servidores MCP enviados pelo chat para analise estavam
+  defasados: o `ollama_remote_server.py` recebido era de setembro (28.265 bytes) contra o canonico
+  de 06/10 (41.801 bytes), sem o mecanismo de jobs, `consultar_papel`, `reranquear_trechos` nem
+  `analisar_mapa_local_visao`. Aplicar a versao analisada teria apagado um mes de trabalho.
+  Regra: antes de alterar qualquer arquivo do ecossistema, conferir sha256 contra o canonico do
+  repo E contra o que roda em `C:\TransportMCP`. Os tres itens que eu havia "corrigido" (embeddings
+  em lote, mapa de ambientes, num_ctx) ja estavam no canonico desde 06/10.
+- `otimizar_rotas_ortools` rodava SEM metaheuristica e SEM limite de tempo, parando na primeira
+  solucao viavel: contradizia a propria bateria. Agora PATH_CHEAPEST_ARC + GUIDED_LOCAL_SEARCH +
+  `time_limit`, com parametro `orcamento_s` (padrao 10 s) e execucao pelo mecanismo de jobs
+  (antes era base64 no comando, com `/home/mateus` fixo no caminho do venv).
+- Nova ferramenta `otimizar_rotas_cuopt`: reaproveita `rodar_cuopt` e `validar` de
+  `bench/cvrp_cuopt_ortools.py` em vez de reimplementar a chamada. Objetivo igualado ao OR-Tools
+  (`so_distancia`, frota travada). RECUSA com mensagem, em vez de aproximar em silencio, frota
+  heterogenea (a funcao testada modela capacidade unica) e deposito em indice diferente de 0.
+- As duas ferramentas devolvem VERIFICACAO INDEPENDENTE na saida: custo recalculado pela matriz,
+  cobertura de todos os nos, duplicados e capacidade por veiculo, sem usar nada interno do solver.
+- `VENVS` ganhou `cuopt` -> `/mnt/nvme_lexar/envs/cuopt` (override por `UBUNTU_CUOPT_ENV`).
+- Medicao de 21/10 no desenho citavel (frota travada no kmin nas duas pontas, cuOpt em
+  so_distancia), 200 pontos, frota 12, 10 s por solver, todas aprovadas na verificacao:
+  OR-Tools sem metaheuristica 23.192 (1,2 s de parede); com GUIDED_LOCAL_SEARCH 22.809 (10,2 s);
+  cuOpt 21.023 (11,9 s). Ganho da metaheuristica: 1,65%. Vantagem do cuOpt: 7,83%.
+  Os valores 22.546 e 20.940, que eu havia escrito nos comentarios do codigo, vinham da rodada
+  superada de 20/10 e foram substituidos por estes.
+- CHAVE NVIDIA rotacionada. A anterior foi exposta em texto puro em config enviado pelo chat.
+  A nova esta em `~/ecossistema/.env` (perm 600, fora do versionamento) e no config do Windows.
+  Testada em INFERENCIA, nao em listagem: `raciocinio-nuvem` (nvidia/nemotron-3-ultra-550b-a55b) e
+  `redacao-nuvem` (google/gemma-4-31b-it) responderam HTTP 200 com conteudo.
+- PROCEDIMENTO PADRAO PARA CREDENCIAL, a repetir: par RSA efemero gerado na Ubuntu; chave publica
+  enviada a maquina de origem; cifragem OAEP-SHA256 lah; so a cifra trafega pelo chat; decifragem na
+  Ubuntu; impressao digital sha256 conferida nas duas pontas; par efemero removido. A credencial em
+  texto puro nunca passa pela conversa.
+- SYNCTHING: a pasta `ecossistema` e **sendonly** na Ubuntu. A Ubuntu e a FONTE. Gravar o arquivo
+  pelo lado do Windows nao propaga e deixa o par fora de sincronia ate um override manual.
+  Alterar sempre na Ubuntu e deixar o Syncthing levar.
+- PONTE: a resposta do MCP corta em ~60 s INDEPENDENTEMENTE de `timeout_s`. Comando com `sleep`
+  longo, ou job em primeiro plano acima disso, perde a saida mesmo terminando bem. Para qualquer
+  coisa acima de ~45 s: `background=True` e consulta curta ao log.
+- Config entregue em `D:\95 - TEMP\claude_desktop_config.novo.json` com a chave NVIDIA aplicada
+  na propria maquina. As chaves TomTom, Perplexity e Moonshot ficaram como `COLE_AQUI_...` porque
+  nao estavam no arquivo enviado: copiar do config atual antes de substituir.
