@@ -1,0 +1,115 @@
+{
+  "titulo": "TomTom x HERE: impedancia e geocodificacao, 8 polos de Salvador",
+  "data": "2026-10-21T15:00-03:00",
+  "desenho": {
+    "pares": 28,
+    "sentido": "um por par, sem diagonal",
+    "modo": "automovel",
+    "coleta": "duas fontes na mesma janela de minutos",
+    "convencao_here": "omitir departureTime = com transito; departureTime=any = fluxo livre",
+    "convencao_tomtom": "computeTravelTimeFor=all obrigatorio para vir o tempo em fluxo livre"
+  },
+  "divergencia_relativa_here_sobre_tomtom_pct": {
+    "distancia": {
+      "mediana": 1.4,
+      "p90": 10.0,
+      "maximo": 55.5
+    },
+    "tempo_fluxo_livre": {
+      "mediana": 3.9,
+      "p90": 9.8,
+      "maximo": 21.0
+    },
+    "tempo_com_transito": {
+      "mediana": 5.7,
+      "p90": 12.9,
+      "maximo": 25.2
+    }
+  },
+  "atraso_declarado_sobre_fluxo_livre_pct": {
+    "tomtom_mediana": 19.9,
+    "here_mediana": 21.6
+  },
+  "pares_de_maior_divergencia": [
+    {
+      "par": "Mussurunga -> Aeroporto",
+      "t0_tomtom_min": 8.8,
+      "t0_here_min": 10.7,
+      "div_pct": 21.0
+    },
+    {
+      "par": "Lapa -> Piraja",
+      "t0_tomtom_min": 14.7,
+      "t0_here_min": 16.6,
+      "div_pct": 13.3
+    },
+    {
+      "par": "Acesso Norte -> Mussurunga",
+      "t0_tomtom_min": 14.4,
+      "t0_here_min": 12.8,
+      "div_pct": -11.1
+    },
+    {
+      "par": "Piraja -> Calcada",
+      "dist_tomtom_km": 8.0,
+      "dist_here_km": 12.4,
+      "div_pct": 55.5,
+      "nota": "rotas materialmente diferentes; conferir a mao antes de usar"
+    }
+  ],
+  "geocodificacao_desvio_do_catalogo_m": {
+    "Terminal da Lapa": {
+      "here": 1253.3,
+      "tomtom": 10335.2,
+      "entre_as_duas": 9648.5
+    },
+    "Estacao Piraja": {
+      "here": 1646.4,
+      "tomtom": 1888.2,
+      "entre_as_duas": 242.3
+    },
+    "Estacao Acesso Norte": {
+      "here": 997.2,
+      "tomtom": 4893.7,
+      "entre_as_duas": 4591.1
+    },
+    "Estacao Mussurunga": {
+      "here": 2856.6,
+      "tomtom": 2513.7,
+      "entre_as_duas": 776.7
+    },
+    "Estacao Aeroporto": {
+      "here": 650.0,
+      "tomtom": 6287.5,
+      "entre_as_duas": 6526.0
+    },
+    "Shopping Iguatemi": {
+      "here": 5644.6,
+      "tomtom": 14066.5,
+      "entre_as_duas": 15761.1
+    },
+    "Barra": {
+      "here": 356.3,
+      "tomtom": 569.2,
+      "entre_as_duas": 234.1
+    },
+    "Estacao Calcada": {
+      "here": 576.2,
+      "tomtom": 415.7,
+      "entre_as_duas": 629.9
+    }
+  },
+  "leitura": [
+    "Para t0 as duas fontes sao equivalentes dentro de 4% na mediana; nenhuma substitui a outra.",
+    "A HERE agrega valor pela matriz em uma chamada e pelo fluxo por trecho com nome de via.",
+    "A divergencia entre as duas serve como faixa de incerteza do t0, nao como erro de uma delas.",
+    "Piraja e Mussurunga: os dois geocodificadores concordam entre si e discordam do catalogo; o suspeito e o catalogo, nao as APIs.",
+    "Lapa, Acesso Norte, Aeroporto e Iguatemi: os dois discordam entre si de 4,6 a 15,8 km, nome ambiguo, coordenada tem de ser fixada a mao."
+  ],
+  "ressalvas": [
+    "8 polos de uma unica cidade, uma unica janela de coleta, somente automovel.",
+    "Nao extrapolar para outras cidades, outros periodos nem para caminhao.",
+    "O tempo com transito depende da hora: so citavel com o periodo declarado."
+  ],
+  "resultado_por_par": "D:\\95 - TEMP\\tomtom_vs_here_resultado.json (fora do repositorio)"
+}

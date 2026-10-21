@@ -263,3 +263,63 @@ capacidade 100, demanda 1-10, RTX 5060 Ti. As 8 solucoes passaram na validacao i
   avisa em vez de retornar string vazia. Testado de ponta a ponta.
 - Os dois servidores foram exercitados com as chaves reais DENTRO da maquina do Mateus, carregando
   o arquivo real com um stub do modulo `mcp`, nao uma copia do codigo.
+
+## Rodada de 21/10/2026 (noite): HERE entra por medicao, e um defeito no t0 do TomTom
+
+- HERE API Key valida (43 caracteres, diferente do refresh token de prefixo "reftkn" entregue antes).
+  Responderam 200: Geocode v1, Routing v8, Matrix v8 e Traffic Flow v7.
+- CONVENCOES DA HERE, verificadas contra a API, nao supostas: omitir `departureTime` devolve tempo
+  COM transito; `departureTime=any` devolve fluxo livre; `now` e RECUSADO com 400 ("'now' is an
+  invalid date/time"). O `summary` do Routing v8 traz `duration` e `baseDuration` juntos. O Flow v7
+  devolve velocidade em METROS POR SEGUNDO, com `jamFactor` de 0 a 10.
+- DEFEITO NO TOMTOM, corrigido hoje. `calcular_tempo_e_distancia_tomtom` nao pedia
+  `computeTravelTimeFor=all`, e sem esse parametro a API OMITE `noTrafficTravelTimeInSeconds`. O
+  codigo caia no valor de reserva e reportava o tempo COM transito como se fosse o t0, com atraso
+  sempre zero. Medido: par Piraja-Lapa, 1.305 s com transito contra 1.133 s em fluxo livre, 15,2%
+  perdidos. O campo `trafficDelayInSeconds`, usado antes como atraso, voltou 0 nos 28 pares, inclusive
+  nos que tinham 20% de degradacao: ele mede atraso por incidente declarado, nao congestionamento.
+  QUALQUER t0 tirado dessa ferramenta antes de 21/10/2026 esta contaminado com transito e nao serve
+  para calibrar BPR.
+- TLS: TESTADO, nao suposto, e corrigindo uma afirmacao minha de duas horas antes. O Crossref
+  respondeu pelo Python do Windows com a verificacao de certificado ATIVA (transport_server, sem
+  TRANSPORT_MCP_INSECURE_SSL). Logo o `verify=False` do tomtom_network_server.py era contorno antigo,
+  nao necessidade atual. Substituido por verificacao ativa, com paliativo explicito
+  (`TOMTOM_MCP_INSECURE_SSL=1`) e mensagem que ensina o caminho certo (REQUESTS_CA_BUNDLE com o
+  certificado raiz corporativo). O problema de TLS e especifico do Node, que nao usa o repositorio de
+  certificados do Windows; nao e da maquina.
+- Novo servidor `mcp/windows/here_network_server.py`, espelhando o do TomTom para permitir comparacao
+  no mesmo par, mais `matriz_impedancia_here`, que resolve a matriz em UMA chamada. Recusa frota de
+  pares acima de 400 e marca par sem rota como `n/d` em vez de 0, porque 0 se confunde com viagem
+  instantanea. Avisa quando ha ponto fora da envoltoria do Brasil, caso tipico de latitude e
+  longitude trocadas que nao sai da faixa valida.
+
+### CONCLUSAO CONSOLIDADA TOMTOM x HERE (so estes numeros podem ser citados fora)
+Desenho: `bench/tomtom_vs_here.py`, 21/10/2026 por volta das 15h, 8 polos de Salvador, 28 pares, um
+sentido por par, automovel, as duas fontes na MESMA janela de minutos.
+
+| grandeza | mediana | p90 | maximo |
+|---|---|---|---|
+| distancia | 1,4% | 10,0% | 55,5% |
+| tempo em fluxo livre (t0) | 3,9% | 9,8% | 21,0% |
+| tempo com transito | 5,7% | 12,9% | 25,2% |
+
+- Atraso declarado sobre o fluxo livre: TomTom 19,9% e HERE 21,6% de mediana. As duas CONCORDAM; a
+  leitura de 0,0% no TomTom, vista na primeira rodada, era o defeito do `computeTravelTimeFor`.
+- Para t0 as duas sao equivalentes dentro de 4% na mediana. Nenhuma substitui a outra: a HERE vale
+  pela matriz em uma chamada e pelo fluxo por trecho com nome de via; o TomTom segue util par a par.
+  Usar a divergencia entre as duas como FAIXA DE INCERTEZA do t0, nao como erro de uma delas.
+- Pior caso de distancia: Piraja-Calcada, 8,0 km no TomTom contra 12,4 km na HERE (55,5%): rotas
+  materialmente diferentes, conferir a mao antes de usar esse par.
+- RESSALVA obrigatoria: 8 polos de uma unica cidade, uma unica janela de coleta, somente automovel.
+  Nao extrapolar para outras cidades, outros periodos nem para caminhao.
+
+### ACHADO QUE AFETA PROJETO: catalogo de coordenadas de Salvador
+Os dois geocodificadores CONCORDAM ENTRE SI dentro de 250 m em Piraja (242 m), Barra (234 m) e
+Calcada (630 m), e ainda assim ficam a 1,6 km (Piraja) e 2,9 km (Mussurunga) do catalogo embutido no
+`tomtom_network_server.py`. Quando duas fontes independentes concordam entre si e discordam do
+catalogo, o suspeito e o catalogo: as coordenadas de PIRAJA e MUSSURUNGA precisam de conferencia
+manual antes de entrar em qualquer matriz. Em Lapa, Acesso Norte, Aeroporto e Iguatemi os dois
+discordam ENTRE SI de 4,6 a 15,8 km, o nome e ambiguo e a coordenada tem de ser fixada a mao; nesses
+quatro o TomTom foi o destoante (ate 14,1 km do catalogo). Resumo em
+`bench/resultados/20261021_tomtom_vs_here_resumo.json`; o resultado por par ficou em
+`D:\95 - TEMP\tomtom_vs_here_resultado.json`, fora do repositorio.
