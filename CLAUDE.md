@@ -323,3 +323,36 @@ discordam ENTRE SI de 4,6 a 15,8 km, o nome e ambiguo e a coordenada tem de ser 
 quatro o TomTom foi o destoante (ate 14,1 km do catalogo). Resumo em
 `bench/resultados/20261021_tomtom_vs_here_resumo.json`; o resultado por par ficou em
 `D:\95 - TEMP\tomtom_vs_here_resultado.json`, fora do repositorio.
+
+### CORRECAO sobre TLS, com medida pela via real (21/10/2026, apos o reinicio)
+
+Afirmei duas vezes coisas diferentes sobre TLS nesta maquina, as duas sem medir pela via que importa.
+Medido agora, chamando cada servidor MCP de fato, todos com verificacao de certificado ATIVA:
+
+| host | servidor | resultado |
+|---|---|---|
+| api.crossref.org | transport_server | 200, verificacao OK |
+| geocode/router/matrix.hereapi.com | here_network_server | 200 nos quatro endpoints, verificacao OK |
+| api.tomtom.com | tomtom_network_server | SSLError, verificacao FALHA |
+
+Conclusao: o problema NAO e da maquina nem do Python dela, e especifico do `api.tomtom.com`. O
+`verify=False` original daquele servidor era necessario, e remove-lo quebrou a ferramenta (com
+mensagem clara, que foi como o defeito apareceu). Fica pendente distinguir entre duas causas, ainda
+nao testadas: `certifi` desatualizado no venv `C:\TransportMCP\.venv`, que nao teria a raiz usada
+hoje pela TomTom, ou cadeia incompleta servida por aquele host. O primeiro se resolve com
+`pip install -U certifi` no venv; o segundo exige apontar REQUESTS_CA_BUNDLE para um conjunto com o
+intermediario. O paliativo `TOMTOM_MCP_INSECURE_SSL=1` restabelece o funcionamento imediato.
+
+LICAO DE PROCESSO: teste em host vizinho nao prova nada sobre o host que interessa. O Crossref
+funcionar com verificacao ativa nao autorizava concluir que a TomTom funcionaria.
+
+### Validacao pela via do MCP, pos-reinicio (21/10/2026)
+- `otimizar_rotas_ortools` e `otimizar_rotas_cuopt` na MESMA instancia de 10 pontos, frota 2,
+  orcamento 5 s: AMBOS 333,0, mesma particao de rotas, verificacao independente aprovada nos dois.
+  E a condicao de comparabilidade declarada obrigatoria: objetivo igualado nas duas pontas. cuOpt
+  com 0,34 s de preparo e 0,48 s de solucao.
+- `here-network`: geocodificacao, rota e matriz respondendo. A geocodificacao da Mussurunga devolveu
+  "CCR Metro Bahia-Estacao Mussurunga" com escore 0,99, a 2,9 km do catalogo embutido no servidor do
+  TomTom, confirmando o achado da comparacao com nome de POI explicito.
+- `perplexity`: resposta ancorada com dez fontes e rodape de custo (US$ 0,0047 na consulta de teste).
+- `kimi-assistant`: kimi-k3 respondendo em duas linhas, como pedido.
