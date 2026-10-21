@@ -40,15 +40,14 @@
       }
     },
     "perplexity": {
-      "command": "cmd.exe",
+      "command": "C:\\TransportMCP\\.venv\\Scripts\\python.exe",
       "args": [
-        "/c",
-        "npx",
-        "-y",
-        "perplexity-mcp"
+        "C:\\TransportMCP\\perplexity_server.py"
       ],
       "env": {
-        "PERPLEXITY_API_KEY": "<PERPLEXITY_API_KEY: definir localmente, nunca versionar>"
+        "PERPLEXITY_API_KEY": "DEFINIR_NO_CONFIG_LOCAL",
+        "PERPLEXITY_PRESET": "low",
+        "PYTHONPATH": "C:\\TransportMCP"
       }
     },
     "memory": {

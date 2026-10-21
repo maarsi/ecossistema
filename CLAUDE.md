@@ -232,3 +232,34 @@ capacidade 100, demanda 1-10, RTX 5060 Ti. As 8 solucoes passaram na validacao i
 - Config entregue em `D:\95 - TEMP\claude_desktop_config.novo.json` com a chave NVIDIA aplicada
   na propria maquina. As chaves TomTom, Perplexity e Moonshot ficaram como `COLE_AQUI_...` porque
   nao estavam no arquivo enviado: copiar do config atual antes de substituir.
+
+## Rodada de 21/10/2026 (fim da tarde): rotacao de chaves, Perplexity e Kimi
+
+- Chaves rotacionadas por Mateus (TomTom, Perplexity, Moonshot) e aplicadas no config PELA PROPRIA
+  MAQUINA dele, lendo os arquivos de `D:\95 - TEMP`: nenhuma passou pela conversa. A chave NVIDIA
+  era a mesma do inicio da tarde (impressao digital identica), e o `.env` seguiu valido.
+- IDENTIFICAR A CREDENCIAL ANTES DE USAR. O "token HERE" entregue nao e apiKey: em base64 ele
+  decodifica para `reftkn:01:18...`, ou seja, refresh token da plataforma HERE. Resultado: 401 como
+  `apiKey` ("apiKey not found") e 401 como Bearer ("Token Validation Failure"). Para montar a
+  ferramenta HERE e a comparacao com o TomTom falta uma API Key gerada no portal. O prefixo em
+  base64 identifica o tipo da credencial antes de qualquer tentativa.
+- TomTom validada: geocode de Salvador devolveu HTTP 200 e -12,9642 / -38,5058.
+- PERPLEXITY: o pacote npm `perplexity-mcp` estava parado por DOIS motivos somados, e nenhum era a
+  chave. (1) TLS: o servidor em Node falha com "unable to verify the first certificate", provavel
+  interceptacao do VPN Cisco; os servidores Python da mesma maquina fazem HTTPS sem problema, porque
+  usam o conjunto de certificados do Python. (2) API: `POST /chat/completions` com `sonar` foi
+  desativado e responde 403 com aviso de migracao. Substituido por `mcp/windows/perplexity_server.py`
+  proprio, chamando `POST /v1/agent` com preset, no interpretador de `C:\TransportMCP\.venv`.
+  Esquema conferido na referencia oficial: resposta em `output` -> item `type=message` -> parte
+  `type=output_text`; fontes em itens `type=search_results`; citacoes nas `annotations`
+  (`type=url_citation`). `model` e `preset` sao mutuamente exclusivos; modelo `anthropic/*` exige
+  `max_output_tokens`. Testado de ponta a ponta: resposta com fontes sobre a Lei 15.432/2026.
+- KIMI: `moonshot-v1-128k` foi desativado e devolve 404 "Not found the model ... or Permission
+  denied", o que mantinha o servidor parado independentemente da chave. A conta enxerga hoje
+  kimi-k2.6, kimi-k2.7-code, kimi-k2.7-code-highspeed e kimi-k3 (conferido em `/v1/models`).
+  Padrao agora `kimi-k3`, que RECUSA temperatura diferente de 1 ("only 1 is allowed for this
+  model"): o campo passou a ser omitido para ele e mantido em 0.3 para os demais. Modelo de
+  raciocinio com orcamento de saida curto devolve HTTP 200 com conteudo vazio, e o servidor agora
+  avisa em vez de retornar string vazia. Testado de ponta a ponta.
+- Os dois servidores foram exercitados com as chaves reais DENTRO da maquina do Mateus, carregando
+  o arquivo real com um stub do modulo `mcp`, nao uma copia do codigo.
