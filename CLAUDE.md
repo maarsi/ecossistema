@@ -127,13 +127,11 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   orcamentos (resolver de novo com limites menores). OR-Tools tem o instante real via
   `AddAtSolutionCallback`. O solver do cuOpt e estocastico: repeticoes com o mesmo orcamento variam
   alguns decimos de %.
-- Bateria CVRP (`bench/cvrp_cuopt_ortools.py`, mesma matriz inteira, capacidade 100, demanda 1-10,
-  semente 42, 30 s por instancia, RTX 5060 Ti). Distancia total, as 6 solucoes validadas por codigo
-  independente (cobertura, capacidade, distancia recalculada):
-  - 50 clientes ..... empate em 7.425 (3 veiculos); cuOpt ja chega la com 1 s, OR-Tools so aos 21 s
-  - 200 clientes .... cuOpt 20.950 x OR-Tools 23.126 (-9,4%); OR-Tools estaciona aos 5 s e nao sai mais
-  - 1000 clientes ... cuOpt 62.387 x OR-Tools 69.127 (-9,8%); os dois usam 55 veiculos (minimo teorico)
-  Leitura: abaixo de ~50 pontos o empate e esperado e o OR-Tools basta; de 200 para cima a GPU paga.
+- Bateria CVRP (`bench/cvrp_cuopt_ortools.py`): a PRIMEIRA rodada (20/10) comparou os dois com frota
+  folgada e funcoes objetivo diferentes. Os numeros dela (7.425 / 20.950 x 23.126 / 62.387 x 69.127)
+  estao SUPERADOS e NAO podem ser citados: inflavam a vantagem do cuOpt. Ver a conclusao consolidada
+  de 21/10 no fim deste arquivo. O que sobrevive daquela rodada e so o metodo (matriz inteira unica,
+  validacao independente) e a constatacao de que o cuOpt roda em Blackwell sm_120.
 - Dois ambientes cuOpt convivem por decisao de Mateus em 20/10: `~/env_cuopt` (26.8, com
   cuopt-server) e `/mnt/nvme_lexar/envs/cuopt` (26.10 + ortools, usado pela bateria CVRP).
 
@@ -145,15 +143,44 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   explicitamente (COST=1, VEHICLE_FIXED_COST=0) para nao depender de default. A skill
   cuopt-routing-api-python NAO documenta nem `set_objective_function` nem `set_min_vehicles`:
   sao os docstrings do pacote que valem.
-- Comparacao justa em 200 pontos (frota travada em 12 nos dois, cuOpt so distancia, semente 42,
-  30 s, validacao independente OK nos dois): cuOpt 20.940 x OR-Tools 22.546.
-  A vantagem ENCOLHE de 9,4% para ~7%, mas se mantem. Quem melhorou foi o OR-Tools
-  (23.126 -> 22.546): com 14 veiculos ele gastava busca em frota que nao precisava.
-  O cuOpt nao mudou (20.950 -> 20.940). Em 4 execucoes a amplitude do cuOpt foi 0,42%
-  (20.940 a 21.028), ou seja vantagem entre 6,7% e 7,1% — maior que o ruido.
-- Licao de metodo: comparar solvers com objetivos diferentes INFLA a diferenca. Antes de publicar
-  qualquer numero, igualar frota e funcao objetivo, e repetir o solver estocastico ao menos 3 vezes
-  para separar vantagem de ruido.
+- CORRECAO de registro: na rodada de 20/10 com 200 pontos o OR-Tools usou **12** veiculos, nao 14
+  (frota de 14 DISPONIVEL no modelo, 2 rotas vazias). A tabela estava certa; errado estava um
+  relato intermediario que dizia "gastava dois veiculos a mais". Os dois solvers sempre usaram 12;
+  o que mudou na rodada justa foi a frota OFERECIDA ao modelo (14 -> 12), que encolhe o espaco de
+  busca. Nunca confundir frota disponivel com frota usada.
+
+### CONCLUSAO CONSOLIDADA CVRP (so estes numeros podem ser citados fora)
+Regra: **so valor com frota igualada nas duas pontas e cuOpt em `--cuopt-so-distancia` e citavel**.
+Qualquer numero de frota folgada ou objetivo diferente fica no historico e nao sai daqui.
+Desenho: `--frota-fixa kmin --cuopt-so-distancia`, 30 s por solver, matriz inteira unica,
+capacidade 100, demanda 1-10, RTX 5060 Ti. As 8 solucoes passaram na validacao independente.
+
+| pontos | semente | frota | OR-Tools | cuOpt | vantagem |
+|---|---|---|---|---|---|
+| 50 | 42 | 3 | 7.480 | 7.425 | 0,7% |
+| 200 | 42 | 12 | 22.546 | 20.940 | 7,1% |
+| 1000 | 42 | 55 | 69.178 | 61.916 | 10,5% |
+| 1000 | 43 | 56 | 89.160 | 84.010 | 5,8% |
+| 1000 | 44 | 56 | 97.411 | 92.825 | 4,7% |
+
+- Em 1000 pontos a vantagem do cuOpt e de 4,7% a 10,5% (media ~7%), sempre a favor dele, com os
+  dois usando a MESMA frota (o minimo teorico) em todos os casos. Ruido do cuOpt medido em 3
+  execucoes: 0,41% — a dispersao entre sementes e real, nao e ruido de solver.
+- A dispersao vem do DESENHO da instancia, nao dos solvers: o deposito e sorteado junto com os
+  clientes, entao sua posicao muda o piso radial que os dois pagam igualmente. Semente 42 cai
+  perto do centro (distancia media ao deposito 414), 43 e 44 caem perto de bordas (607 e 684),
+  e isso sozinho explica a distancia total saltar de 69k para 97k. Piso radial maior comprime a
+  vantagem percentual. Em benchmark futuro, fixar o deposito no centro para medir so a parte
+  otimizavel, ou reportar a vantagem sobre o excedente acima do piso radial.
+- Travar a frota NAO e neutro para o OR-Tools: em 50 pontos ele PIOROU (7.425 com frota 5 para
+  7.480 com frota 3), porque rotas vazias servem de estado intermediario para a busca local.
+  Em 200 ele melhorou (23.126 -> 22.546). Ou seja, igualar a frota e o certo metodologicamente,
+  mas nao favorece sistematicamente ninguem.
+- Leitura pratica: ate ~50 pontos os dois empatam na pratica (0,7%) e o OR-Tools basta; de 200
+  para cima o cuOpt entrega de 5% a 10% com a mesma frota, e a GPU se paga.
+- Licao de metodo: comparar solvers com objetivos diferentes INFLA a diferenca (9,4% viraram 7,1%
+  em 200 pontos). Antes de publicar qualquer numero: igualar frota e funcao objetivo, repetir o
+  solver estocastico ao menos 3 vezes, e variar a semente — uma semente so nao mede nada.
 - `bin/manus_export.py`: o rotulo "link expirado" saiu. `motivo_cdn()` le o `<Code>` do corpo do
   CloudFront e grava o motivo real (InvalidKey, MissingKey, AccessDenied...). Importante: ler o
   corpo ANTES de fechar a resposta — com `stream=True` + `r.close()` o `<Code>` se perde e o

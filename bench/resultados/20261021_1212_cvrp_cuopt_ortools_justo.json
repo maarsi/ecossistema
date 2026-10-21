@@ -1,0 +1,105 @@
+{
+  "gerado_em": "2026-10-21 12:11:07",
+  "maquina": {
+    "gpu": "NVIDIA GeForce RTX 5060 Ti, 595.91.07",
+    "python": "3.14.4"
+  },
+  "parametros": {
+    "capacidade": 100,
+    "demanda": "1..10 inteira",
+    "orcamento_s": 30,
+    "semente": 43,
+    "curva_orcamentos_s": [
+      1,
+      2,
+      5,
+      10,
+      20
+    ],
+    "frota_fixa": "kmin",
+    "cuopt_so_distancia": true,
+    "matriz": "euclidiana inteira, identica para os dois solvers"
+  },
+  "instancias": [
+    {
+      "clientes": 1000,
+      "demanda_total": 5529,
+      "frota": 56,
+      "frota_travada": true,
+      "veiculos_minimo_teorico": 56,
+      "semente_efetiva": 1043,
+      "resultados": [
+        {
+          "solver": "OR-Tools",
+          "ok": true,
+          "custo_reportado": 89160,
+          "tempo_total_s": 30.0,
+          "tempo_ate_melhor_s": 24.19,
+          "metodo_tempo_ate_melhor": "callback AddAtSolutionCallback (instante real da ultima melhoria)",
+          "curva_custo_por_orcamento_s": {
+            "1": 95965,
+            "2": 94553,
+            "5": 91239,
+            "10": 90179,
+            "20": 89322,
+            "30": 89160
+          },
+          "melhorias": 618,
+          "primeira_solucao_s": 0.43,
+          "objetivo": "distancia total (frota fixa, veiculo vazio custa 0)",
+          "validacao": {
+            "valida": true,
+            "cobertura_ok": true,
+            "duplicados": 0,
+            "faltando": [],
+            "capacidade_ok": true,
+            "rotas_acima_da_capacidade": [],
+            "demanda_atendida": 5529,
+            "demanda_total": 5529,
+            "carga_maxima": 100,
+            "distancia_recalculada": 89160,
+            "distancia_reportada": 89160,
+            "distancia_confere": true,
+            "veiculos_usados": 56
+          }
+        },
+        {
+          "solver": "cuOpt",
+          "ok": true,
+          "custo_reportado": 84010,
+          "tempo_total_s": 31.35,
+          "tempo_preparo_s": 1.05,
+          "tempo_solve_s": 30.29,
+          "tempo_ate_melhor_s": 20,
+          "metodo_tempo_ate_melhor": "varredura de orcamentos (sem trace no build 26.10)",
+          "curva_custo_por_orcamento_s": {
+            "1": 85842,
+            "2": 86007,
+            "5": 85717,
+            "10": 85252,
+            "20": 84388,
+            "30": 84010
+          },
+          "veiculos_reportados": 56,
+          "objetivo": "distancia total, frota travada em 56 por set_min_vehicles",
+          "nota": "solver estocastico: repeticoes com o mesmo orcamento variam alguns decimos de %",
+          "validacao": {
+            "valida": true,
+            "cobertura_ok": true,
+            "duplicados": 0,
+            "faltando": [],
+            "capacidade_ok": true,
+            "rotas_acima_da_capacidade": [],
+            "demanda_atendida": 5529,
+            "demanda_total": 5529,
+            "carga_maxima": 100,
+            "distancia_recalculada": 84010,
+            "distancia_reportada": 84010,
+            "distancia_confere": true,
+            "veiculos_usados": 56
+          }
+        }
+      ]
+    }
+  ]
+}

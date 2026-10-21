@@ -22,8 +22,9 @@ RES = RAIZ / "bench" / "resultados"
 def instancia(n_clientes, capacidade, semente, frota_fixa=0):
     """Pontos uniformes em [0,1000]^2, deposito no indice 0. Matriz inteira (mesma para os dois solvers).
 
-    frota_fixa > 0 trava a frota nesse numero nos dois solvers (modo de comparacao justa);
-    0 mantem a folga heuristica usada na primeira rodada.
+    frota_fixa trava a frota nos dois solvers (modo de comparacao justa): um numero, a string
+    'kmin' para o minimo teorico da propria instancia (util ao variar a semente, porque o kmin
+    muda com a demanda sorteada) ou 0 para a folga heuristica da primeira rodada.
     """
     rng = np.random.default_rng(semente + n_clientes)
     pts = rng.uniform(0, 1000, size=(n_clientes + 1, 2))
@@ -33,9 +34,12 @@ def instancia(n_clientes, capacidade, semente, frota_fixa=0):
     dem = np.zeros(n_clientes + 1, dtype=np.int64)
     dem[1:] = rng.integers(1, 11, size=n_clientes)          # demanda de 1 a 10
     k_min = math.ceil(dem.sum() / capacidade)
-    frota = frota_fixa or k_min + max(2, round(0.2 * k_min))
+    if frota_fixa == "kmin":
+        frota = k_min
+    else:
+        frota = int(frota_fixa) or k_min + max(2, round(0.2 * k_min))
     return dict(n=n_clientes, pts=pts, D=D, dem=dem, cap=capacidade,
-                k_min=k_min, frota=frota, frota_travada=bool(frota_fixa),
+                k_min=k_min, frota=frota, frota_travada=bool(frota_fixa and frota_fixa != "0"),
                 semente=semente + n_clientes)
 
 
@@ -223,8 +227,9 @@ def principal():
     ap.add_argument("--capacidade", type=int, default=100)
     ap.add_argument("--curva", default="1,2,5,10,20",
                     help="orcamentos menores para o perfil anytime (vazio desliga)")
-    ap.add_argument("--frota-fixa", type=int, default=0,
-                    help="trava a frota neste numero nos dois solvers (0 = folga heuristica)")
+    ap.add_argument("--frota-fixa", default="0",
+                    help="trava a frota nos dois solvers: numero, 'kmin' (minimo teorico da "
+                         "instancia) ou 0 para a folga heuristica")
     ap.add_argument("--cuopt-so-distancia", action="store_true",
                     help="cuOpt otimiza so distancia (exige --frota-fixa para ter efeito pleno)")
     a = ap.parse_args()
@@ -241,7 +246,7 @@ def principal():
                  parametros=dict(capacidade=a.capacidade, demanda="1..10 inteira",
                                  orcamento_s=a.orcamento, semente=a.semente,
                                  curva_orcamentos_s=curva,
-                                 frota_fixa=a.frota_fixa or None,
+                                 frota_fixa=(a.frota_fixa if a.frota_fixa != "0" else None),
                                  cuopt_so_distancia=a.cuopt_so_distancia,
                                  matriz="euclidiana inteira, identica para os dois solvers"),
                  instancias=[])
@@ -276,7 +281,7 @@ def principal():
         saida["instancias"].append(reg)
 
     RES.mkdir(parents=True, exist_ok=True)
-    sufixo = "_justo" if (a.frota_fixa and a.cuopt_so_distancia) else ""
+    sufixo = "_justo" if (a.frota_fixa != "0" and a.cuopt_so_distancia) else ""
     arq = RES / f"{time.strftime('%Y%m%d_%H%M')}_cvrp_cuopt_ortools{sufixo}.json"
     arq.write_text(json.dumps(saida, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\n-> {arq}")
