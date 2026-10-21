@@ -136,3 +136,28 @@ Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel:
   Leitura: abaixo de ~50 pontos o empate e esperado e o OR-Tools basta; de 200 para cima a GPU paga.
 - Dois ambientes cuOpt convivem por decisao de Mateus em 20/10: `~/env_cuopt` (26.8, com
   cuopt-server) e `/mnt/nvme_lexar/envs/cuopt` (26.10 + ortools, usado pela bateria CVRP).
+
+## Rodada de 21/10/2026: comparacao justa no CVRP e sonda no exportador do Manus
+- Objetivo do cuOpt: `set_objective_function(objectives, weights)` NAO permite desligar a
+  minimizacao de veiculos — o proprio docstring diz "Solver optimizes for vehicle count first and
+  then the total objective". Para igualar ao OR-Tools, travar a frota: `set_min_vehicles(K)` com
+  `n_fleet=K` deixa so K viavel, o termo de contagem vira constante e sobra COST. Pesos declarados
+  explicitamente (COST=1, VEHICLE_FIXED_COST=0) para nao depender de default. A skill
+  cuopt-routing-api-python NAO documenta nem `set_objective_function` nem `set_min_vehicles`:
+  sao os docstrings do pacote que valem.
+- Comparacao justa em 200 pontos (frota travada em 12 nos dois, cuOpt so distancia, semente 42,
+  30 s, validacao independente OK nos dois): cuOpt 20.940 x OR-Tools 22.546.
+  A vantagem ENCOLHE de 9,4% para ~7%, mas se mantem. Quem melhorou foi o OR-Tools
+  (23.126 -> 22.546): com 14 veiculos ele gastava busca em frota que nao precisava.
+  O cuOpt nao mudou (20.950 -> 20.940). Em 4 execucoes a amplitude do cuOpt foi 0,42%
+  (20.940 a 21.028), ou seja vantagem entre 6,7% e 7,1% — maior que o ruido.
+- Licao de metodo: comparar solvers com objetivos diferentes INFLA a diferenca. Antes de publicar
+  qualquer numero, igualar frota e funcao objetivo, e repetir o solver estocastico ao menos 3 vezes
+  para separar vantagem de ruido.
+- `bin/manus_export.py`: o rotulo "link expirado" saiu. `motivo_cdn()` le o `<Code>` do corpo do
+  CloudFront e grava o motivo real (InvalidKey, MissingKey, AccessDenied...). Importante: ler o
+  corpo ANTES de fechar a resposta — com `stream=True` + `r.close()` o `<Code>` se perde e o
+  motivo vira "sem codigo no corpo".
+- `sondar_anexos()`: baixa UMA url de anexo antes de comecar e aborta com mensagem clara se nao
+  vier 200/206, em vez de marcar milhares de falhas. `--sem-anexos` pula a sonda. Testado em 21/10
+  contra a panne em curso: aborta com "HTTP 403 (InvalidKey)" sem escrever nada em disco.

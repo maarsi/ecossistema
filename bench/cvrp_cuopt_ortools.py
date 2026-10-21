@@ -19,8 +19,12 @@ RES = RAIZ / "bench" / "resultados"
 
 
 # ------------------------------------------------------------------ INSTANCIA
-def instancia(n_clientes, capacidade, semente):
-    """Pontos uniformes em [0,1000]^2, deposito no indice 0. Matriz inteira (mesma para os dois solvers)."""
+def instancia(n_clientes, capacidade, semente, frota_fixa=0):
+    """Pontos uniformes em [0,1000]^2, deposito no indice 0. Matriz inteira (mesma para os dois solvers).
+
+    frota_fixa > 0 trava a frota nesse numero nos dois solvers (modo de comparacao justa);
+    0 mantem a folga heuristica usada na primeira rodada.
+    """
     rng = np.random.default_rng(semente + n_clientes)
     pts = rng.uniform(0, 1000, size=(n_clientes + 1, 2))
     dif = pts[:, None, :] - pts[None, :, :]
@@ -29,9 +33,10 @@ def instancia(n_clientes, capacidade, semente):
     dem = np.zeros(n_clientes + 1, dtype=np.int64)
     dem[1:] = rng.integers(1, 11, size=n_clientes)          # demanda de 1 a 10
     k_min = math.ceil(dem.sum() / capacidade)
-    frota = k_min + max(2, round(0.2 * k_min))              # folga identica para os dois
+    frota = frota_fixa or k_min + max(2, round(0.2 * k_min))
     return dict(n=n_clientes, pts=pts, D=D, dem=dem, cap=capacidade,
-                k_min=k_min, frota=frota, semente=semente + n_clientes)
+                k_min=k_min, frota=frota, frota_travada=bool(frota_fixa),
+                semente=semente + n_clientes)
 
 
 # ------------------------------------------------------------------ VALIDACAO INDEPENDENTE
@@ -127,8 +132,15 @@ def rodar_ortools(inst, orcamento, curva=()):
 
 
 # ------------------------------------------------------------------ cuOPT
-def _resolver_cuopt(inst, orcamento):
-    """Uma resolucao cuOpt. Devolve (custo, rotas, veiculos, t_preparo, t_solve) ou levanta."""
+def _resolver_cuopt(inst, orcamento, so_distancia=False):
+    """Uma resolucao cuOpt. Devolve (custo, rotas, veiculos, t_preparo, t_solve) ou levanta.
+
+    so_distancia=True iguala o objetivo ao do OR-Tools. O cuOpt minimiza numero de veiculos ANTES
+    do objetivo (esta no docstring de set_objective_function, nao e um peso que se possa zerar);
+    a forma de neutralizar isso e travar a frota: set_min_vehicles(K) com n_fleet=K deixa so K
+    viavel, o termo de contagem vira constante e sobra COST. O peso e declarado explicitamente
+    (COST=1, VEHICLE_FIXED_COST=0) para nao depender de default.
+    """
     import cudf
     from cuopt import routing
     D, dem, cap, K, n = inst["D"], inst["dem"], inst["cap"], inst["frota"], inst["n"]
@@ -142,6 +154,12 @@ def _resolver_cuopt(inst, orcamento):
         cudf.Series(dem[1:].astype(np.int32)),
         cudf.Series(np.full(K, cap, dtype=np.int32)),
     )
+    if so_distancia:
+        dm.set_min_vehicles(K)
+        dm.set_objective_function(
+            cudf.Series([routing.Objective.COST, routing.Objective.VEHICLE_FIXED_COST]),
+            cudf.Series([1.0, 0.0], dtype=np.float32),
+        )
     ss = routing.SolverSettings()
     ss.set_time_limit(orcamento)
     t_prep = time.perf_counter() - t0
@@ -162,20 +180,20 @@ def _resolver_cuopt(inst, orcamento):
             int(sol.get_vehicle_count()), t_prep, t_solve)
 
 
-def rodar_cuopt(inst, orcamento, curva=()):
+def rodar_cuopt(inst, orcamento, curva=(), so_distancia=False):
     """cuOpt 26.10 nao expoe trace de incumbentes pelo Python (dump_best_results grava arquivo
     vazio e set_verbose_mode nao imprime nada neste build), entao o perfil anytime e obtido
     resolvendo de novo com orcamentos menores. 'tempo_ate_melhor_s' e o menor orcamento da
     varredura que ja chega a 1% do melhor custo observado."""
     try:
-        custo, rotas, veic, t_prep, t_solve = _resolver_cuopt(inst, orcamento)
+        custo, rotas, veic, t_prep, t_solve = _resolver_cuopt(inst, orcamento, so_distancia)
     except Exception as e:
         return dict(solver="cuOpt", ok=False, erro=f"{type(e).__name__}: {e}")
 
     perfil = {}
     for b in sorted(x for x in curva if x < orcamento):
         try:
-            perfil[b] = _resolver_cuopt(inst, b)[0]
+            perfil[b] = _resolver_cuopt(inst, b, so_distancia)[0]
         except Exception:
             perfil[b] = None
     perfil[orcamento] = custo
@@ -191,7 +209,8 @@ def rodar_cuopt(inst, orcamento, curva=()):
                 metodo_tempo_ate_melhor="varredura de orcamentos (sem trace no build 26.10)",
                 curva_custo_por_orcamento_s={str(k): v for k, v in sorted(perfil.items())},
                 veiculos_reportados=veic,
-                objetivo="padrao do cuOpt (minimiza veiculos, depois custo)",
+                objetivo=("distancia total, frota travada em %d por set_min_vehicles" % inst["frota"]
+                          if so_distancia else "padrao do cuOpt (minimiza veiculos, depois custo)"),
                 nota="solver estocastico: repeticoes com o mesmo orcamento variam alguns decimos de %")
 
 
@@ -204,6 +223,10 @@ def principal():
     ap.add_argument("--capacidade", type=int, default=100)
     ap.add_argument("--curva", default="1,2,5,10,20",
                     help="orcamentos menores para o perfil anytime (vazio desliga)")
+    ap.add_argument("--frota-fixa", type=int, default=0,
+                    help="trava a frota neste numero nos dois solvers (0 = folga heuristica)")
+    ap.add_argument("--cuopt-so-distancia", action="store_true",
+                    help="cuOpt otimiza so distancia (exige --frota-fixa para ter efeito pleno)")
     a = ap.parse_args()
     curva = [int(x) for x in a.curva.split(",") if x.strip()]
 
@@ -218,21 +241,26 @@ def principal():
                  parametros=dict(capacidade=a.capacidade, demanda="1..10 inteira",
                                  orcamento_s=a.orcamento, semente=a.semente,
                                  curva_orcamentos_s=curva,
+                                 frota_fixa=a.frota_fixa or None,
+                                 cuopt_so_distancia=a.cuopt_so_distancia,
                                  matriz="euclidiana inteira, identica para os dois solvers"),
                  instancias=[])
 
     for n in [int(x) for x in a.pontos.split(",")]:
-        inst = instancia(n, a.capacidade, a.semente)
+        inst = instancia(n, a.capacidade, a.semente, a.frota_fixa)
         print(f"\n=== {n} clientes | demanda total {inst['dem'].sum()} | "
-              f"frota {inst['frota']} (minimo teorico {inst['k_min']})", flush=True)
+              f"frota {inst['frota']}{' TRAVADA' if inst['frota_travada'] else ''} "
+              f"(minimo teorico {inst['k_min']})", flush=True)
         reg = dict(clientes=n, demanda_total=int(inst["dem"].sum()), frota=inst["frota"],
+                   frota_travada=inst["frota_travada"],
                    veiculos_minimo_teorico=inst["k_min"], semente_efetiva=inst["semente"],
                    resultados=[])
 
         for runner in (rodar_ortools, rodar_cuopt):
             nome = "OR-Tools" if runner is rodar_ortools else "cuOpt"
             try:
-                r = runner(inst, a.orcamento, curva)
+                r = (rodar_cuopt(inst, a.orcamento, curva, a.cuopt_so_distancia)
+                     if runner is rodar_cuopt else rodar_ortools(inst, a.orcamento, curva))
             except Exception as e:
                 r = dict(solver=nome, ok=False, erro=f"{type(e).__name__}: {e}")
             if r.get("ok"):
@@ -248,7 +276,8 @@ def principal():
         saida["instancias"].append(reg)
 
     RES.mkdir(parents=True, exist_ok=True)
-    arq = RES / f"{time.strftime('%Y%m%d_%H%M')}_cvrp_cuopt_ortools.json"
+    sufixo = "_justo" if (a.frota_fixa and a.cuopt_so_distancia) else ""
+    arq = RES / f"{time.strftime('%Y%m%d_%H%M')}_cvrp_cuopt_ortools{sufixo}.json"
     arq.write_text(json.dumps(saida, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\n-> {arq}")
     return saida

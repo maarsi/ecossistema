@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-20 23:42",
+  "gerado_em": "2026-10-21 00:23",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
@@ -19,15 +19,15 @@
       "num_ctx": null
     },
     {
-      "nome": "qwen3:30b-a3b",
-      "gb": 17.3,
-      "cabe_vram": false,
-      "num_ctx": null
-    },
-    {
       "nome": "qwen3:14b",
       "gb": 8.6,
       "cabe_vram": true,
+      "num_ctx": null
+    },
+    {
+      "nome": "qwen3:30b-a3b",
+      "gb": 17.3,
+      "cabe_vram": false,
       "num_ctx": null
     },
     {
