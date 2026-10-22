@@ -37,7 +37,28 @@ if not _BUNDLE:
         _BUNDLE = certifi.where()
     except Exception:
         _BUNDLE = ""
-_VERIFICAR = False if _INSEGURO else (_BUNDLE or True)
+
+# MEDIDO em 21/10/2026, apos tres rodadas de diagnostico: a falha e
+# INTERMITENTE e o motivo e 'unable to get local issuer certificate'. Nao e
+# interceptacao (daria 'self signed certificate in chain') nem variavel de
+# ambiente (SSL_CERT_FILE e REQUESTS_CA_BUNDLE vieram vazias). Resta cadeia
+# incompleta servida por parte dos nos da CDN da TomTom: o certifi e um arquivo
+# estatico e nao tem como completar cadeia que o servidor nao manda.
+# O repositorio de certificados do Windows busca o intermediario que falta pela
+# extensao AIA, e o truststore faz o Python usar esse repositorio. Assim a
+# verificacao continua ATIVA e o caso ruim deixa de quebrar.
+_TRUSTSTORE = False
+if os.environ.get("TOMTOM_USAR_TRUSTSTORE", "1") == "1" and not _INSEGURO:
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+        _TRUSTSTORE = True
+    except Exception:
+        pass        # sem o pacote, segue com o certifi
+
+# Com o truststore ativo, verify precisa ser True: passar caminho de arquivo
+# substituiria o repositorio do sistema pelo conjunto estatico, anulando o ganho.
+_VERIFICAR = False if _INSEGURO else (True if _TRUSTSTORE else (_BUNDLE or True))
 if _INSEGURO:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -64,6 +85,7 @@ def _ajuda_tls(erro: Exception) -> str:
     """
     return (
         "Falha de verificacao de certificado TLS ao falar com a TomTom.\n"
+        f"  repositorio do Windows via truststore: {'ativo' if _TRUSTSTORE else 'NAO ativo'}\n"
         f"  conjunto de certificados usado: {_BUNDLE or 'padrao do requests'}\n"
         f"  SSL_CERT_FILE herdado: {os.environ.get('SSL_CERT_FILE', '(nao definido)')}\n"
         f"  REQUESTS_CA_BUNDLE herdado: {os.environ.get('REQUESTS_CA_BUNDLE', '(nao definido)')}\n"

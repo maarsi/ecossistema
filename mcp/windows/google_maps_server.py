@@ -69,7 +69,20 @@ if not _BUNDLE:
         _BUNDLE = certifi.where()
     except Exception:
         _BUNDLE = ""
-_VERIFICAR = False if _INSEGURO else (_BUNDLE or True)
+
+# Mesmo tratamento dado ao servidor do TomTom em 21/10/2026: o repositorio de
+# certificados do Windows completa cadeia incompleta pela extensao AIA, coisa
+# que o certifi, sendo arquivo estatico, nao faz. Preventivo aqui: os endpoints
+# do Google nao falharam, mas o modo de falha e o mesmo e e intermitente.
+_TRUSTSTORE = False
+if os.environ.get("GOOGLE_USAR_TRUSTSTORE", "1") == "1" and not _INSEGURO:
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+        _TRUSTSTORE = True
+    except Exception:
+        pass
+_VERIFICAR = False if _INSEGURO else (True if _TRUSTSTORE else (_BUNDLE or True))
 if _INSEGURO:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

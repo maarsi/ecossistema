@@ -407,3 +407,41 @@ requisicao veio junto, e como a TomTom recebe a chave na query string, a chave f
 conversa. Corrigido com `_sem_chave()`, que censura `key=...` em qualquer texto de erro antes de
 sair, replicado no servidor do Google. REGRA: texto de excecao de API que leva chave na query
 NUNCA sai sem censura. Chave do TomTom a rotacionar.
+
+### FECHAMENTO DO CASO TLS DA TOMTOM (21/10/2026, 22h30)
+
+Quatro rodadas de diagnostico, e o erro de metodo em cada uma vale mais que a solucao:
+
+1. Testei o Crossref e conclui que o Python da maquina verificava certificado sem problema.
+   ERRADO como generalizacao: host vizinho nao prova nada sobre o host que interessa.
+2. Testei o interpretador de `C:\TransportMCP\.venv`. ERRADO: o servidor do TomTom roda com o de
+   `D:\TransportMCP\.venv`, o que estava no proprio config que eu tinha lido.
+3. Testei o interpretador certo pelo Explorador e passou, enquanto a ferramenta falhava. Isso sim
+   foi informativo: mesma maquina, mesmo interpretador, mesmo host, resultado diferente conforme
+   quem lanca o processo.
+4. Fiz o servidor informar o motivo real do OpenSSL. Veio `unable to get local issuer certificate`,
+   com SSL_CERT_FILE e REQUESTS_CA_BUNDLE vazias. Isso elimina interceptacao corporativa (daria
+   'self signed certificate in chain') e variavel de ambiente herdada.
+
+CAUSA: cadeia incompleta servida por parte dos nos da CDN da TomTom. O `certifi` e um arquivo
+estatico e nao tem como completar cadeia que o servidor nao manda; o repositorio de certificados do
+Windows busca o intermediario que falta pela extensao AIA. Por isso a falha e INTERMITENTE: depende
+do no que atende.
+
+SOLUCAO, sem desligar verificacao: `pip install truststore` no venv e `truststore.inject_into_ssl()`
+no servidor. Instalado o truststore 0.10.5 em `D:\TransportMCP\.venv`, ligado no
+`tomtom_network_server.py` e, preventivamente, no `google_maps_server.py`, que roda no mesmo venv.
+Com o truststore ativo, `verify` TEM de ser True: passar caminho de arquivo substituiria o
+repositorio do sistema pelo conjunto estatico e anularia o ganho. Chaves de escape mantidas:
+`TOMTOM_USAR_TRUSTSTORE=0` e `TOMTOM_MCP_INSECURE_SSL=1`.
+
+LICOES DE PROCESSO, as tres:
+- Teste no host vizinho nao vale; testar o host que falha.
+- Testar no interpretador que o servidor usa, nao em outro da mesma maquina.
+- Antes de propor remedio, fazer o codigo dizer o motivo real. Tres hipoteses minhas cairam com uma
+  unica linha de erro do OpenSSL.
+
+NOTA DE INFRAESTRUTURA: a gravacao remota de arquivo nesta ponte devolveu conteudo DEFASADO em tres
+ocasioes, mesmo reportando sucesso, inclusive com `force`. Contorno que funcionou: gravar com nome
+novo, conferir o sha256 no destino e so entao copiar por cima pelo shell. Conferir hash no destino
+antes de instalar deixou de ser zelo e passou a ser necessario.
