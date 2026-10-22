@@ -6,6 +6,7 @@
 !/config/
 !/mcp/
 !/CLAUDE.md
+!/instrucoes_claude.txt
 !/README.md
 !/.gitignore
 # exclusoes dentro do que foi permitido
