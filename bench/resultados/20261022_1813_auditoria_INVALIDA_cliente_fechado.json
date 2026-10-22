@@ -1,0 +1,258 @@
+[
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": false,
+  "seg": 0.4,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "c_t0_correto",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "c_t0_correto",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": false,
+  "seg": 0.1,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "c_t0_correto",
+  "ok": false,
+  "seg": 0.0,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": true,
+  "seg": 57.3,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": true,
+  "seg": 57.8,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": true,
+  "seg": 64.5,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": false,
+  "seg": 57.7,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": true,
+  "seg": 67.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": false,
+  "seg": 63.4,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": false,
+  "seg": 42.6,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "c_t0_correto",
+  "ok": false,
+  "seg": 66.9,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ }
+]

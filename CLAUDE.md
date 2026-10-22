@@ -459,3 +459,151 @@ antes de instalar deixou de ser zelo e passou a ser necessario.
   CloudFront do Manus. Nao e expiracao de policy e nao tem contorno do nosso lado. O exportador
   aborta antes de tocar no acervo, como deve. Encaminhamento possivel: abrir chamado no suporte do
   Manus citando o codigo InvalidKey; enquanto isso, `--sem-anexos` exporta so as conversas.
+
+## Auditoria independente antes de fechar entregavel
+
+Antes de fechar entregavel tecnico, rodar job critico ou concluir calculo relevante, acionar o
+servidor MCP `argon-auditor` (Argon, Gemini) como segunda opiniao e, quando houver numero, como
+verificacao independente.
+
+ESCOPO, QUE NAO E NEGOCIAVEL. A regra vale sobre METODO e CODIGO, nunca sobre dado de cliente.
+O Argon e modelo de NUVEM: o conteudo sai da workstation. Submeter formulacao, premissa, rotina e
+enunciado com o dado substituido por sintetico ou agregado. Nunca pesquisa bruta, microdado, nome
+de cliente ou material sob NDA. O entregavel registra o que foi submetido a auditoria. Regra de
+escopo mais larga que isso seria descumprida de rotina, e regra descumprida de rotina corroi as
+outras.
+
+AS TRES FERRAMENTAS, E O QUE CADA UMA E DE VERDADE
+
+  argon_auditar_metodologia  Segunda opiniao sobre premissa e metodo, de 3 a 5 pontos. NAO e
+                             verificacao independente: nenhum numero e conferido, so lido. Enviar
+                             o material SEM a conclusao propria, para a leitura dele nao se
+                             ancorar nela.
+
+  argon_fiscalizar_codigo    Segunda opiniao sobre rotina, com caso concreto de entrada por
+                             defeito. Defeito sem caso concreto e suspeita, nao defeito, e
+                             reproduzir o caso continua sendo obrigacao de quem recebe o parecer.
+
+  argon_prova_independente   Verificacao independente de verdade: o Argon escreve uma rotina
+                             autocontida, a rotina e EXECUTADA em ambiente isolado e o veredito e
+                             a comparacao dos dois numeros. O numero do solicitante nao vai no
+                             prompt: o calculo dele e as cegas. Pela ponte do Windows a ferramenta
+                             devolve a rotina SEM executar, porque codigo escrito por modelo nao
+                             roda na estacao de trabalho; o veredito sai na Ubuntu, com
+                             bin/llm.py --papel auditor-argon --nuvem --prova --referencia <numero>
+
+LER O VEREDITO COM A MEDICAO NA MAO. 'SEM RESSALVA' e resposta valida, e esta no prompt de
+proposito: auditor que nunca aprova nada nao informa nada. A suite `auditoria` de bench/bench.py
+mede as DUAS metades, deteccao de erro plantado e falso positivo em item correto, e o campo
+`teste` do papel em config/papeis.json traz o numero da ultima medicao. Comparar o parecer com
+essa taxa antes de agir sobre ele.
+
+QUANDO NAO DER. Se a ponte cair, a chave falhar ou a cota acabar, registrar no entregavel
+"auditoria independente nao realizada: <motivo>" e seguir. Ausencia de parecer NAO e parecer
+favoravel, do mesmo jeito que valor ausente nao vira zero.
+
+CAMADAS. A logica vive em bin/argon_core.py na Ubuntu, que e fonte unica, e o servidor
+mcp/windows/argon_mcp.py a carrega pela variavel ARGON_CORE apontando para a copia sincronizada
+por Syncthing. Nao existe copia local dos prompts: prompt de auditoria duplicado em duas maquinas
+vira dois criterios diferentes sem ninguem perceber.
+
+## Rodada de 22/10/2026: o Argon (Gemini) entra por medicao como auditor
+
+Construido: bin/argon_core.py (fonte unica dos prompts, da censura de credencial, da recusa por
+orcamento e da prova real), mcp/windows/argon_mcp.py (servidor argon-auditor, quatro ferramentas),
+integracao em bin/llm.py (provedor google, chamar_google, prova_real, --prova e --referencia) e a
+suite `auditoria` em bench/bench.py.
+
+### CONCLUSAO CONSOLIDADA AUDITORIA (so estes numeros podem ser citados fora)
+
+Desenho: 9 itens, 6 com erro plantado e 3 de controle tecnicamente defensaveis, prompt identico ao
+de producao (importado de argon_core, nao copiado), temperatura 0, uma passada por modelo.
+Mede DUAS metades: deteccao do erro plantado e falso positivo em item correto.
+
+  modelo                    total  deteccao  falso positivo  t medio
+  gemini-4-argon             9/9      6/6         0/3         12,8 s   <- titular
+  gemini-3.1-pro-preview     9/9      6/6         0/3         21,9 s
+  gemini-3.8-flash           9/9      6/6         0/3         21,7 s
+  qwen3:30b-a3b (local)      4/9      4/6         3/3         59,7 s
+
+Leitura: o modelo local, no papel de auditor, perde um terco dos defeitos E acusa defeito nos tres
+itens corretos, ou seja, nunca aprova nada, e um veredito dele nao carrega informacao. Alem disso
+59,7 s por item excede o corte de 45 s da ponte MCP. Entre os tres de nuvem houve empate perfeito
+no acerto, e a escolha foi pela latencia.
+
+RESSALVAS OBRIGATORIAS AO CITAR:
+  - uma passada por modelo, 9 itens. Diferenca de um item e empate tecnico.
+  - com tres modelos de fronteira em 9/9 a suite CHEGOU AO TETO: ela separa nuvem de local, nao
+    ordena modelos de nuvem. Para ordenar, precisa de itens mais dificeis.
+  - os controles de CODIGO funcionam melhor que os de METODOLOGIA, porque codigo tem correcao
+    decidivel. O unico controle de metodologia que sobreviveu teve de declarar explicitamente o
+    proprio escopo para nao haver extrapolacao a criticar.
+
+### ERRO NO PROPRIO INSTRUMENTO, achado pela medicao (22/10/2026)
+
+O item `c_t0_correto`, escrito por mim como controle, foi reprovado pelos QUATRO modelos. A leitura
+do parecer mostrou que eles estavam certos: a capacidade do HCM aparecia transposta sem os fatores
+de ajuste locais (largura de faixa, rampa, pesados, razao de verde) e sem declarar alfa e beta, e a
+validacao por mediana de pares esconde erro compensatorio no arco, que e a unidade de entrada da
+BPR. O item foi RECLASSIFICADO como erro plantado (`d_capacidade_transposta`) e um controle novo
+(`c_amostra_declarada`) entrou no lugar. Regra confirmada: quando fontes independentes concordam
+entre si e discordam do registro, o suspeito e o registro, e isso vale contra quem escreveu a suite.
+
+### LICOES DE INFRAESTRUTURA (22/10/2026)
+
+1. O CACHE DA GRAVACAO REMOTA E DO LADO DA ORIGEM. Gravar na maquina Windows um arquivo editado de
+   novo a partir do MESMO caminho de origem no contentor entrega o conteudo da versao ANTERIOR,
+   reportando sucesso. Explica as cinco "gravacoes defasadas" de 21 e 22/10. Regra: toda gravacao
+   sai de um nome de origem INEDITO, com conferencia de sha256 no destino antes de usar.
+
+2. EXISTEM QUATRO claude_desktop_config.json NESTA MAQUINA, e o VIVO fica em
+   %LOCALAPPDATA%\Claude-Data\claude_<sufixo aleatorio>\. Nao e %APPDATA%\Claude. Editei o
+   errado por duas rodadas sem erro nenhum aparecer, so sem efeito. Regra: o caminho do arquivo
+   vivo nao se deduz, se le de config_caminho.txt, e o script lista todos os candidatos.
+
+3. EDITAR A CONFIGURACAO COM O APLICATIVO ABERTO NAO VALE. Fechar por completo, inclusive a
+   bandeja. O script recusa rodar se detectar o processo.
+
+4. google-genai 2.32.0: o Client COMPARTILHA o transporte HTTP. Criar um Client por chamada faz a
+   segunda falhar com 'Cannot send a request, as the client has been closed', ANTES de sair da
+   maquina. Derrubou a primeira bateria com 0/8 nos tres modelos, e o unico sinal foi a latencia
+   de 0,0 s. Cliente e memorizado por processo, e o bench avisa quando a latencia maxima fica
+   abaixo de 0,5 s.
+
+5. MODELO DE RACIOCINIO COM max_tokens BAIXO devolve VAZIO com finish_reason=MAX_TOKENS, porque
+   gastou o orcamento pensando. Fez o gemini-3.5-flash parecer quebrado numa sondagem com
+   max_tokens=24. Piso de 512 no gateway e diagnostico explicito na mensagem.
+
+6. 503 UNAVAILABLE e sobrecarga momentanea e pede nova tentativa (tres, com espera crescente).
+   429 com 'limit: 0' NAO pede: e modelo nao liberado para a chave, e repetir so queima cota.
+   Aparecer em models.list nao significa poder chamar: a listagem trouxe 46 modelos.
+
+7. ISOLAMENTO DA PROVA REAL: 'unshare -rn' falha nesta workstation com 'write failed
+   /proc/self/uid_map: Operation not permitted', porque
+   kernel.apparmor_restrict_unprivileged_userns = 1. O bubblewrap funciona sem privilegio no mesmo
+   kernel, entao a prova real roda em 'bwrap --unshare-net --ro-bind / /': sem rede e com sistema
+   de arquivos somente leitura. Medido: sem bwrap a resolucao de nome funciona, com bwrap da
+   gaierror.
+
+8. GUARDA SOBRE PALPITE CUSTA RODADA. Exigi que a chave do Gemini comecasse com 'AIza', por
+   analogia com a chave do Maps, e o guarda recusou uma chave CORRETA. Verificacao assumida nao e
+   verificacao: trocada por conferencia estrutural (palavra unica, sem espaco, tamanho minimo) e
+   comparativa (prefixo contra o da chave que ja estava na variavel).
+
+9. CHAMADA EM PRIMEIRO PLANO QUE ESTOURA O CORTE DE 60 s DA PONTE PERDE A SAIDA, mesmo que o
+   processo termine bem na Ubuntu. Sondagem de 12 modelos foi perdida assim. Acima de 45 s:
+   background com registro em arquivo, sempre.
+
+### VAZAMENTO DE CREDENCIAL (22/10/2026)
+
+O claude_desktop_config.json com as SEIS chaves em texto puro foi anexado ao chat. Todas foram
+rotacionadas e reinstaladas no mesmo dia, por transferencia cifrada (envelope AES-256-GCM com
+RSA-OAEP-SHA256, par efemero gerado na Ubuntu e destruido apos o uso), com impressao digital
+sha256 conferida nas duas pontas e nenhum valor passando pelo chat. Para inspecionar configuracao
+de agora em diante: mcp/windows/claude_desktop_config.sanitizado.json, ou leitura pela ponte, nunca
+anexo.
+
+PENDENCIA ABERTA: a pasta ~/ecossistema nao tem .stignore, e o Syncthing sem lista de exclusao
+sincroniza o .env para os quatro dispositivos pareados. Por isso a GEMINI_API_KEY foi gravada em
+~/TransportMCP/.env, fora da pasta sincronizada. Decidir se cria o .stignore e se apaga as copias
+ja propagadas nos outros dispositivos.

@@ -1,0 +1,290 @@
+[
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": true,
+  "seg": 10.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": true,
+  "seg": 8.8,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": true,
+  "seg": 21.5,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": true,
+  "seg": 18.6,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": true,
+  "seg": 17.1,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": true,
+  "seg": 8.2,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": true,
+  "seg": 7.7,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_capacidade_transposta",
+  "ok": true,
+  "seg": 16.7,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "c_amostra_declarada",
+  "ok": true,
+  "seg": 6.9,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-4-argon"
+ },
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": true,
+  "seg": 21.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": true,
+  "seg": 15.7,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": true,
+  "seg": 21.1,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": true,
+  "seg": 22.8,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": true,
+  "seg": 22.5,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": true,
+  "seg": 10.6,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": true,
+  "seg": 33.6,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_capacidade_transposta",
+  "ok": true,
+  "seg": 28.9,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "c_amostra_declarada",
+  "ok": true,
+  "seg": 20.7,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.1-pro-preview"
+ },
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": true,
+  "seg": 12.4,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": true,
+  "seg": 14.4,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": true,
+  "seg": 16.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": true,
+  "seg": 24.7,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": true,
+  "seg": 26.3,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": true,
+  "seg": 17.0,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": true,
+  "seg": 28.6,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_capacidade_transposta",
+  "ok": true,
+  "seg": 22.9,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "c_amostra_declarada",
+  "ok": true,
+  "seg": 33.2,
+  "detalhe": "aprovou (correto)",
+  "suite": "auditoria",
+  "modelo": "google:gemini-3.8-flash"
+ },
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": true,
+  "seg": 50.5,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": true,
+  "seg": 57.8,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": true,
+  "seg": 64.4,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": false,
+  "seg": 57.6,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": true,
+  "seg": 67.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": false,
+  "seg": 63.4,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": false,
+  "seg": 42.7,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "d_capacidade_transposta",
+  "ok": false,
+  "seg": 67.1,
+  "detalhe": "nao achou: apontou outra coisa",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "c_amostra_declarada",
+  "ok": false,
+  "seg": 67.1,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b"
+ }
+]

@@ -133,6 +133,12 @@ VIS = [
 # ------------------------------------------------------------------ EXECUCAO
 def gerar(modelo, prompt, max_tokens, ctx=8192, imagem=None):
     t = time.time()
+    if modelo.startswith("google:"):
+        try:
+            txt, _, _ = llm.chamar_google(modelo[7:], prompt, max_tokens, 0)
+        except SystemExit as e:
+            return f"[erro google: {e}]", time.time() - t
+        return llm.limpar_raciocinio(txt), time.time() - t
     if modelo.startswith("nuvem:"):
         try:
             txt, _, tout = llm.chamar_nuvem(modelo[6:], prompt, max_tokens, 0)
@@ -288,11 +294,178 @@ def suite_embeddings(m, lim):
                     "detalhe": f"posicao do trecho certo: {ordem.index(alvo) + 1}"})
     return out
 
+# ------------------------------------------------------------------ AUDITORIA
+# Esta suite mede o que um papel de AUDITOR faz, que nao e o que as suites codigo e raciocinio
+# medem. Resolver um problema e achar o erro de outro sao tarefas diferentes, e um modelo bom na
+# primeira nao e necessariamente bom na segunda.
+#
+# Metade da medicao e o FALSO POSITIVO. Sem item correto no conjunto, um modelo que responde
+# "ha um problema aqui" em tudo tira nota maxima e nao informa nada. Por isso os itens c_* sao
+# tecnicamente defensaveis e o acerto neles e APROVAR.
+#
+# Os prompts vem de bin/argon_core.py, nao de copias: a suite tem de medir o prompt que a
+# producao usa, senao mede outra coisa.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bin"))
+import argon_core
+
+def _norm(txt):
+    import unicodedata
+    s = unicodedata.normalize("NFKD", str(txt).lower())
+    return "".join(c for c in s if not unicodedata.combining(c))
+
+def _tem(r, chaves):
+    n = _norm(r)
+    return any(k in n for k in chaves)
+
+def _aprovou(r):
+    return "sem ressalva" in _norm(r)[:240]
+
+AUDIT = [
+ {"id": "d_media_de_medias", "tipo": "codigo",
+  "contexto": "velocidade media de um corredor a partir dos seus trechos",
+  "material": "def velocidade_media(trechos):\n"
+              "    # trechos: lista de (extensao_km, velocidade_kmh)\n"
+              "    return sum(v for _, v in trechos) / len(trechos)\n",
+  "defeito": "media aritmetica de velocidades por trecho; o correto e extensao total dividida "
+             "pelo tempo total (harmonica, ponderada pela extensao)",
+  "checar": lambda r: _tem(r, ["ponderad", "harmonic", "extensao total", "distancia total",
+                               "tempo total"])},
+
+ {"id": "d_ausente_virou_zero", "tipo": "codigo",
+  "contexto": "tempo medio de viagem entre pares de zonas; pares sem rota vem como None",
+  "material": "def tempo_medio(pares):\n"
+              "    # pares: {'AB': 540, 'AC': None, 'AD': 720}  tempos em segundos\n"
+              "    return sum(t or 0 for t in pares.values()) / len(pares)\n",
+  "defeito": "'t or 0' converte par sem rota em zero e ainda o conta no denominador, puxando a "
+             "media para baixo sem aviso",
+  "checar": lambda r: _tem(r, ["zero"]) and _tem(r, ["denominador", "ausente", "nulo", "none",
+                                                     "faltante", "sem rota"])},
+
+ {"id": "d_t0_contaminado", "tipo": "metodologia",
+  "material": "Para calibrar a funcao BPR do corredor, adotamos t0 igual ao tempo de percurso "
+              "medido na hora pico pelo provedor de dados viarios, com alfa = 0,15 e beta = 4,0 "
+              "dos valores classicos. A capacidade foi tomada do HCM.",
+  "defeito": "t0 da BPR e tempo de FLUXO LIVRE, nao de pico; com t0 de pico a funcao subestima a "
+             "sensibilidade ao volume e superestima o tempo em volume baixo",
+  "checar": lambda r: _tem(r, ["fluxo livre", "fluxo-livre", "free flow", "free-flow"])},
+
+ {"id": "d_expansao_sem_estrato", "tipo": "metodologia",
+  "material": "A pesquisa domiciliar de origem e destino coletou 1.200 questionarios distribuidos "
+              "pelas 40 zonas do municipio. Para expandir a amostra, dividimos o total de viagens "
+              "declaradas pelo numero de questionarios e multiplicamos pela populacao total do "
+              "municipio, obtendo as viagens diarias.",
+  "defeito": "fator de expansao unico sobre desenho estratificado por zona; o fator tem de ser "
+             "por estrato, com a taxa de amostragem de cada zona",
+  "checar": lambda r: _tem(r, ["estrat", "por zona", "fator por", "taxa de amostragem",
+                               "fatores de expansao distintos"])},
+
+ {"id": "d_comparacao_nao_equalizada", "tipo": "metodologia",
+  "material": "Comparamos dois roteirizadores na mesma instancia de 500 pontos. O primeiro rodou "
+              "com limite de 10 s e o segundo ate convergir. O primeiro minimizou a distancia "
+              "total percorrida e o segundo minimizou o numero de veiculos. O segundo foi 12% "
+              "melhor e sera o adotado.",
+  "defeito": "orcamento de tempo e funcao objetivo diferentes nos dois lados, e os 12% nao "
+             "declaram em relacao a que grandeza",
+  "checar": lambda r: _tem(r, ["funcao objetivo", "objetivo diferente", "objetivos diferentes",
+                               "mesma funcao"]) or (_tem(r, ["orcamento", "limite de tempo",
+                               "tempo de execucao", "convergir"]) and _tem(r, ["12%"]))},
+
+ {"id": "c_velocidade_correta", "tipo": "codigo",
+  "contexto": "velocidade media de um corredor a partir de extensao e tempo de cada trecho",
+  "material": "def velocidade_media_corredor(trechos):\n"
+              "    # trechos: lista de (extensao_km, tempo_h)\n"
+              "    extensao = sum(e for e, _ in trechos)\n"
+              "    tempo = sum(h for _, h in trechos)\n"
+              "    if tempo <= 0:\n"
+              "        raise ValueError('tempo total nao positivo')\n"
+              "    return extensao / tempo  # km/h\n",
+  "defeito": None, "checar": None},
+
+ {"id": "c_frota_correta", "tipo": "codigo",
+  "contexto": "frota operacional necessaria a partir do tempo de ciclo e do headway desejado",
+  "material": "import math\n\n"
+              "def frota(tempo_ciclo_min, headway_min):\n"
+              "    if headway_min <= 0:\n"
+              "        raise ValueError('headway deve ser positivo')\n"
+              "    return math.ceil(tempo_ciclo_min / headway_min)\n",
+  "defeito": None, "checar": None},
+
+ # Este item NASCEU como controle e foi RECLASSIFICADO em 22/10/2026. Os quatro modelos medidos
+ # reprovaram o material, e a leitura do parecer mostrou que eles estavam certos e eu errado: a
+ # capacidade do HCM aparece transposta sem os fatores de ajuste locais e sem declarar alfa e
+ # beta, e a validacao por mediana de pares esconde erro compensatorio no arco, que e a unidade
+ # de entrada da BPR. Quando fontes independentes concordam entre si e discordam do registro, o
+ # suspeito e o registro, e isso vale contra quem escreveu a suite.
+ {"id": "d_capacidade_transposta", "tipo": "metodologia",
+  "material": "O t0 usado na funcao BPR veio do atributo de tempo de fluxo livre da base viaria, "
+              "conferido contra uma segunda base independente, com diferenca de mediana de 0,1% "
+              "entre as duas. Os pares sem rota foram registrados como nao disponiveis e "
+              "excluidos do calculo da mediana, e o numero de pares excluidos esta informado no "
+              "relatorio. A capacidade veio do HCM para o tipo de via observado em campo.",
+  "defeito": "capacidade do HCM transposta sem os fatores de ajuste locais (largura de faixa, "
+             "rampa, percentual de pesados, razao de verde nos trechos semaforizados) e sem "
+             "declarar alfa e beta da BPR; o erro de capacidade se amplifica por V/C elevado a "
+             "beta. Secundariamente, mediana de pares esconde erro compensatorio no arco",
+  "checar": lambda r: _tem(r, ["fator de ajuste", "fatores de ajuste", "ajuste local",
+                               "largura de faixa", "pesados", "razao de verde", "g/c",
+                               "capacidade pratica", "alfa", "alpha"])},
+
+ # Controle de metodologia reescrito para fechar as frestas que derrubaram o anterior: agregacao
+ # correta (total sobre total), amostra e incerteza reportadas, e escopo declarado de forma
+ # explicita, para que nao haja extrapolacao a criticar. Se ainda assim for reprovado, a conclusao
+ # sera que item de controle em metodologia nao e viavel, e isso tambem e um achado.
+ {"id": "c_amostra_declarada", "tipo": "metodologia",
+  "material": "A velocidade media de percurso foi calculada dividindo a extensao total do trecho, "
+              "8,40 km, pelo tempo total de percurso. Foram realizadas 15 viagens por sentido, "
+              "todas no pico da manha de dias uteis, e o resultado e reportado separadamente por "
+              "sentido, acompanhado do desvio padrao, do numero de viagens e do intervalo de "
+              "confianca de 95%. O relatorio declara que o valor caracteriza apenas o pico da "
+              "manha em dia util, e que nao foi extrapolado para outros periodos, outros dias, "
+              "outros trechos nem outras categorias de veiculo.",
+  "defeito": None, "checar": None},
+]
+
+def _prompt_audit(t):
+    if t["tipo"] == "codigo":
+        corpo = argon_core.P_CODIGO.format(codigo=t["material"], contexto=t.get("contexto", ""),
+                                           cerca="```")
+    else:
+        corpo = argon_core.P_METODOLOGIA.format(material=t["material"], foco="")
+    return argon_core.SISTEMA + "\n\n" + corpo
+
+def suite_auditoria(m, lim):
+    out = []
+    for t in AUDIT[:lim]:
+        txt, s = gerar(m, _prompt_audit(t), 4096, ctx=16384)
+        if t["defeito"] is None:
+            ok = _aprovou(txt)
+            det = "aprovou (correto)" if ok else "FALSO POSITIVO: apontou defeito em item correto"
+        else:
+            achou = bool(t["checar"](txt))
+            ok = achou and not _aprovou(txt)
+            det = ("achou o defeito plantado" if ok else
+                   "nao achou: aprovou item defeituoso" if _aprovou(txt) else
+                   "nao achou: apontou outra coisa")
+        out.append({"tarefa": t["id"], "ok": ok, "seg": round(s, 1), "detalhe": det})
+    if out and max(x["seg"] for x in out) < 0.5:
+        print("           ATENCAO: latencia maxima abaixo de 0,5 s em todos os itens. Chamada de"
+              " modelo nao leva esse tempo: a requisicao provavelmente nao saiu da maquina e o"
+              " texto de erro entrou no lugar da resposta. Conferir antes de ler as notas.",
+              flush=True)
+    plantados = [x for x in out if x["tarefa"].startswith("d_")]
+    controles = [x for x in out if x["tarefa"].startswith("c_")]
+    if plantados and controles:
+        print(f"           deteccao {sum(x['ok'] for x in plantados)}/{len(plantados)} | "
+              f"falso positivo {sum(not x['ok'] for x in controles)}/{len(controles)}", flush=True)
+    return out
+
+
 SUITES = {"codigo": (suite_codigo, ["qwen2.5-coder:14b-fast", "qwen3:14b", "qwen3:30b-a3b"]),
           "raciocinio": (suite_raciocinio, ["qwen3:14b", "qwen3:30b-a3b", "nuvem:nvidia/nemotron-3-ultra-550b-a55b"]),
           "visao": (suite_visao, ["qwen2.5vl:7b"]),
           "doc": (suite_doc, ["qwen3:14b", "qwen3:30b-a3b"]),
-          "embeddings": (suite_embeddings, ["qwen3-embedding:4b"])}
+          "embeddings": (suite_embeddings, ["qwen3-embedding:4b"]),
+          "auditoria": (suite_auditoria, ["qwen3:30b-a3b"])}
 
 
 def autoteste():
@@ -313,6 +486,18 @@ def autoteste():
     for s, esp in [("RESPOSTA: 40000", 40000), ("RESPOSTA: 40.000", 40000), ("RESPOSTA: 0,4013", 0.4013),
                    ("RESPOSTA: **-0.538**", -0.538), ("RESPOSTA: 15.73", 15.73), ("RESPOSTA: 1.234,5", 1234.5)]:
         v = ler_numeros(s); ok = esp in v; falhas += not ok; print(f"  leitor '{s}' -> {v} {'OK' if ok else 'FALHOU'}")
+    # Autoteste dos CONFERIDORES da suite de auditoria: conferidor que nunca dispara, ou que
+    # dispara em qualquer coisa, torna a suite inutil sem dar sinal nenhum.
+    for t in AUDIT:
+        if t["defeito"] is None:
+            ok = _aprovou("SEM RESSALVA\nO material se sustenta.") and not _aprovou(
+                "VEREDITO: COM RESSALVAS\n1. a premissa de capacidade e fragil")
+            print(f"  auditoria/{t['id']:28} conferidor de controle {'OK' if ok else 'FALHOU'}")
+        else:
+            ok = bool(t["checar"](t["defeito"])) and not bool(t["checar"]("SEM RESSALVA"))
+            print(f"  auditoria/{t['id']:28} conferidor dispara no defeito "
+                  f"{'OK' if ok else 'FALHOU'}")
+        falhas += not ok
     print("AUTOTESTE:", "APROVADO" if not falhas else f"{falhas} FALHA(S)")
 
 if __name__ == "__main__":

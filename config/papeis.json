@@ -68,5 +68,24 @@
     "max_tokens": 4096,
     "uso": "Conferencia de calculo ou rotina critica antes do entregavel, sob demanda. NAO usar no fluxo cotidiano: 3 a 7 vezes mais lento que o papel doc, por rodar ~29% na CPU (19 GB nao cabem na VRAM)",
     "teste": "bench 04/10: raciocinio 8/8 (unico a gabaritar, acertou BPR), doc 4/4, codigo 5/6. Empate tecnico com qwen3:14b em tudo, mas falhas COMPLEMENTARES em codigo (acerta DuckDB e GeoPandas, erra GTFS pos-meia-noite), o que justifica a segunda opiniao"
+  },
+  "auditor-argon": {
+    "onde": "nuvem",
+    "provedor": "google",
+    "persona": "auditor",
+    "modelo": "gemini-4-argon",
+    "ctx_max": 1048576,
+    "max_tokens": 4096,
+    "uso": "Auditoria metodologica e fiscalizacao de codigo como SEGUNDA OPINIAO, e prova real por recalculo com --prova --referencia. SEM dado sigiloso: exige --nuvem, porque o conteudo sai da workstation. Nao substitui verificacao propria: defeito apontado so vale depois de reproduzido com o caso concreto indicado",
+    "teste": "bench 22/10/2026, suite auditoria (6 erros plantados e 3 controles corretos): 9/9, deteccao 6/6, falso positivo 0/3, 12,8 s por item. Empate tecnico com gemini-3.1-pro-preview (9/9, 21,9 s) e gemini-3.8-flash (9/9, 21,7 s); titular escolhido pela latencia, 41% menor, que importa contra o corte de 45 s da ponte MCP. Contra o titular local do papel conferencia, qwen3:30b-a3b, a diferenca foi decisiva: 4/9, deteccao 4/6 e falso positivo 3/3 em 59,7 s, ou seja, o local perde um terco dos defeitos e nao aprova nenhum item correto. RESSALVA: com tres modelos de fronteira em 9/9 a suite chegou ao teto e NAO discrimina entre modelos de nuvem, so entre nuvem e local; para ordenar modelos de nuvem ela precisa de itens mais dificeis."
+  },
+  "doc-longo-argon": {
+    "onde": "nuvem",
+    "provedor": "google",
+    "modelo": "gemini-4-argon",
+    "ctx_max": 1048576,
+    "max_tokens": 8192,
+    "uso": "Documento PUBLICO muito extenso, que estoura os 262K tokens do papel doc-longo local. SEM dado sigiloso: exige --nuvem. Nao usar para redacao final de entregavel",
+    "teste": "NAO MEDIDO na suite doc. Entrou apenas pelo contexto de 1.048.576 tokens de entrada declarado pela API em 22/10/2026, quatro vezes o do gemma4:12b local. Medir na suite doc antes de usar em producao"
   }
 }

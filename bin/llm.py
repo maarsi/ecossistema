@@ -89,6 +89,45 @@ def chamar_nuvem(modelo, prompt, max_tokens, temperatura):
     return d["choices"][0]["message"].get("content") or "", u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
 
 
+def chamar_google(modelo_, prompt, max_tokens, temperatura, ctx_max=0, persona=""):
+    """Papel de nuvem do Google (Argon/Gemini). Delega a bin/argon_core.py, que e a FONTE UNICA
+    das regras de censura de credencial, de recusa em vez de truncar e de autorizacao de saida
+    de dado. A autorizacao de saida aqui ja foi dada pela flag --nuvem, conferida em main().
+    persona='auditor' aplica o prompt de sistema do auditor; vazio deixa o modelo generico."""
+    sys.path.insert(0, str(RAIZ / "bin"))
+    try:
+        import argon_core
+    except ImportError as e:
+        sys.exit(f"ERRO: bin/argon_core.py nao importavel por {sys.executable}: {e}")
+    try:
+        r = argon_core.gerar_texto(
+            prompt, sistema=(argon_core.SISTEMA if persona == "auditor" else ""),
+            mod=modelo_, max_tokens=max_tokens, temperatura=temperatura,
+            ctx_max=ctx_max, nao_sigiloso=True)
+    except argon_core.ArgonErro as e:
+        sys.exit(f"ERRO nuvem Google: {e}")
+    return r["texto"], r["tokens_in"], r["tokens_out"]
+
+
+def prova_real(cfg, enunciado, referencia, max_tokens):
+    """VERIFICACAO INDEPENDENTE, nao segunda opiniao: o Argon escreve uma rotina autocontida, a
+    rotina e executada AQUI, na Ubuntu, em ambiente isolado, e o veredito e a comparacao dos dois
+    numeros. O numero de referencia nao vai no prompt: o calculo do Argon e feito as cegas.
+    Esta funcao nao existe no servidor MCP do Windows de proposito: codigo escrito por modelo nao
+    roda na estacao de trabalho."""
+    sys.path.insert(0, str(RAIZ / "bin"))
+    try:
+        import argon_core
+    except ImportError as e:
+        sys.exit(f"ERRO: bin/argon_core.py nao importavel por {sys.executable}: {e}")
+    try:
+        return argon_core.prova_independente(
+            enunciado, meu_resultado=referencia, nao_sigiloso=True, mod=cfg["modelo"],
+            max_tokens=max_tokens, ctx_max=cfg.get("ctx_max", 0), executar=True)
+    except argon_core.ArgonErro as e:
+        return {"veredito": "ERRO", "motivo": str(e)}
+
+
 def escolher_ctx(tokens_in, max_tokens, ctx_max):
     necessario = tokens_in + max_tokens + 256
     for c in DEGRAUS_CTX:
@@ -151,6 +190,11 @@ def main():
     ap.add_argument("--consolidar", choices=["concatenar", "llm"], default="concatenar",
                     help="modo partes: concatenar (extracao, deterministico) ou llm (sintese/resumo)")
     ap.add_argument("--manter-raciocinio", action="store_true")
+    ap.add_argument("--prova", action="store_true",
+                    help="papel do Argon: verificacao independente. O modelo escreve a "
+                         "rotina, a Ubuntu executa em ambiente isolado e compara os numeros")
+    ap.add_argument("--referencia", type=float,
+                    help="numero a conferir na --prova; sem ele o veredito e CALCULADO")
     a = ap.parse_args()
 
     if a.listar or not (a.papel or a.modelo):
@@ -203,7 +247,19 @@ def main():
             sys.exit("ERRO: papel de NUVEM exige --nuvem explicito. O conteudo sai da workstation: "
                      "nao usar com dado de cliente, pesquisa bruta ou material sob NDA.")
         prompt = montar_prompt(instrucao, conteudo)
-        texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura)
+        if a.prova:
+            if cfg.get("provedor") != "google":
+                sys.exit("ERRO: --prova existe apenas nos papeis de provedor 'google' (Argon). "
+                         "Nos demais papeis de nuvem nao ha execucao da rotina, logo nao ha prova.")
+            print(json.dumps(prova_real(cfg, prompt, a.referencia, max_tokens),
+                             ensure_ascii=False, indent=2))
+            return
+        if cfg.get("provedor") == "google":
+            texto, tin, tout = chamar_google(cfg["modelo"], prompt, max_tokens,
+                                             a.temperatura, cfg.get("ctx_max", 0),
+                                             cfg.get("persona", ""))
+        else:
+            texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura)
         modo = "nuvem"
     else:
         res, est = (None, estimar_tokens(conteudo)) if a.partes else executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)
