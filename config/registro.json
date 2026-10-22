@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-21 12:22",
+  "gerado_em": "2026-10-21 22:37",
   "gpu": {
     "nome": "NVIDIA GeForce RTX 5060 Ti",
     "vram_mib": 16311,
@@ -120,6 +120,16 @@
     "~/venv": {
       "python": "3.14.4",
       "pacotes": {}
+    },
+    "/mnt/nvme_lexar/envs/cuopt": {
+      "python": "3.14.4",
+      "pacotes": {
+        "ortools": "9.15.6755",
+        "scipy": "1.18.1",
+        "pandas": "3.0.6",
+        "cudf-cu13": "26.10.0",
+        "cuopt-cu13": "26.10.0"
+      }
     }
   },
   "servicos": {
@@ -136,8 +146,8 @@
     "open-webui"
   ],
   "discos_livres_gb": {
-    "/mnt/nvme_lexar": 788,
-    "/media/mateus/DADOS_01": 3208,
+    "/mnt/nvme_lexar": 784,
+    "/media/mateus/DADOS_01": 3207,
     "/": 547
   },
   "papeis": {

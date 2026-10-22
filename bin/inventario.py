@@ -52,7 +52,13 @@ def coletar():
         modelos = [{"erro": f"Ollama inacessivel: {type(e).__name__}"}]
     reg["ollama"] = modelos
     amb = {}
-    for d in sorted(list(HOME.glob("env_*")) + [HOME / "venv", HOME / "TransportMCP" / ".venv"]):
+    # /mnt/nvme_lexar/envs guarda o ambiente do cuOpt 26.10, que nao cabia com
+    # folga na particao do /home. Sem esta linha o inventario nao enxergava o
+    # ambiente usado pela bateria CVRP nem o servidor MCP que o chama
+    # (pendencia registrada em 20/10/2026, fechada em 21/10/2026).
+    _ambientes = (list(HOME.glob("env_*")) + [HOME / "venv", HOME / "TransportMCP" / ".venv"]
+                  + list(Path("/mnt/nvme_lexar/envs").glob("*")))
+    for d in sorted(_ambientes):
         py = d / "bin" / "python"
         if py.exists():
             amb[str(d).replace(str(HOME), "~")] = {"python": sh(f"{py} -V").replace("Python ", ""), "pacotes": pacotes(py)}

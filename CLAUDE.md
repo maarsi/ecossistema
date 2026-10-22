@@ -445,3 +445,17 @@ NOTA DE INFRAESTRUTURA: a gravacao remota de arquivo nesta ponte devolveu conteu
 ocasioes, mesmo reportando sucesso, inclusive com `force`. Contorno que funcionou: gravar com nome
 novo, conferir o sha256 no destino e so entao copiar por cima pelo shell. Conferir hash no destino
 antes de instalar deixou de ser zelo e passou a ser necessario.
+
+### Pendencias antigas, fechadas e nao fechadas (21/10/2026, 22h40)
+
+- FECHADA: `bin/inventario.py` nao varria `/mnt/nvme_lexar/envs`. Corrigido, e o registro agora
+  mostra os DOIS ambientes cuOpt com os pacotes de cada um: `~/env_cuopt` (cuopt 26.8.0 com
+  cuopt-server-cu13) e `/mnt/nvme_lexar/envs/cuopt` (cuopt 26.10.0 com ortools, o que a bateria
+  CVRP e a ferramenta MCP usam). Lembrete de uso: `--resumo` so relê o `config/registro.json`
+  gravado; para refletir mudanca de ambiente e preciso rodar sem argumento.
+- NAO FECHADA, e nao e nossa: os 1.008 anexos do Manus seguem inacessiveis. A sonda do exportador
+  devolveu HTTP 403 (InvalidKey) de novo em 21/10 as 22h37, mesmo diagnostico de 20/10: o
+  Key-Pair-Id que assina as URLs nao esta entre os signatarios confiaveis da distribuicao
+  CloudFront do Manus. Nao e expiracao de policy e nao tem contorno do nosso lado. O exportador
+  aborta antes de tocar no acervo, como deve. Encaminhamento possivel: abrir chamado no suporte do
+  Manus citando o codigo InvalidKey; enquanto isso, `--sem-anexos` exporta so as conversas.
