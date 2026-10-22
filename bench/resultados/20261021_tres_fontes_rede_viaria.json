@@ -1,0 +1,52 @@
+{
+  "titulo": "Tres fontes de rede viaria: TomTom x HERE x Google, polos de Salvador",
+  "data": "2026-10-21T22:20-03:00",
+  "desenho": {
+    "pontos": 8,
+    "pares": 28,
+    "sentido": "um por par",
+    "modo": "automovel",
+    "transito": "sem transito ao vivo nas tres",
+    "coordenadas": "pontos corrigidos pelo Google Places (New), tipados"
+  },
+  "tempo_divergencia_pct": {
+    "google_sobre_here": {
+      "mediana": 17.6,
+      "p10": 9.3,
+      "p90": 27.2,
+      "sinal": "sempre positivo"
+    },
+    "google_sobre_tomtom": {
+      "mediana": 14.9,
+      "p10": 7.1,
+      "p90": 27.0,
+      "sinal": "misto"
+    },
+    "here_sobre_tomtom": {
+      "mediana": -0.1,
+      "p10": -12.4,
+      "p90": 7.2,
+      "sinal": "misto"
+    },
+    "google_e_o_maior_dos_tres": "27 de 28 pares"
+  },
+  "distancia_divergencia_pct": {
+    "google_sobre_tomtom": {
+      "mediana": 0.2
+    },
+    "here_sobre_tomtom": {
+      "mediana": 0.0
+    }
+  },
+  "leitura": [
+    "A diferenca de tempo do Google e DEFINICAO, nao ruido: staticDuration embute condicao tipica, enquanto noTrafficTravelTimeInSeconds (TomTom) e baseDuration (HERE) sao fluxo livre.",
+    "Para t0 de BPR usar TomTom ou HERE, que concordam na mediana (-0,1%).",
+    "Misturar o estatico do Google inflaria o t0 em 15% a 18%, achatando a curva e subestimando o efeito do congestionamento.",
+    "Para geocodificar equipamento de transporte a ordem e Google (tipado), HERE, TomTom."
+  ],
+  "ressalvas": [
+    "8 polos de uma unica cidade, uma janela de coleta, somente automovel.",
+    "Comparacao anterior TomTom x HERE usou as coordenadas antigas do catalogo, tres delas a mais de 1 km do equipamento: a divergencia relativa continua valida, os tempos absolutos nao sao estacao a estacao."
+  ],
+  "dados_por_par": "D:\\95 - TEMP\\tres_fontes_impedancia.json (fora do repositorio)"
+}

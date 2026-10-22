@@ -356,3 +356,54 @@ funcionar com verificacao ativa nao autorizava concluir que a TomTom funcionaria
   TomTom, confirmando o achado da comparacao com nome de POI explicito.
 - `perplexity`: resposta ancorada com dez fontes e rodape de custo (US$ 0,0047 na consulta de teste).
 - `kimi-assistant`: kimi-k3 respondendo em duas linhas, como pedido.
+
+## Rodada de 21/10/2026 (22h): Google entra como terceira fonte e o catalogo de Salvador e corrigido
+
+- Chave do Google Cloud (39 caracteres, prefixo AIza) com Geocoding, Places (New), Routes e Street
+  View Static habilitadas. As tres primeiras testadas: 200 em todas. Novo servidor
+  `mcp/windows/google_maps_server.py` com geocodificacao, busca de lugares tipada, rota e matriz.
+- CONVENCOES VERIFICADAS CONTRA A API: a Routes devolve `duration` (com transito) e
+  `staticDuration` (sem transito ao vivo); `computeRouteMatrix` devolve LISTA de itens com
+  `originIndex`/`destinationIndex` e `condition`, e a ordem NAO e garantida (usar os indices); a
+  Geocoding devolve `location_type` (ROOFTOP, GEOMETRIC_CENTER, APPROXIMATE); a Places (New)
+  devolve o TIPO do lugar, o que separa estacao de metro de terminal de onibus no mesmo nome.
+- CATALOGO DE POLOS DE SALVADOR CORRIGIDO no `tomtom_network_server.py`. Google e HERE
+  concordaram entre si dentro de 29 m (Piraja), 79 m (Mussurunga) e 152 m (Acesso Norte), e os
+  dois discordaram do catalogo em 1.672 m, 2.874 m e 1.138 m. REGRA: quando duas fontes
+  independentes concordam entre si e discordam do registro, o suspeito e o registro.
+  Em Lapa (211 m) e Iguatemi (190 m) a leitura se inverteu: o catalogo estava certo e erraram a
+  HERE e o TomTom, por nome desatualizado (o antigo Shopping Iguatemi responde hoje como Shopping
+  da Bahia). O TomTom foi a pior fonte para POI em Salvador: 10,3 km na Lapa, 14,1 km no Iguatemi,
+  6,3 km no Aeroporto.
+- O catalogo passou a guardar ATE DOIS pontos por polo, com o tipo declarado: acesso ao trilho e
+  embarque no alimentador. Separacao medida: Lapa 70 m, Piraja 277 m, Aeroporto 1.116 m. A escolha
+  entre os dois muda o tempo de acesso e nao se resolve por nome.
+
+### CONCLUSAO CONSOLIDADA TRES FONTES (so estes numeros podem ser citados fora)
+Desenho: 8 polos de Salvador com coordenada corrigida, 28 pares, um sentido, automovel, sem
+transito ao vivo nas tres fontes.
+
+| comparacao | mediana | p10 | p90 | sinal |
+|---|---|---|---|---|
+| Google sobre HERE | +17,6% | +9,3% | +27,2% | sempre positivo |
+| Google sobre TomTom | +14,9% | +7,1% | +27,0% | misto |
+| HERE sobre TomTom | -0,1% | -12,4% | +7,2% | misto |
+
+- O Google e o maior dos tres em 27 dos 28 pares. Em distancia as tres concordam na mediana
+  (+0,2% e +0,0%).
+- A diferenca de TEMPO e DEFINICAO, nao ruido: o `staticDuration` do Google embute condicao
+  tipica, enquanto o `noTrafficTravelTimeInSeconds` do TomTom e o `baseDuration` da HERE sao fluxo
+  livre. Evidencia direta: as 22h15 o tempo COM transito do Google veio MENOR que o estatico.
+- REGRA DE USO: para t0 de BPR usar TomTom ou HERE, que concordam na mediana. Misturar o estatico
+  do Google infla o t0 em 15% a 18%, achata a curva volume-atraso e subestima o congestionamento.
+  Para geocodificar equipamento de transporte, a ordem e Google (tipado), HERE, TomTom por ultimo.
+- Ressalva: 8 polos de uma cidade, uma janela de coleta, automovel. A comparacao TomTom x HERE da
+  tarde usou as coordenadas ANTIGAS, tres delas a mais de 1 km do equipamento: a divergencia
+  relativa segue valida, mas os tempos absolutos de la nao sao estacao a estacao.
+
+### VAZAMENTO DE CREDENCIAL (erro meu, 21/10/2026)
+Ao incluir `str(erro)` na mensagem de falha de TLS do servidor do TomTom, a URL completa da
+requisicao veio junto, e como a TomTom recebe a chave na query string, a chave foi parar na
+conversa. Corrigido com `_sem_chave()`, que censura `key=...` em qualquer texto de erro antes de
+sair, replicado no servidor do Google. REGRA: texto de excecao de API que leva chave na query
+NUNCA sai sem censura. Chave do TomTom a rotacionar.
