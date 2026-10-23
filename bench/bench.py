@@ -133,6 +133,12 @@ VIS = [
 # ------------------------------------------------------------------ EXECUCAO
 def gerar(modelo, prompt, max_tokens, ctx=8192, imagem=None):
     t = time.time()
+    if modelo.startswith("deepseek:"):
+        try:
+            txt, _, _ = llm.chamar_nuvem(modelo[9:], prompt, max_tokens, 0, "deepseek")
+        except SystemExit as e:
+            return f"[erro deepseek: {e}]", time.time() - t
+        return llm.limpar_raciocinio(txt), time.time() - t
     if modelo.startswith("google:"):
         try:
             txt, _, _ = llm.chamar_google(modelo[7:], prompt, max_tokens, 0)

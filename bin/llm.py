@@ -22,6 +22,13 @@ RAIZ = Path(__file__).resolve().parent.parent
 PAPEIS = json.loads((RAIZ / "config" / "papeis.json").read_text(encoding="utf-8"))
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
 NVIDIA = "https://integrate.api.nvidia.com/v1/chat/completions"
+# Provedores de nuvem que falam o formato OpenAI de chat completions. Acrescentar um aqui e
+# acrescentar uma linha, nao um caminho de codigo novo. O Google NAO entra nesta tabela: o SDK
+# dele tem outra forma e vive em bin/argon_core.py.
+PROVEDORES_OPENAI = {
+    "nvidia":   (NVIDIA, "NVIDIA_API_KEY"),
+    "deepseek": ("https://api.deepseek.com/v1/chat/completions", "DEEPSEEK_API_KEY"),
+}
 DEGRAUS_CTX = [4096, 8192, 16384, 32768, 65536, 131072]
 # Estimativa PESSIMISTA de tokens (limite superior plausivel para portugues com numeros e acentos).
 # Motivo: quando o prompt excede num_ctx, o Ollama descarta ~metade do contexto e guarda o FINAL,
@@ -34,15 +41,40 @@ def estimar_tokens(txt):
     return int(len(txt) / CHARS_POR_TOKEN) + 1
 
 
-def chave_nvidia():
-    if os.environ.get("NVIDIA_API_KEY"):
-        return os.environ["NVIDIA_API_KEY"]
+def chave_env(nome):
+    """Le a credencial do ambiente ou dos .env conhecidos. Nunca devolve string vazia: ou acha,
+    ou encerra dizendo onde procurou."""
+    if os.environ.get(nome):
+        return os.environ[nome]
     for p in [RAIZ / ".env", Path.home() / "TransportMCP" / ".env"]:
         if p.exists():
             for l in p.read_text(encoding="utf-8").splitlines():
-                if l.startswith("NVIDIA_API_KEY="):
-                    return l.split("=", 1)[1].strip().strip('"')
-    sys.exit("ERRO: NVIDIA_API_KEY nao encontrada (ambiente, ~/ecossistema/.env ou ~/TransportMCP/.env).")
+                if l.startswith(nome + "="):
+                    v = l.split("=", 1)[1].strip().strip('"').strip("'")
+                    if v:
+                        return v
+    sys.exit(f"ERRO: {nome} nao encontrada (ambiente, ~/ecossistema/.env ou "
+             f"~/TransportMCP/.env). Atencao: ~/ecossistema/.env e sincronizado pelo Syncthing "
+             f"para quatro dispositivos; credencial que nao precisa estar neles vai em "
+             f"~/TransportMCP/.env.")
+
+
+def chave_nvidia():
+    return chave_env("NVIDIA_API_KEY")
+
+
+def _sem_credencial(texto):
+    """Nenhum texto de erro de provedor sai sem passar por aqui. Estes provedores mandam a chave
+    em cabecalho Authorization, nao em query string, mas um dia um deles pode mudar, e a hora de
+    descobrir isso nao e lendo a chave na tela."""
+    s = str(texto)
+    s = re.sub(r"(?i)(bearer\s+)[A-Za-z0-9_\-.]{8,}", r"\1<censurado>", s)
+    s = re.sub(r"(?i)(\bkey=)[^&\s'\"]+", r"\1<censurado>", s)
+    for nome in ("NVIDIA_API_KEY", "DEEPSEEK_API_KEY", "NGC_API_KEY", "GEMINI_API_KEY"):
+        v = os.environ.get(nome, "")
+        if v and len(v) >= 8:
+            s = s.replace(v, "<censurado>")
+    return s
 
 
 def montar_prompt(instrucao, conteudo):
@@ -78,12 +110,19 @@ def chamar_local(modelo, prompt, ctx, max_tokens, temperatura):
     return d.get("response", ""), d.get("prompt_eval_count", 0), d.get("eval_count", 0)
 
 
-def chamar_nuvem(modelo, prompt, max_tokens, temperatura):
-    r = requests.post(NVIDIA, timeout=300, headers={"Authorization": f"Bearer {chave_nvidia()}"},
+def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia"):
+    if provedor not in PROVEDORES_OPENAI:
+        sys.exit(f"ERRO: provedor '{provedor}' desconhecido. Conhecidos: "
+                 f"{', '.join(sorted(PROVEDORES_OPENAI))}.")
+    url, var = PROVEDORES_OPENAI[provedor]
+    r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {chave_env(var)}"},
                       json={"model": modelo, "messages": [{"role": "user", "content": prompt}],
                             "max_tokens": max_tokens, "temperature": temperatura})
     if r.status_code != 200:
-        sys.exit(f"ERRO nuvem HTTP {r.status_code} em {modelo}. Tentar outro papel de nuvem.")
+        # O corpo entra na mensagem porque 'HTTP 400' sozinho nao diagnostica nada; passa pela
+        # censura antes de sair.
+        sys.exit(f"ERRO nuvem {provedor} HTTP {r.status_code} em {modelo}: "
+                 f"{_sem_credencial(r.text)[:400]}")
     d = r.json()
     u = d.get("usage", {})
     return d["choices"][0]["message"].get("content") or "", u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
@@ -259,7 +298,8 @@ def main():
                                              a.temperatura, cfg.get("ctx_max", 0),
                                              cfg.get("persona", ""))
         else:
-            texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura)
+            texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura,
+                                            cfg.get("provedor", "nvidia"))
         modo = "nuvem"
     else:
         res, est = (None, estimar_tokens(conteudo)) if a.partes else executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)
