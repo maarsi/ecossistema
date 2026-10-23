@@ -536,7 +536,8 @@ def prova_independente(enunciado: str, meu_resultado=None, nao_sigiloso: bool = 
     SEM_CODIGO, SEM_RESULTADO, FALHA_EXECUCAO, NAO_EXECUTADO."""
     r = gerar_texto(P_PROVA.format(enunciado=enunciado), SISTEMA, mod, max_tokens, temperatura,
                     ctx_max, semente=7, nao_sigiloso=nao_sigiloso)
-    meta = {k: r[k] for k in ("modelo", "tokens_in", "tokens_out", "segundos")}
+    meta = {k: r[k] for k in ("modelo", "tokens_in", "tokens_out", "segundos",
+                              "tokens_entrada_conferidos", "origem_contagem")}
     bruto = r["texto"]
 
     if bruto.upper().lstrip().startswith("NAO_CALCULAVEL"):
