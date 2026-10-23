@@ -1,0 +1,83 @@
+[
+ {
+  "tarefa": "d_media_de_medias",
+  "ok": true,
+  "seg": 65.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "d_ausente_virou_zero",
+  "ok": true,
+  "seg": 49.8,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "d_t0_contaminado",
+  "ok": true,
+  "seg": 70.0,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "d_expansao_sem_estrato",
+  "ok": true,
+  "seg": 64.2,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "d_comparacao_nao_equalizada",
+  "ok": true,
+  "seg": 70.1,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "c_velocidade_correta",
+  "ok": false,
+  "seg": 29.6,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "c_frota_correta",
+  "ok": false,
+  "seg": 38.2,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "d_capacidade_transposta",
+  "ok": true,
+  "seg": 70.2,
+  "detalhe": "achou o defeito plantado",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ },
+ {
+  "tarefa": "c_amostra_declarada",
+  "ok": false,
+  "seg": 70.2,
+  "detalhe": "FALSO POSITIVO: apontou defeito em item correto",
+  "suite": "auditoria",
+  "modelo": "qwen3:30b-a3b",
+  "pesos": "ad815644918f"
+ }
+]

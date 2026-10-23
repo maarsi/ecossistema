@@ -666,3 +666,58 @@ DENTRO, contra a chave publica efemera da Ubuntu, e so a cifra trafegou. Impress
 conferida nas duas pontas, par destruido. Esse e o caminho mais barato quando a credencial so
 precisa chegar a Ubuntu: papel de nuvem puro nao toca claude_desktop_config.json, logo nao exige
 fechar e reabrir o aplicativo. Gravada em ~/TransportMCP/.env, fora da pasta sincronizada.
+
+## Manutencao de 23/10/2026 (turno do Kimi) e o que ela obriga a mudar no metodo
+
+Relatado: faxina de apt, fwupd, flatpak e snap, com snapshot Timeshift 2026-10-23_00-41-17 antes;
+Open WebUI recriado com imagem nova, volume preservado, porta 3000 para 8080; Ubuntu Pro ativado
+(assinatura free personal, esm-apps, esm-infra e livepatch habilitados, confirmado por
+`pro status`: attached True, os tres enabled); envs Python e demais containers inalterados por
+desenho. E, o item que mexe com medicao, cinco modelos do Ollama re-baixados: qwen3:14b,
+qwen3:30b-a3b, gemma4:12b, qwen2.5vl:7b e qwen3-embedding:4b. O qwen2.5-coder:14b-fast falhou o
+re-pull como previsto, tag fora do registro, copia local intacta.
+
+### PESO DE MODELO LOCAL PASSA A SER REGISTRADO PELO DIGEST, NAO PELA DATA
+
+Problema: resultado de bateria deixa de ser comparavel quando o peso muda, e nada no arquivo de
+resultado dizia qual peso tinha sido usado. Depois de um re-pull, um numero antigo que nao
+reproduz parece regressao do modelo quando e so outro modelo.
+
+Resolvido no bench, de forma automatica em vez de anotada a mao: `identidade_modelo()` consulta
+/api/tags e grava o DIGEST curto em cada linha de resultado, no campo `pesos`, e a linha impressa
+tambem o mostra. Para modelo de nuvem grava provedor e nome. Digest e melhor que data porque e a
+identidade real: peso diferente, digest diferente, sem depender de fuso nem de quem anotou.
+
+Digests em uso em 23/10/2026, apos o re-pull:
+  qwen3:30b-a3b           ad815644918f
+  qwen3:14b               bdbd181c33f2
+  qwen2.5-coder:14b-fast  6253ba1a6b4e  (nao re-baixado, 5 semanas)
+
+### O QUE ISSO INVALIDOU, CONFERIDO PELO HORARIO E NAO SUPOSTO
+
+Os pesos foram modificados por volta de 00h45 de 23/10. Comparando com os arquivos de resultado:
+  - auditoria com qwen3:30b-a3b, 22/10 as 19h44: pesos ANTERIORES, medicao limpa porem velha.
+  - raciocinio com qwen3:30b-a3b, 23/10 as 00h45:04: NA FRONTEIRA, nao certificavel. O bench chama
+    o Ollama com keep_alive de 30 minutos, e a instancia carregada em VRAM continua servindo
+    mesmo com o manifesto trocado, entao a rodada provavelmente usou os pesos antigos de ponta a
+    ponta; provavelmente nao e certificacao.
+  - modelos de nuvem: nao afetados.
+As duas linhas de base locais foram REFEITAS com os pesos novos, o que serve tambem de verificacao
+de regressao do proprio re-pull.
+
+### PROCEDIMENTO APROVADO: credencial cifrada pela maquina virtual da estacao
+
+Quando a credencial so precisa chegar a Ubuntu, este e o caminho mais barato, e nao exige script
+no Windows nem fechar o aplicativo:
+  1. a Ubuntu gera par RSA 3072 efemero com permissao 600 e imprime apenas a chave publica;
+  2. a maquina virtual Linux da estacao, que tem o pacote cryptography, le o arquivo de chave na
+     pasta conectada e cifra com RSA-OAEP-SHA256 contra essa publica, imprimindo so a cifra em
+     base64 e a impressao digital sha256 de 12 hex;
+  3. a Ubuntu decifra, confere a impressao digital, grava em ~/TransportMCP/.env com permissao 600
+     e destroi o par.
+A chave em claro nunca existe fora das duas pontas. Para mais de uma credencial de uma vez, usar
+envelope: AES-256-GCM nos dados e RSA-OAEP-SHA256 na chave simetrica, porque quatro credenciais
+nao cabem numa unica cifragem RSA de 3072 bits.
+Observacao de escopo: isso vale para papel de nuvem puro. Credencial que precisa entrar no bloco
+`env` de um servidor MCP ainda exige o script no Windows com o aplicativo FECHADO, e o alvo e o
+arquivo de %LOCALAPPDATA%\Claude-Data\claude_<sufixo>\, declarado em config_caminho.txt.

@@ -163,6 +163,25 @@ def gerar(modelo, prompt, max_tokens, ctx=8192, imagem=None):
         return f"[ERRO API: {r['error'][:120]}]", time.time() - t
     return llm.limpar_raciocinio(r.get("response", "")), time.time() - t
 
+def identidade_modelo(m):
+    """Identidade VERIFICAVEL dos pesos, que e o digest, nao a data.
+
+    Em 23/10/2026 cinco modelos do Ollama foram re-baixados por manutencao, e as baterias da
+    vespera passaram a se referir a pesos que nao existiam mais, sem NADA no arquivo de resultado
+    indicando isso. Resultado que nao reproduz depois de uma troca de peso parece regressao do
+    modelo quando e so outro modelo. Digest resolve: peso diferente, digest diferente."""
+    prefixo = m.split(":", 1)[0] if ":" in m else ""
+    if prefixo in ("nuvem", "google", "deepseek"):
+        return f"{prefixo}/{m.split(':', 1)[1]}"
+    try:
+        for mod in requests.get(f"{llm.OLLAMA}/api/tags", timeout=20).json().get("models", []):
+            if m in (mod.get("name"), mod.get("model")):
+                return (mod.get("digest") or "")[:12]
+    except Exception:
+        pass
+    return "desconhecido"
+
+
 def extrair_codigo(txt):
     m = re.search(r"```(?:python)?\s*\n(.*?)```", txt, re.S); return m.group(1) if m else txt
 
@@ -517,10 +536,12 @@ if __name__ == "__main__":
         f, padrao = SUITES[nome]
         for m in (a.modelos.split(",") if a.modelos else padrao):
             r = f(m, a.limite)
-            for x in r: x.update({"suite": nome, "modelo": m})
+            ident = identidade_modelo(m)
+            for x in r: x.update({"suite": nome, "modelo": m, "pesos": ident})
             todas += r
             ac = sum(x["ok"] for x in r)
             print(f"{nome:10} {m:42} {ac}/{len(r)}  t_medio={sum(x['seg'] for x in r)/len(r):.1f}s  "
+                  f"pesos={ident}  "
                   + " ".join(("+" if x["ok"] else "-") + x["tarefa"] for x in r), flush=True)
     arq = RES / f"{time.strftime('%Y%m%d_%H%M')}_{a.suite}.json"
     arq.write_text(json.dumps(todas, indent=1, ensure_ascii=False), encoding="utf-8"); print("resultados:", arq)
