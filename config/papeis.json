@@ -33,10 +33,11 @@
   },
   "raciocinio-nuvem": {
     "onde": "nuvem",
-    "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+    "provedor": "deepseek",
+    "modelo": "deepseek-flash",
     "max_tokens": 4096,
-    "uso": "Segunda opiniao conceitual SEM dado sigiloso",
-    "teste": "2026-09-22: resposta correta no problema de frota, 10 s"
+    "uso": "Segunda opiniao conceitual e conferencia de calculo SEM dado sigiloso; exige --nuvem. Para material sigiloso usar o papel conferencia, que mediu o MESMO acerto nesta suite: a fronteira de dados nao custa acerto aqui, custa velocidade",
+    "teste": "bench 23/10/2026, suite raciocinio (8 itens), DUAS passadas: 8/8 e 8/8, em 2,4 s e 3,1 s por item. Promovido por medicao contra o titular anterior nvidia/nemotron-3-ultra-550b-a55b, que ao ser finalmente medido na suite fez 6/8 em 51,1 s, acima do corte de 45 s da ponte MCP, e errou justamente o item frota, que era a UNICA tarefa citada no campo teste que o havia colocado no posto em 22/09. deepseek-v4-pro tambem fez 8/8 nas duas passadas, em 13,2 s e 6,3 s, latencia menos previsivel. RESSALVA: o qwen3:30b-a3b LOCAL tambem fez 8/8, em 26,2 s, entao a suite nao discrimina acerto entre os tres melhores, so velocidade."
   },
   "redacao-nuvem": {
     "onde": "nuvem",
@@ -77,7 +78,7 @@
     "ctx_max": 1048576,
     "max_tokens": 4096,
     "uso": "Auditoria metodologica e fiscalizacao de codigo como SEGUNDA OPINIAO, e prova real por recalculo com --prova --referencia. SEM dado sigiloso: exige --nuvem, porque o conteudo sai da workstation. Nao substitui verificacao propria: defeito apontado so vale depois de reproduzido com o caso concreto indicado",
-    "teste": "bench 22/10/2026, suite auditoria (6 erros plantados e 3 controles corretos): 9/9, deteccao 6/6, falso positivo 0/3, 12,8 s por item. Empate tecnico com gemini-3.1-pro-preview (9/9, 21,9 s) e gemini-3.8-flash (9/9, 21,7 s); titular escolhido pela latencia, 41% menor, que importa contra o corte de 45 s da ponte MCP. Contra o titular local do papel conferencia, qwen3:30b-a3b, a diferenca foi decisiva: 4/9, deteccao 4/6 e falso positivo 3/3 em 59,7 s, ou seja, o local perde um terco dos defeitos e nao aprova nenhum item correto. RESSALVA: com tres modelos de fronteira em 9/9 a suite chegou ao teto e NAO discrimina entre modelos de nuvem, so entre nuvem e local; para ordenar modelos de nuvem ela precisa de itens mais dificeis."
+    "teste": "bench 22 e 23/10/2026, suite auditoria (6 erros plantados e 3 controles corretos), DUAS passadas: 9/9 com falso positivo 0/3 em 12,8 s, e 8/9 com falso positivo 1/3 em 17,4 s. Deteccao ESTAVEL em 6/6 nas duas. CORRECAO de registro: a primeira versao deste campo citava so a primeira passada e superestimava a precisao. Concorrentes: gemini-3.8-flash 9/9 e 9/9, falso positivo 0/3 nas duas, em 21,7 s e 20,2 s, ou seja, MAIS ESTAVEL no acerto; gemini-3.1-pro-preview 9/9, falso positivo 0/3, 21,9 s, uma passada. Titular mantido por decisao de Mateus pela latencia, 15,1 s de media contra 21,0 s, sendo a diferenca de acerto de um item em dezoito observacoes de controle, dentro da faixa de empate tecnico. Linha de base local: qwen3:30b-a3b 4/9, deteccao 4/6, falso positivo 3/3, 59,7 s. RESSALVAS: a suite chegou ao teto nos modelos de fronteira e nao os ordena por acerto; sao 3 observacoes de controle por passada, base estreita para taxa de falso positivo; e a latencia do provedor varia por fator de dois entre rodadas."
   },
   "doc-longo-argon": {
     "onde": "nuvem",

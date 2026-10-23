@@ -607,3 +607,62 @@ PENDENCIA ABERTA: a pasta ~/ecossistema nao tem .stignore, e o Syncthing sem lis
 sincroniza o .env para os quatro dispositivos pareados. Por isso a GEMINI_API_KEY foi gravada em
 ~/TransportMCP/.env, fora da pasta sincronizada. Decidir se cria o .stignore e se apaga as copias
 ja propagadas nos outros dispositivos.
+
+## Rodada de 23/10/2026 (madrugada): DeepSeek entra, o titular de nuvem reprova, e uma correcao
+
+### CONCLUSAO CONSOLIDADA RACIOCINIO (so estes numeros podem ser citados fora)
+
+Desenho: suite raciocinio, 8 itens numericos de engenharia de transportes com gabarito e
+tolerancia (frota, logit binomial, elasticidade-arco, BPR, VPL, Little, capacidade, valor do
+tempo), temperatura 0. Duas passadas nos candidatos de nuvem.
+
+  modelo                                passada 1   passada 2   t medio
+  deepseek-flash                          8/8         8/8       2,4 s e 3,1 s   <- titular
+  deepseek-v4-pro                         8/8         8/8      13,2 s e 6,3 s
+  qwen3:30b-a3b (local)                   8/8          -        26,2 s
+  nvidia/nemotron-3-ultra (ex-titular)    6/8          -        51,1 s
+
+ACHADO QUE MUDA PRATICA: o modelo LOCAL gabaritou tambem. Para esta classe de problema a
+fronteira de dados NAO custa acerto, custa velocidade. Material sigiloso vai para o papel
+conferencia sem perda de qualidade; a nuvem serve para quando o tempo importa.
+
+O EX-TITULAR NUNCA HAVIA SIDO MEDIDO. O campo teste dele dizia apenas "2026-09-22: resposta
+correta no problema de frota, 10 s", que e amostra de tamanho um. Medido na suite, fez 6/8 em
+51,1 s, acima do corte de 45 s da ponte, e errou JUSTAMENTE o item frota, a unica tarefa que o
+havia qualificado. Melhor ilustracao possivel da regra: amostra de um nao e resultado.
+
+Observado de passagem: o nemotron emite o raciocinio em ingles SEM as etiquetas <think>, entao
+limpar_raciocinio() nao o remove e esse texto iria para quem chamou o papel. Com max_tokens=300
+ele gastou o orcamento raciocinando e nao entregou o numero.
+
+RESSALVA: com tres modelos em 8/8, a suite raciocinio tambem chegou ao teto e nao os ordena por
+acerto, so por velocidade.
+
+### CORRECAO DO REGISTRO DO AUDITOR (23/10/2026)
+
+O campo teste de auditor-argon citava "9/9, falso positivo 0/3, 12,8 s" a partir de UMA passada.
+A segunda passada deu 8/9 com falso positivo 1/3 em 17,4 s, acusando o controle c_frota_correta.
+Deteccao ficou estavel em 6/6 nas duas. O gemini-3.8-flash foi MAIS ESTAVEL no acerto, 9/9 e 9/9
+com falso positivo 0/3 nas duas, porem 28% mais lento. Titular mantido por decisao de Mateus pela
+latencia, com a diferenca de acerto dentro da faixa de empate tecnico (um item em dezoito
+observacoes de controle). O campo teste foi reescrito com as duas passadas e as ressalvas.
+
+LICAO: o campo teste de um papel deve trazer REPETICAO, nao uma passada. Uma passada produz
+numero de ponto onde existe intervalo, e isso vale tanto para acerto quanto para latencia: a
+latencia do mesmo modelo variou por fator de dois entre rodadas (deepseek-v4-pro, 13,2 s e 6,3 s;
+gemini-4-argon, 12,8 s e 17,4 s).
+
+### INFRAESTRUTURA
+
+bin/llm.py deixou de ter o endpoint da NVIDIA chumbado: provedores de nuvem no formato OpenAI
+ficam na tabela PROVEDORES_OPENAI, e acrescentar provedor e acrescentar uma linha. O Google segue
+fora da tabela, porque o SDK dele tem outra forma e vive em bin/argon_core.py. chave_nvidia()
+virou chave_env(nome), e a mensagem de erro passou a levar o corpo da resposta, censurado por
+_sem_credencial.
+
+CHAVE DO DEEPSEEK: transferida sem passar pelo chat e SEM precisar de script no Windows. A maquina
+virtual Linux da estacao tem cryptography instalado, entao a cifragem RSA-OAEP-SHA256 aconteceu lA
+DENTRO, contra a chave publica efemera da Ubuntu, e so a cifra trafegou. Impressao digital
+conferida nas duas pontas, par destruido. Esse e o caminho mais barato quando a credencial so
+precisa chegar a Ubuntu: papel de nuvem puro nao toca claude_desktop_config.json, logo nao exige
+fechar e reabrir o aplicativo. Gravada em ~/TransportMCP/.env, fora da pasta sincronizada.

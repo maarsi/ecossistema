@@ -1,0 +1,258 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 51.1,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 12.7,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 10.7,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 3.5,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 11.1,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 7.1,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 4.2,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 4.8,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 3.5,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 2.7,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 2.6,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 2.2,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 2.1,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 1.6,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 1.7,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 2.8,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "frota",
+  "ok": false,
+  "seg": 91.7,
+  "detalhe": "resposta=[25.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 56.5,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 32.5,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 15.6,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": false,
+  "seg": 155.2,
+  "detalhe": "resposta=[1610.0] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 4.5,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 15.7,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 37.4,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "nuvem:nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 89.0,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 17.3,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 21.3,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 18.9,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 20.6,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 13.5,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 16.5,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 12.8,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "qwen3:30b-a3b"
+ }
+]

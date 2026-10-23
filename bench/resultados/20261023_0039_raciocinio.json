@@ -1,0 +1,130 @@
+[
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 13.7,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 7.5,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 3.8,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 3.2,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 3.7,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 5.5,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 2.8,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 10.6,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-v4-pro"
+ },
+ {
+  "tarefa": "frota",
+  "ok": true,
+  "seg": 9.5,
+  "detalhe": "resposta=[23.0] esperado=23",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "logit_bin",
+  "ok": true,
+  "seg": 2.9,
+  "detalhe": "resposta=[0.4013] esperado=0.4013",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "elasticidade_arco",
+  "ok": true,
+  "seg": 2.4,
+  "detalhe": "resposta=[-0.538] esperado=-0.5385",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "bpr",
+  "ok": true,
+  "seg": 1.9,
+  "detalhe": "resposta=[15.73] esperado=15.7325",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "vpl",
+  "ok": true,
+  "seg": 2.0,
+  "detalhe": "resposta=[13.72] esperado=13.7236",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "little",
+  "ok": true,
+  "seg": 2.0,
+  "detalhe": "resposta=[120.0] esperado=120.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "capacidade",
+  "ok": true,
+  "seg": 2.0,
+  "detalhe": "resposta=[40000.0] esperado=40000.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ },
+ {
+  "tarefa": "valor_tempo",
+  "ok": true,
+  "seg": 2.2,
+  "detalhe": "resposta=[12.0] esperado=12.0",
+  "suite": "raciocinio",
+  "modelo": "deepseek:deepseek-flash"
+ }
+]
