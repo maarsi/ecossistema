@@ -35,10 +35,66 @@ _ERRO_SEM_CHAVE = (
 if not KIMI_API_KEY:
     print("AVISO: MOONSHOT_API_KEY ausente; as ferramentas do Kimi retornarao erro ate a chave ser definida.", file=sys.stderr)
 
+# Contexto declarado pela propria API em 23/10/2026 (GET /v1/models, campo context_length).
+# Nao e suposicao nem leitura de documentacao: veio da conta que esta chave alcanca. A familia k3
+# tem o MESMO contexto do gemini-4-argon, um milhao de tokens, e quatro vezes o doc-longo local.
+CTX_MAX_POR_MODELO = {
+    "kimi-k3": 1048576,
+    "kimi-k3.1-pro": 1048576,
+    "kimi-k3.1-pro-highspeed": 1048576,
+    "kimi-k2.6": 262144,
+    "kimi-k2.7-code": 262144,
+    "kimi-k2.7-code-highspeed": 262144,
+}
+CHARS_POR_TOKEN = 2.5  # estimativa pessimista, a mesma de bin/llm.py
+
+# Esforco de raciocinio. MEDIDO em 23/10/2026, quatro repeticoes de cada: low leva 4,2 s e gera
+# 112 caracteres de raciocinio; max leva 10,9 s e gera 1.748. Intervalos sem sobreposicao, logo o
+# parametro e honrado. MAS a API NAO valida o valor: valor invalido, e mesmo nome de parametro
+# inventado, voltam HTTP 200 em silencio e cobram o padrao, que e max. Por isso a validacao e
+# feita aqui: o remoto nao reclama, e um erro de digitacao custaria 2,6 vezes o tempo sem aviso.
+ESFORCOS_VALIDOS = ("low", "high", "max")
+
 mcp = FastMCP("KimiAssistant")
 
 
-def _chamar_api_kimi(mensagens: list, modelo: str = "") -> str:
+def _conferir_saida(nao_sigiloso: bool, conteudo: str, esforco: str, modelo: str) -> str:
+    """As DUAS travas que o gateway bin/llm.py aplica e que faltavam neste caminho.
+
+    Ate 23/10/2026 o Kimi era alcancavel apenas por aqui, fora do gateway. A advertencia sobre
+    dado de cliente existia em DOCSTRING, e docstring e aviso, nao trava. E nao havia conferencia
+    de orcamento de contexto, justamente num servidor cujo nicho declarado e documento extenso,
+    que e o pior lugar possivel para essa trava faltar.
+
+    Devolve string vazia quando pode seguir, ou o texto da recusa."""
+    if nao_sigiloso is not True:
+        return (
+            "RECUSADO: esta ferramenta envia o conteudo para a Moonshot, FORA da workstation. "
+            "Exige nao_sigiloso=True explicito.\n"
+            "Nao usar com dado de cliente, pesquisa bruta ou material sob NDA: nesses casos "
+            "processar na Ubuntu e devolver apenas agregado, estatistica ou conclusao. Para "
+            "analisar METODO sobre material sigiloso, substituir o dado por sintetico ou "
+            "agregado e enviar so a formulacao."
+        )
+    if esforco and esforco not in ESFORCOS_VALIDOS:
+        return (f"RECUSADO: esforco '{esforco}' invalido. Validos: "
+                f"{', '.join(ESFORCOS_VALIDOS)}. A API aceitaria esse valor SEM reclamar e "
+                f"cobraria o esforco padrao (max), medido em 2,6 vezes o tempo do 'low', por "
+                f"isso a recusa e local.")
+    mod = modelo or MODELO_PADRAO
+    teto = CTX_MAX_POR_MODELO.get(mod)
+    if teto:
+        est = int(len(conteudo) / CHARS_POR_TOKEN) + 1
+        if est > teto:
+            return (f"RECUSADO: insumo de ~{est} tokens (estimativa pessimista de "
+                    f"{CHARS_POR_TOKEN} caracteres por token) excede o contexto de {teto} do "
+                    f"modelo {mod}. Recusado em vez de truncado: corte silencioso devolve "
+                    f"resposta plausivel e INCOMPLETA, que e o pior defeito possivel numa "
+                    f"analise de documento. Dividir o material e analisar por partes.")
+    return ""
+
+
+def _chamar_api_kimi(mensagens: list, modelo: str = "", esforco: str = "") -> str:
     """Envia requisicoes para a API oficial da Moonshot AI com suporte a janelas longas de contexto."""
     if not KIMI_API_KEY:
         return _ERRO_SEM_CHAVE
@@ -53,6 +109,8 @@ def _chamar_api_kimi(mensagens: list, modelo: str = "") -> str:
     }
     if not modelo.startswith(MODELOS_SEM_TEMPERATURA):
         payload["temperature"] = 0.3
+    if esforco in ESFORCOS_VALIDOS:
+        payload["reasoning_effort"] = esforco
     try:
         r = requests.post(KIMI_API_URL, headers=headers, json=payload, timeout=180)
         try:
@@ -76,9 +134,11 @@ def _chamar_api_kimi(mensagens: list, modelo: str = "") -> str:
         msg_erro = dados.get("error", {}).get("message", "")
         extra = ""
         if r.status_code == 404:
-            extra = (" Conferir o nome do modelo: a familia moonshot-v1-* foi desativada; "
-                     "a conta hoje enxerga kimi-k2.6, kimi-k2.7-code, "
-                     "kimi-k2.7-code-highspeed e kimi-k3.")
+            extra = (" Conferir o nome do modelo: a familia moonshot-v1-* foi desativada. "
+                     "Conferido em 23/10/2026, a conta enxerga kimi-k2.6, kimi-k2.7-code, "
+                     "kimi-k2.7-code-highspeed, kimi-k3, kimi-k3.1-pro e "
+                     "kimi-k3.1-pro-highspeed. O catalogo mudou em dois dias: os dois ultimos "
+                     "nao existiam em 21/10, entao listar pela API antes de fixar nome.")
         elif r.status_code == 401:
             extra = " Problema de chave, nao de requisicao: conferir MOONSHOT_API_KEY."
         # Nao propagar r.text bruto: pode conter eco de cabecalhos ou credenciais
@@ -88,7 +148,8 @@ def _chamar_api_kimi(mensagens: list, modelo: str = "") -> str:
 
 
 @mcp.tool()
-def consultar_kimi(pergunta: str, modelo: str = "") -> str:
+def consultar_kimi(pergunta: str, nao_sigiloso: bool = False,
+                   modelo: str = "", esforco: str = "") -> str:
     """Envia uma pergunta tecnica direta para a IA Kimi (Moonshot AI).
 
     Uso recomendado: documentos ou bases muito extensas que excedam a janela util
@@ -100,6 +161,9 @@ def consultar_kimi(pergunta: str, modelo: str = "") -> str:
     mais rapido), 'kimi-k2.7-code' e 'kimi-k2.7-code-highspeed' (codigo).
     A familia 'moonshot-v1-*' foi desativada.
     """
+    recusa = _conferir_saida(nao_sigiloso, pergunta, esforco, modelo)
+    if recusa:
+        return recusa
     mensagens = [
         {
             "role": "system",
@@ -107,12 +171,13 @@ def consultar_kimi(pergunta: str, modelo: str = "") -> str:
         },
         {"role": "user", "content": pergunta},
     ]
-    return _chamar_api_kimi(mensagens, modelo=modelo)
+    return _chamar_api_kimi(mensagens, modelo=modelo, esforco=esforco)
 
 
 @mcp.tool()
 def analisar_documento_com_kimi(
-    texto_documento: str, instrucao_de_analise: str, modelo: str = ""
+    texto_documento: str, instrucao_de_analise: str, nao_sigiloso: bool = False,
+    modelo: str = "", esforco: str = ""
 ) -> str:
     """Envia documentos extensos, editais ou dados para analise critica pelo Kimi.
 
@@ -123,6 +188,9 @@ def analisar_documento_com_kimi(
     Nao usar com dados de cliente, pesquisa bruta ou material sob NDA;
     nesses casos processar localmente no Ubuntu.
     """
+    recusa = _conferir_saida(nao_sigiloso, texto_documento, esforco, modelo)
+    if recusa:
+        return recusa
     mensagens = [
         {
             "role": "system",
@@ -133,7 +201,7 @@ def analisar_documento_com_kimi(
             "content": f"INSTRUCAO:\n{instrucao_de_analise}\n\nCONTEUDO:\n{texto_documento}",
         },
     ]
-    return _chamar_api_kimi(mensagens, modelo=modelo)
+    return _chamar_api_kimi(mensagens, modelo=modelo, esforco=esforco)
 
 
 if __name__ == "__main__":

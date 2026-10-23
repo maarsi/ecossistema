@@ -133,6 +133,12 @@ VIS = [
 # ------------------------------------------------------------------ EXECUCAO
 def gerar(modelo, prompt, max_tokens, ctx=8192, imagem=None):
     t = time.time()
+    if modelo.startswith("moonshot:"):
+        try:
+            txt, _, _ = llm.chamar_nuvem(modelo[9:], prompt, max_tokens, 1, "moonshot")
+        except SystemExit as e:
+            return f"[erro moonshot: {e}]", time.time() - t
+        return llm.limpar_raciocinio(txt), time.time() - t
     if modelo.startswith("deepseek:"):
         try:
             txt, _, _ = llm.chamar_nuvem(modelo[9:], prompt, max_tokens, 0, "deepseek")
@@ -171,7 +177,7 @@ def identidade_modelo(m):
     indicando isso. Resultado que nao reproduz depois de uma troca de peso parece regressao do
     modelo quando e so outro modelo. Digest resolve: peso diferente, digest diferente."""
     prefixo = m.split(":", 1)[0] if ":" in m else ""
-    if prefixo in ("nuvem", "google", "deepseek"):
+    if prefixo in ("nuvem", "google", "deepseek", "moonshot"):
         return f"{prefixo}/{m.split(':', 1)[1]}"
     try:
         for mod in requests.get(f"{llm.OLLAMA}/api/tags", timeout=20).json().get("models", []):

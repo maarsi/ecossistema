@@ -721,3 +721,80 @@ nao cabem numa unica cifragem RSA de 3072 bits.
 Observacao de escopo: isso vale para papel de nuvem puro. Credencial que precisa entrar no bloco
 `env` de um servidor MCP ainda exige o script no Windows com o aplicativo FECHADO, e o alvo e o
 arquivo de %LOCALAPPDATA%\Claude-Data\claude_<sufixo>\, declarado em config_caminho.txt.
+
+## Rodada de 23/10/2026 (noite): o Kimi entra atras do gateway, e um furo antigo do gateway
+
+Decisao de Mateus: trazer o Kimi para tras do gateway, que e correcao de seguranca que se
+sustenta sozinha, sem ainda criar papel titular.
+
+### O FURO QUE EXISTIA, E QUE ERA MAIOR DO QUE PARECIA
+
+O Kimi era alcancavel SO pelo servidor MCP kimi-assistant, fora de bin/llm.py. Logo nao tinha a
+exigencia de autorizacao para saida de dado nem a recusa por orcamento de contexto, justamente
+num servidor cujo nicho declarado e documento extenso, que e o pior lugar possivel para a segunda
+trava faltar. A advertencia sobre dado de cliente existia em DOCSTRING, e docstring e aviso, nao
+trava.
+
+E ao fechar isso apareceu um furo que nao era do Kimi: O GATEWAY NUNCA TEVE A RECUSA POR
+ORCAMENTO PARA PAPEL DE NUVEM. A verificacao existia apenas no ramo local; raciocinio-nuvem e
+redacao-nuvem mandavam o insumo inteiro e deixavam o provedor cortar em silencio, e o Argon so
+estava protegido porque bin/argon_core.py faz a sua propria conferencia. Corrigido em bin/llm.py:
+papel de nuvem com ctx_max declarado agora recusa, com a estimativa pessimista de 2,5 caracteres
+por token. Papel SEM ctx_max declarado nao e verificado, de proposito: contexto que nao foi
+conferido na API nao entra como numero.
+
+### O QUE A API DA MOONSHOT DISSE, MEDIDO EM 23/10/2026
+
+GET /v1/models devolve muito mais que o padrao OpenAI, inclusive context_length e modalities:
+  kimi-k3, kimi-k3.1-pro, kimi-k3.1-pro-highspeed .... contexto 1.048.576
+  kimi-k2.6, kimi-k2.7-code, kimi-k2.7-code-highspeed  contexto   262.144
+  todos aceitam texto, IMAGEM e VIDEO na entrada
+
+Tres consequencias:
+1. CONTEXTO IGUAL, NAO MAIOR. Um milhao e o MESMO do gemini-4-argon. Para documento longo de
+   texto puro o Argon ja cobre, e um segundo caminho seria redundancia, nao capacidade.
+2. O DIFERENCIAL REAL E A ENTRADA MULTIMODAL. Video na entrada nao existe em nenhum outro papel
+   do ecossistema. Para consultoria de transportes isso aponta para contagem volumetrica em
+   video, filmagem de campo e gravacao de travessia. O caminho do gateway hoje NAO monta mensagem
+   multimodal, entao essa capacidade esta identificada e nao esta implementada.
+3. O CATALOGO MUDOU EM DOIS DIAS. Em 21/10 a conta via quatro modelos; kimi-k3.1-pro e
+   kimi-k3.1-pro-highspeed apareceram depois. Nenhum foi promovido: nao ha medicao.
+
+### reasoning_effort: HONRADO, POReM NAO VALIDADO
+
+Quatro repeticoes de cada, mesmo enunciado:
+  low  4,2 s (3,3 a 5,7)  raciocinio   112 caracteres (61 a 161)   126 tokens de saida
+  max 10,9 s (8,3 a 13,0) raciocinio 1.748 caracteres (1.171 a 2.221) 549 tokens de saida
+Intervalos sem sobreposicao, logo o parametro e honrado, e 'low' custa 2,6 vezes menos tempo.
+
+MAS A API ACEITA PARAMETRO E VALOR DESCONHECIDOS EM SILENCIO, com HTTP 200: tanto
+reasoning_effort="valor_que_nao_existe" quanto um nome de parametro que eu inventei passaram.
+Consequencia pratica: erro de digitacao no esforco NAO da erro, so cobra o padrao, que e max.
+Por isso a validacao e LOCAL, em bin/llm.py e em kimi_server.py. Regra geral que isso confirma:
+validar aqui o que o remoto nao valida, porque sondar nome de parametro por uma chamada nao
+distingue "funcionou" de "foi ignorado". O teste que distingue e o valor invalido, e depois a
+repeticao comparando o efeito.
+
+A temperatura segue travada: a familia k3 recusa valor diferente de 1 com HTTP 400 explicito.
+Esse campo e omitido para esses modelos, nos dois caminhos.
+
+### O QUE ENTROU
+
+bin/llm.py: provedor moonshot na tabela PROVEDORES_OPENAI, que passou de tupla a dicionario para
+carregar as particularidades; omissao de temperatura por modelo; esforco validado localmente; e
+diagnostico de resposta vazia com raciocinio cheio, que significa orcamento de saida gasto
+pensando e nao modelo quebrado.
+mcp/windows/kimi_server.py: funcao _conferir_saida com as duas travas, esforco repassado,
+catalogo atualizado na mensagem de 404. EXIGE REINICIO do Claude Desktop para as assinaturas
+novas das ferramentas (nao_sigiloso, esforco) aparecerem.
+config/papeis.json: papel auditor-kimi como CANDIDATO, explicitamente nao titular, com o campo
+teste dizendo que nao foi medido e por que a medicao hoje nao decidiria.
+
+### HIPOTESE A TESTAR, DE UMA AMOSTRA SO
+
+No mesmo material de dimensionamento de frota, o Kimi apontou OS MESMOS tres defeitos que o
+Argon havia apontado: amostra de tamanho um, ausencia de tempo de terminal e arredondamento para
+baixo. Se isso se repetir, a tese de que um auditor de linhagem diferente traz falha
+complementar ENFRAQUECE, e o segundo auditor passa a ser eco caro em vez de informacao. E
+amostra de um, nao conclusao, e e exatamente o que a suite de auditoria mais dificil tera de
+medir. Enquanto a suite estiver no teto, essa pergunta fica aberta.

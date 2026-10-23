@@ -26,8 +26,22 @@ NVIDIA = "https://integrate.api.nvidia.com/v1/chat/completions"
 # acrescentar uma linha, nao um caminho de codigo novo. O Google NAO entra nesta tabela: o SDK
 # dele tem outra forma e vive em bin/argon_core.py.
 PROVEDORES_OPENAI = {
-    "nvidia":   (NVIDIA, "NVIDIA_API_KEY"),
-    "deepseek": ("https://api.deepseek.com/v1/chat/completions", "DEEPSEEK_API_KEY"),
+    "nvidia": {"url": NVIDIA, "chave": "NVIDIA_API_KEY"},
+    "deepseek": {"url": "https://api.deepseek.com/v1/chat/completions",
+                 "chave": "DEEPSEEK_API_KEY"},
+    # Moonshot (Kimi). Duas particularidades MEDIDAS em 23/10/2026, nao supostas:
+    #  1. a familia k3 e de raciocinio puro e RECUSA temperatura diferente de 1, com HTTP 400
+    #     "invalid temperature: only 1 is allowed for this model". Para esses modelos o campo e
+    #     omitido e vale o padrao da API.
+    #  2. reasoning_effort e HONRADO (low contra max, 4 repeticoes cada: 4,2 s e 112 caracteres
+    #     de raciocinio contra 10,9 s e 1.748, intervalos sem sobreposicao), POREM a API NAO
+    #     valida o valor: tanto um valor invalido quanto um nome de parametro inventado voltam
+    #     200. Erro de digitacao nao da erro, so custa 2,6 vezes o tempo em silencio, por isso a
+    #     validacao e feita AQUI.
+    "moonshot": {"url": "https://api.moonshot.ai/v1/chat/completions",
+                 "chave": "MOONSHOT_API_KEY",
+                 "sem_temperatura": ("kimi-k3", "kimi-k3.1-pro", "kimi-k3.1-pro-highspeed"),
+                 "esforcos": ("low", "high", "max")},
 }
 DEGRAUS_CTX = [4096, 8192, 16384, 32768, 65536, 131072]
 # Estimativa PESSIMISTA de tokens (limite superior plausivel para portugues com numeros e acentos).
@@ -110,14 +124,27 @@ def chamar_local(modelo, prompt, ctx, max_tokens, temperatura):
     return d.get("response", ""), d.get("prompt_eval_count", 0), d.get("eval_count", 0)
 
 
-def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia"):
+def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esforco=""):
     if provedor not in PROVEDORES_OPENAI:
         sys.exit(f"ERRO: provedor '{provedor}' desconhecido. Conhecidos: "
                  f"{', '.join(sorted(PROVEDORES_OPENAI))}.")
-    url, var = PROVEDORES_OPENAI[provedor]
-    r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {chave_env(var)}"},
-                      json={"model": modelo, "messages": [{"role": "user", "content": prompt}],
-                            "max_tokens": max_tokens, "temperature": temperatura})
+    p = PROVEDORES_OPENAI[provedor]
+    corpo = {"model": modelo, "messages": [{"role": "user", "content": prompt}],
+             "max_tokens": max_tokens}
+    if modelo not in p.get("sem_temperatura", ()):
+        corpo["temperature"] = temperatura
+    if esforco:
+        validos = p.get("esforcos", ())
+        if not validos:
+            sys.exit(f"ERRO: o provedor '{provedor}' nao declara esforco de raciocinio.")
+        if esforco not in validos:
+            # Validado AQUI porque o provedor aceita valor invalido em silencio.
+            sys.exit(f"ERRO: esforco '{esforco}' invalido para {provedor}. Validos: "
+                     f"{', '.join(validos)}. A API aceitaria o valor errado sem reclamar e "
+                     f"cobraria o esforco padrao, por isso a recusa e local.")
+        corpo["reasoning_effort"] = esforco
+    r = requests.post(p["url"], timeout=300,
+                      headers={"Authorization": f"Bearer {chave_env(p['chave'])}"}, json=corpo)
     if r.status_code != 200:
         # O corpo entra na mensagem porque 'HTTP 400' sozinho nao diagnostica nada; passa pela
         # censura antes de sair.
@@ -125,7 +152,20 @@ def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia"):
                  f"{_sem_credencial(r.text)[:400]}")
     d = r.json()
     u = d.get("usage", {})
-    return d["choices"][0]["message"].get("content") or "", u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
+    msg = d["choices"][0]["message"]
+    texto = msg.get("content") or ""
+    if not texto.strip():
+        # Modelo de raciocinio puro devolve o pensamento em reasoning_content e a resposta em
+        # content. Conteudo vazio com raciocinio cheio significa orcamento de saida gasto
+        # pensando, e NAO modelo quebrado: e max_tokens curto demais, ou esforco alto demais.
+        racio = len(msg.get("reasoning_content") or "")
+        if racio:
+            sys.exit(f"ERRO nuvem {provedor}: resposta vazia com {racio} caracteres de "
+                     f"raciocinio em {modelo}. O orcamento de saida acabou antes de sair texto: "
+                     f"aumentar --max-tokens (agora {max_tokens}) ou baixar o esforco para 'low'.")
+        sys.exit(f"ERRO nuvem {provedor}: resposta vazia em {modelo}, sem motivo declarado. "
+                 "Resposta vazia nao e resposta.")
+    return texto, u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
 
 
 def chamar_google(modelo_, prompt, max_tokens, temperatura, ctx_max=0, persona=""):
@@ -286,6 +326,19 @@ def main():
             sys.exit("ERRO: papel de NUVEM exige --nuvem explicito. O conteudo sai da workstation: "
                      "nao usar com dado de cliente, pesquisa bruta ou material sob NDA.")
         prompt = montar_prompt(instrucao, conteudo)
+        # RECUSA EM VEZ DE TRUNCAR, agora tambem na nuvem. Ate 23/10/2026 esta verificacao
+        # existia apenas no ramo local, e papel de nuvem mandava o insumo inteiro e deixava o
+        # provedor cortar em silencio. Papel sem ctx_max declarado nao e verificado, e isso esta
+        # dito no campo uso: contexto que eu nao conferi na API nao entra como numero aqui.
+        if cfg.get("ctx_max"):
+            est = estimar_tokens(prompt)
+            if est + max_tokens > cfg["ctx_max"]:
+                sys.exit(f"ERRO: insumo de ~{est} tokens (estimativa pessimista de "
+                         f"{CHARS_POR_TOKEN} caracteres por token) mais {max_tokens} de resposta "
+                         f"excede o ctx_max {cfg['ctx_max']} do papel '{a.papel}'. RECUSADO em "
+                         f"vez de truncado: excesso de ~{est + max_tokens - cfg['ctx_max']} "
+                         f"tokens. Dividir o material com --partes ou usar papel de contexto "
+                         f"maior.")
         if a.prova:
             if cfg.get("provedor") != "google":
                 sys.exit("ERRO: --prova existe apenas nos papeis de provedor 'google' (Argon). "
@@ -299,7 +352,7 @@ def main():
                                              cfg.get("persona", ""))
         else:
             texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura,
-                                            cfg.get("provedor", "nvidia"))
+                                            cfg.get("provedor", "nvidia"), cfg.get("esforco", ""))
         modo = "nuvem"
     else:
         res, est = (None, estimar_tokens(conteudo)) if a.partes else executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)

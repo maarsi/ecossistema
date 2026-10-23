@@ -88,5 +88,15 @@
     "max_tokens": 8192,
     "uso": "Documento PUBLICO muito extenso, que estoura os 262K tokens do papel doc-longo local. SEM dado sigiloso: exige --nuvem. Nao usar para redacao final de entregavel",
     "teste": "NAO MEDIDO na suite doc. Entrou apenas pelo contexto de 1.048.576 tokens de entrada declarado pela API em 22/10/2026, quatro vezes o do gemma4:12b local. Medir na suite doc antes de usar em producao"
+  },
+  "auditor-kimi": {
+    "onde": "nuvem",
+    "provedor": "moonshot",
+    "modelo": "kimi-k3",
+    "ctx_max": 1048576,
+    "max_tokens": 8192,
+    "esforco": "max",
+    "uso": "CANDIDATO, NAO titular de nada. Existe para dar segunda opiniao de LINHAGEM DIFERENTE do auditor-argon, que e o criterio que justificou o papel conferencia: falha complementar, nao qualidade. Dois pareceres de familias distintas que discordam sao informacao; dois da mesma familia que concordam podem ser eco. SEM dado sigiloso: exige --nuvem. ATENCAO: este papel NAO carrega o prompt de auditoria, que vive em bin/argon_core.py e so e aplicado no caminho do Google; aqui a instrucao de auditoria tem de vir no --instrucao.",
+    "teste": "NAO MEDIDO. Nao entrou por desempenho, entrou para fechar o furo de seguranca: ate 23/10/2026 o Kimi era alcancavel apenas pelo servidor MCP kimi-assistant, fora do gateway, logo sem a exigencia de autorizacao para saida de dado e sem a recusa por orcamento de contexto. Medido na API em 23/10, e so isso: contexto 1.048.576 tokens, igual ao do gemini-4-argon e quatro vezes o doc-longo local; aceita texto, IMAGEM e VIDEO na entrada, que nenhum outro papel do ecossistema aceita; raciocinio do tipo 'only' com esforco padrao max; reasoning_effort honrado (low 4,2 s e 112 caracteres de raciocinio contra max 10,9 s e 1.748, quatro repeticoes cada, intervalos sem sobreposicao) porem NAO validado pela API. NAO PROMOVER sem medicao, e a medicao hoje nao decide: a suite auditoria esta no teto com tres modelos de fronteira em 9/9. Construir itens mais dificeis primeiro."
   }
 }
