@@ -831,3 +831,77 @@ Enquanto os servidores rodarem de C:\TransportMCP e D:\TransportMCP, toda correc
 manual e a divergencia pode voltar. Apontar todos para a copia sincronizada do ecossistema, como
 ja e feito com o argon-auditor, elimina a classe de erro: edita-se na Ubuntu, o Syncthing
 propaga, reinicia. Exige uma edicao do config com o aplicativo FECHADO. Nao feito ainda.
+
+
+================================================================================
+24/10 - CLAUDE CODE DA UBUNTU EQUIPADO COM OS SERVIDORES DO ECOSSISTEMA
+================================================================================
+
+O PROBLEMA QUE ISSO RESOLVE. A regra de auditoria independente exige acionar o
+argon-auditor antes de fechar entregavel. Mas o lugar designado para TAREFA LONGA e o
+Claude Code instalado na Ubuntu, e ele nao tinha o argon-auditor declarado. Ou seja, o
+unico lugar que roda bateria, exportacao e lote era justamente o que nao podia auditar
+o proprio resultado. Contradicao fechada agora.
+
+O QUE ELE JA TINHA, e eu afirmei errado que nao tinha. O Claude Code da Ubuntu ja estava
+conectado a transport-modeling, assistente-juridico, perplexity e memory, no escopo user,
+mais os conectores da conta (Docs, Drive, Sheets, Slides, Gmail, Calendar, BigQuery,
+Notion, Gamma, Composio, Adobe). Eu disse que ele era mal equipado porque meu
+`claude mcp list | head -20` cortou a lista antes dos locais. Ele e mal equipado nos
+servidores DO ECOSSISTEMA, que e outra afirmacao.
+
+DECLARADOS EM 24/10, escopo user, ambos Connected e provados por chamada real:
+  argon-auditor    mcp_local.sh argon_mcp.py, com ARGON_CORE e ARGON_MODELO por -e
+  kimi-assistant   mcp_local.sh kimi_server.py
+
+O ollama-remote NAO vai para la, de proposito: ele e a ponte PARA a Ubuntu, e o Claude
+Code ja esta dentro dela, com shell. Declarar seria a maquina falando com ela mesma.
+
+bin/mcp_local.sh, E POR QUE ELE EXISTE. O `claude mcp add` aceita -e CHAVE=valor, mas isso
+gravaria a credencial em texto puro em ~/.claude.json, que nao tem permissao 600. Seria a
+quinta copia de cada chave e multiplicaria o trabalho de rotacao. O involucro carrega
+~/TransportMCP/.env (600, fora do versionamento e do Syncthing) e passa o controle ao
+servidor. O arquivo nao contem credencial e por isso e versionado. Conferido: o campo
+Environment do kimi-assistant esta VAZIO em ~/.claude.json.
+
+INTERPRETADOR. O Claude Code usa ~/TransportMCP/.venv/bin/python, que ja tinha
+mcp 1.29.0 e fastmcp 3.4.7. Faltava google-genai, que o argon_core carrega de forma
+preguicosa: por isso o modulo importava sem erro e so a chamada falharia. Instalado
+2.33.0. ERRO MEU no caminho: rodei o primeiro `pip install` no ~/env_transporte, que nao
+e o ambiente de producao do Claude Code. Mesma classe do erro de editar o espelho em vez
+da producao. Antes de instalar, conferir QUAL interpretador o alvo usa.
+
+RISCO ABERTO, mcp 2.x DERRUBA OS NOVE SERVIDORES. Um `pip install mcp` sem restricao traz
+o mcp 2.x, onde FastMCP foi renomeado para MCPServer e mcp.server.fastmcp deixou de
+existir. Os nove servidores usam FastMCP. Hoje nada fixa a versao em nenhuma das duas
+maquinas. Enquanto nao houver arquivo de restricao, NUNCA rodar `pip install -U mcp` nem
+`pip install mcp` sem `"mcp<2"` nos ambientes de producao. Versoes medidas em 24/10 estao
+em config/versoes_criticas.txt.
+
+DIVERGENCIA DE VERSAO ENTRE AS MAQUINAS. google-genai 2.33.0 na Ubuntu contra 2.32.0 no
+Windows. O singleton de cliente do argon_core continua correto nas duas, porque o
+problema do transporte HTTP compartilhado nao depende da versao menor, mas o mesmo codigo
+rodando contra versoes diferentes e como comparar ferramenta sem equalizar condicao: se
+o comportamento divergir, a causa fica ambigua.
+
+CONNECTED NAO E PROVA DE CREDENCIAL. O `claude mcp get` diz Connected quando o servidor
+sobe e lista ferramentas. Nao diz que a chave resolve, porque a chave so e lida na
+chamada. Mesma estrutura do erro de tomar ausencia de vazamento por prova de censura.
+Prova aceita: chamada real pelo proprio Claude Code, em segundo plano com nohup setsid
+porque chamada de modelo estoura o corte de 60 s da ponte.
+  argon_diagnostico   GEMINI_API_KEY presente, digital 6f815a1c6ee5, gemini-4-argon na
+                      chave, 46 modelos com generateContent
+  consultar_kimi      devolveu PONTE OK com nao_sigiloso=true
+  argon_fiscalizar_codigo  parecer real em 14,1 s sobre rotina BPR plantada: achou a
+                      media de razoes, achou capacidade nula, e classificou alfa/beta
+                      fixos como SUSPEITA e nao como defeito, que e o comportamento
+                      calibrado que a bateria mediu
+
+AUTORIZACAO DE FERRAMENTA NO MODO -p. `claude -p "<pedido>" --allowedTools
+"mcp__<servidor>__<ferramenta>"`. Sem isso o modo nao interativo nao chama a ferramenta
+e devolve texto sem ter feito nada, que e falso negativo silencioso.
+
+PENDENTE. here-network, google-maps e tomtom-transport ainda nao declarados la: as tres
+chaves de rede nao estao na Ubuntu. Transporte pelo caminho aprovado de credencial
+cifrada, par RSA-3072 efemero gerado NA UBUNTU com a privada nunca saindo de lá,
+executavel D:\95 - TEMP\rede_cifrar.bat.

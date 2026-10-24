@@ -1,0 +1,28 @@
+VERSOES CRITICAS DOS AMBIENTES DE PRODUCAO
+medido em 24/10/2026
+
+POR QUE ESTE ARQUIVO EXISTE. O pacote `mcp` subiu para 2.x, onde FastMCP foi renomeado
+para MCPServer e `mcp.server.fastmcp` deixou de existir. Os nove servidores do ecossistema
+usam FastMCP. Um `pip install -U mcp` derruba todos de uma vez, nas duas maquinas.
+
+REGRA. Nos ambientes abaixo, instalar SEMPRE com restricao: pip install "mcp<2"
+
+UBUNTU, ambiente de producao do Claude Code e dos servidores locais
+  interpretador  ~/TransportMCP/.venv/bin/python
+  mcp            1.29.0
+  fastmcp        3.4.7
+  google-genai   2.33.0
+  requests       2.34.2
+  httpx          0.28.1
+
+WINDOWS, ambiente de producao do Claude Desktop
+  interpretador  C:\TransportMCP\.venv\Scripts\python.exe
+  mcp            1.29.0
+  google-genai   2.32.0   DIVERGENTE da Ubuntu
+
+UBUNTU, ambiente auxiliar, NAO e producao do Claude Code
+  interpretador  ~/env_transporte/bin/python
+  mcp            1.30.0
+
+DIVERGENCIA CONHECIDA E NAO RESOLVIDA. google-genai 2.33.0 contra 2.32.0. Nao houve
+medicao comparando as duas versoes; a diferenca esta registrada, nao avaliada.
