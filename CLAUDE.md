@@ -1273,8 +1273,23 @@ teste removido em seguida.
 O .stignore NAO e sincronizado entre dispositivos; cada maquina tem o seu. Como esta e a
 origem sendonly, ignorar aqui basta para o arquivo nunca mais sair.
 
-PENDENTE.
-  Zurich       confirmar a mao que ~/ecossistema/.env nao existe mais la. O indice diz que
-               o Zurich recebeu a exclusao, mas indice diz o que ele RECEBEU, nao o que
-               sobrou no disco dele.
-  vivobook-go  desligado. Ao ligar, apagar ~/ecossistema/.env a mao.
+ZURICH CONFERIDO E ENCERRADO, em 24/10 14:18, com as tres checagens que importavam:
+  ls ~/ecossistema/CLAUDE.md   existe, com data do dia: a pasta sincronizada E aquela,
+                               logo "o .env nao existe" significa APAGADO e nao caminho
+                               errado. Descartar esse "nao existe" ambiguo foi necessario:
+                               arquivo ausente e o que se ve tambem quando se olha o lugar
+                               errado.
+  find ~ -maxdepth 5 -name .env   NADA. Nenhuma copia esquecida em outro canto da pasta
+                               pessoal, que era a hipotese aberta depois da identidade
+                               recriada.
+  loginctl ... Linger          yes. O servico de usuario sobrevive ao logout, senao o
+                               Syncthing morreria ao deslogar e voltariamos ao problema de
+                               hoje sem ninguem perceber.
+Estado pelo lado de ca: conectado, 100%, 0 itens pendentes, 0 erros, .env deletado no
+indice global.
+
+PENDENTE, apenas um.
+  vivobook-go  desligado ha 5 dias no Tailscale, sem sincronizar ha 20. Ao ligar: conferir
+               se o Syncthing dele subiu (pode estar disabled como o Zurich estava),
+               conferir se a identidade tambem foi recriada, e apagar ~/ecossistema/.env a
+               mao em vez de esperar propagacao.
