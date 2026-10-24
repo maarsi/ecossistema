@@ -31,15 +31,51 @@ import sys
 RAIZ = pathlib.Path.home() / "ciencia"
 MANIFESTOS = RAIZ / "_manifestos"
 
-# Padroes de nome de coluna que identificam respondente. Lista explicita, nao heuristica
-# de prefixo: guarda sobre palpite nao e guarda.
-IDENT = re.compile(
-    r"(^|_)(nome|sobrenome|cpf|cnpj|rg|documento|doc|telefone|fone|celular|email|"
-    r"e_mail|endereco|logradouro|numero_casa|complemento|cep|matricula|cadastro|"
-    r"respondente|entrevistado|motorista|placa|chassi|prontuario|titulo_eleitor|"
-    r"lat_domicilio|lon_domicilio|latitude_origem_exata|id_pessoa|id_individuo)($|_)",
+# DOIS NIVEIS, e a razao esta medida.
+#
+# A primeira versao tinha uma lista unica com 'nome', 'cnpj', 'placa' e 'cep' dentro. Numa
+# varredura real do acervo de corredores logisticos, 563 tabelas, ela marcou 122 arquivos,
+# e a amostra inspecionada mostrou 36 de cada 40 marcas vindas so de texto de alta
+# unicidade, com os acertos "fortes" disparados por colunas 'nome' que eram nome de via,
+# de municipio e de terminal. Isso e transposicao de parametro entre contextos: a lista
+# fora escrita para microdado de pesquisa domiciliar e foi aplicada a dado de rede. Guarda
+# que marca quase tudo numa pasta legitima e guarda que passa a ser ignorada, que e a
+# mesma falha de regra descumprida de rotina, em forma de detector.
+#
+# FORTE bloqueia. Sao campos que nao tem leitura inocente em dado de transporte.
+IDENT_FORTE = re.compile(
+    r"(^|_)(cpf|rg|titulo_eleitor|prontuario|email|e_mail|telefone|fone|celular|"
+    r"whatsapp|numero_casa|complemento|matricula|respondente|entrevistado|"
+    r"nome_entrevistado|nome_respondente|nome_motorista|nome_morador|"
+    r"lat_domicilio|lon_domicilio|id_pessoa|id_individuo|id_respondente)($|_)",
     re.IGNORECASE,
 )
+# FRACO so reporta. Em dado de transporte e logistica estes nomes aparecem o tempo todo
+# com sentido nao pessoal: nome de via, CNPJ de embarcador, placa de frota, CEP de polo.
+IDENT_FRACO = re.compile(
+    r"(^|_)(nome|sobrenome|cnpj|documento|doc|endereco|logradouro|cep|cadastro|"
+    r"motorista|placa|chassi)($|_)",
+    re.IGNORECASE,
+)
+# Corroboracao do texto livre. Alta unicidade sozinha pega titulo de documento, citacao
+# bibliografica, nome de trecho e prompt. So vira bloqueio se o proprio texto carregar
+# marca de pessoa ou de endereco urbano. 'rodovia' e 'estrada' ficam FORA de proposito:
+# em dado de transporte sao o assunto, nao o identificador.
+PESSOAL_NO_TEXTO = re.compile(
+    r"([A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})"
+    r"|(\(?\d{2}\)?\s?9?\d{4}[-\s]?\d{4})"
+    r"|(\d{3}\.?\d{3}\.?\d{3}-?\d{2})"
+    r"|((^|\s)(rua|avenida|av\.|travessa|alameda|praca|praça)\s+\S+.*\d+)",
+    re.IGNORECASE,
+)
+# ASSIMETRIA DELIBERADA ENTRE AS DUAS PORTAS, e ela tem razao.
+#
+# --varrer olha PASTA que pode nao ter nada de pessoal, e usa so o nivel FORTE, porque ali
+# 'nome' costuma ser nome de via ou de municipio. --origem/--candidato olha agregado
+# DERIVADO DE MICRODADO, onde 'nome' quase certamente e pessoa. A probabilidade a priori
+# e diferente por construcao, entao o limiar tem de ser diferente. Usar o mesmo limiar nos
+# dois casos seria ou ruido na pasta ou buraco no agregado.
+IDENT = re.compile(IDENT_FORTE.pattern + "|" + IDENT_FRACO.pattern, re.IGNORECASE)
 
 COLUNAS_CONTAGEM = re.compile(r"(^|_)(n|freq|frequencia|contagem|count|qtd|quantidade|"
                               r"casos|obs|observacoes)($|_)", re.IGNORECASE)
@@ -98,7 +134,7 @@ def varrer(pasta, celula_minima):
     if not pasta.is_dir():
         print(f"ERRO: nao e pasta: {pasta}")
         return 2
-    tabelas, marcados, ilegiveis, outros = 0, [], 0, 0
+    tabelas, marcados, atencao, ilegiveis, outros = 0, [], [], 0, 0
     for f in sorted(pasta.rglob("*")):
         if not f.is_file():
             continue
@@ -114,9 +150,11 @@ def varrer(pasta, celula_minima):
         if cols is None:
             ilegiveis += 1
             continue
-        marcas = []
-        if any(IDENT.search(str(c)) for c in cols):
-            marcas.append("coluna identificadora")
+        fortes, fracas = [], []
+        if any(IDENT_FORTE.search(str(c)) for c in cols):
+            fortes.append("coluna identificadora forte")
+        if any(IDENT_FRACO.search(str(c)) for c in cols):
+            fracas.append("nome de coluna ambiguo neste dominio")
         for i, c in enumerate(cols):
             vals = [str(r[i]) for r in linhas[:500] if i < len(r) and r[i] not in (None, "")]
             if len(vals) < 20:
@@ -125,10 +163,16 @@ def varrer(pasta, celula_minima):
             comp = sum(len(v) for v in vals) / len(vals)
             nao_num = sum(1 for v in vals if not re.fullmatch(r"[-+0-9.,eE ]+", v))
             if unic > 0.8 and comp > 12 and nao_num > len(vals) * 0.5:
-                marcas.append("texto livre de alta unicidade")
+                corrob = sum(1 for v in vals if PESSOAL_NO_TEXTO.search(v))
+                if corrob > max(3, len(vals) * 0.05):
+                    fortes.append(f"texto com marca pessoal em {corrob} valores")
+                else:
+                    fracas.append("texto livre de alta unicidade, sem marca pessoal")
                 break
-        if marcas:
-            marcados.append((f.relative_to(pasta), sorted(set(marcas))))
+        if fortes:
+            marcados.append((f.relative_to(pasta), sorted(set(fortes))))
+        elif fracas:
+            atencao.append((f.relative_to(pasta), sorted(set(fracas))))
 
     print("=" * 74)
     print(f"VARREDURA DE PASTA - {pasta}")
@@ -136,11 +180,16 @@ def varrer(pasta, celula_minima):
     print(f"  tabelas examinadas : {tabelas}")
     print(f"  outros arquivos    : {outros} (nao examinados: a varredura so le tabela)")
     print(f"  ilegiveis          : {ilegiveis}")
-    print(f"  COM MARCA          : {len(marcados)}")
+    print(f"  BLOQUEIO           : {len(marcados)}")
     for rel, marcas in marcados[:40]:
-        print(f"    {str(rel)[:70]:72s} {', '.join(marcas)}")
+        print(f"    {str(rel)[-70:]:72s} {', '.join(marcas)}")
     if len(marcados) > 40:
         print(f"    ... e mais {len(marcados)-40}")
+    print(f"  ATENCAO, nao bloqueia: {len(atencao)}")
+    for rel, marcas in atencao[:15]:
+        print(f"    {str(rel)[-70:]:72s} {', '.join(marcas)}")
+    if len(atencao) > 15:
+        print(f"    ... e mais {len(atencao)-15}")
     print()
     if marcados:
         print("  NAO conceder cartao de aprovacao a esta pasta como ela esta. Ou mover os")

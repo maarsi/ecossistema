@@ -1081,3 +1081,49 @@ e reaproveitado no arranque enquanto o listed permanece do levantamento original
 CAMPOS ENVELHECEM EM RITMOS DIFERENTES. Ler o par como retrato do mesmo instante induz ao
 erro que eu cometi. Para saber o que esta concedido agora, a fonte e a interface, nao este
 arquivo.
+
+
+================================================================================
+24/10 - O DETECTOR DA TRAVA REPROVADO PELA PRIMEIRA VARREDURA REAL
+================================================================================
+
+O QUE ACONTECEU. A primeira varredura real, no acervo ECOPLAN_CORREDORES, 2549 arquivos e
+563 tabelas, marcou 122 arquivos. Inspecionada a amostra de 40 que o relatorio mostra: 36
+vinham so de "texto livre de alta unicidade", e os 4 acertos ditos fortes foram disparados
+por colunas chamadas 'nome', que ali sao nome de via, de municipio e de terminal.
+
+O DIAGNOSTICO, E ELE E DE METODO. A lista de identificadores fora escrita para microdado
+de pesquisa domiciliar e foi aplicada a dado de rede e logistica. Isso e TRANSPOSICAO DE
+PARAMETRO ENTRE CONTEXTOS, que e um dos gatilhos de contraditorio da nossa propria regra,
+e eu cai nele ao escrever o detector. Guarda que marca quase tudo numa pasta legitima e
+guarda que passa a ser ignorada: a mesma falha de regra descumprida de rotina, so que em
+forma de detector.
+
+A CORRECAO, EM DOIS NIVEIS.
+  FORTE, bloqueia: cpf, rg, titulo_eleitor, prontuario, email, telefone, celular,
+    whatsapp, numero_casa, complemento, matricula, respondente, entrevistado,
+    nome_entrevistado e irmaos, lat_domicilio, lon_domicilio, id_pessoa, id_individuo.
+    Campos sem leitura inocente em dado de transporte.
+  FRACO, so reporta: nome, sobrenome, cnpj, documento, endereco, logradouro, cep,
+    cadastro, motorista, placa, chassi. Em transporte e logistica aparecem o tempo todo
+    com sentido nao pessoal.
+  TEXTO LIVRE passa a exigir CORROBORACAO: alta unicidade sozinha pega titulo de
+    documento, citacao bibliografica, nome de trecho e prompt. So vira bloqueio se o
+    proprio texto trouxer email, telefone, CPF ou endereco urbano (rua, avenida, travessa,
+    alameda, praca seguidos de numero). 'rodovia' e 'estrada' ficam FORA de proposito: em
+    dado de transporte sao o assunto, nao o identificador.
+
+ASSIMETRIA DELIBERADA ENTRE AS DUAS PORTAS, com razao declarada. --varrer olha pasta que
+pode nao ter nada de pessoal e usa so o nivel FORTE. --origem/--candidato olha agregado
+DERIVADO DE MICRODADO, onde 'nome' quase certamente e pessoa, e usa FORTE mais FRACO. A
+probabilidade a priori e diferente por construcao, entao o limiar tem de ser diferente;
+limiar unico daria ou ruido na pasta ou buraco no agregado.
+
+MEDICAO APOS A CORRECAO: 8 de 8 casos, cobrindo as duas portas. Na porta de arquivo,
+'nome' e 'endereco' continuam bloqueando, e o agregado legitimo continua passando. Na
+porta de pasta, pasta de rede viaria mais bibliografia passa com 0 bloqueios e 2 avisos,
+e pasta com endereco dentro de texto livre bloqueia.
+
+LIMITES QUE CONTINUAM VALENDO. So examina tabela: PDF, DOCX, shapefile e imagem nao sao
+examinados, e ausencia de marca nao e atestado sobre eles. Na primeira varredura real
+houve ainda 126 arquivos ilegiveis, que sao buraco silencioso e nao ausencia de marca.
