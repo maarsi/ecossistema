@@ -60,7 +60,7 @@
     "modelo": "qwen3-embedding:4b",
     "embeddings": true,
     "uso": "Vetores para busca semantica no acervo (indice local); nao gera texto",
-    "teste": "bench 22/09: 10/10 buscas por parafrase em portugues, 0,7 s; bge-m3 9/10 em 1,8 s; nomic-embed-text 4/10. [pesos: qwen3-embedding:4b digest df5bd2e3c74c. ATENCAO: o modelo foi RE-BAIXADO em 23/10/2026 e a medicao citada acima e ANTERIOR a essa troca, logo nao e corrente. Remedir antes de citar o numero fora, ou compara-se peso diferente com peso diferente.]"
+    "teste": "bench 24/10, 3 passadas com os pesos ATUAIS: 10/10 nas tres, com o trecho certo na POSICAO 1 nas dez consultas de cada passada. [pesos: df5bd2e3c74c, medido APOS o re-baixamento de 23/10; a medicao anterior de 22/09 era de peso diferente e foi descartada, nao atualizada]. LATENCIA E INTERVALO, NAO PONTO: ~1,2 s na passada que carrega o modelo e ~0,04 s com ele ja residente (ollama ps: 4,1 GB, 100% GPU). Citar sempre dizendo qual dos dois. SUITE NO TETO: 10/10 com tudo em primeiro lugar nao ordena nada e nao pode mostrar ganho de desafiante. Ela testa parafrase sobre PROSA e nao testa recuperacao em tabela nem em legenda de figura, que e onde esta a duvida real do acervo. Comparar embedder novo nesta suite seria medir o que ela nao mede."
   },
   "conferencia": {
     "onde": "local",
