@@ -973,3 +973,68 @@ get_device_info ja os mostra como announced: a lista foi calculada antes de o ha
 terminar. Reconsultar com RefreshMcpTools antes de concluir que um servidor caiu. Ocorrido
 em 24/10 com argon-auditor e tomtom-transport, e resolvido pela reconsulta, sem nenhuma
 intervencao.
+
+
+================================================================================
+24/10 - AS TRES CHAVES DE REDE NA UBUNTU, E O CLAUDE SCIENCE POR DENTRO
+================================================================================
+
+TRANSFERENCIA CONCLUIDA. HERE_API_KEY, GOOGLE_MAPS_API_KEY e TOMTOM_API_KEY entraram em
+~/TransportMCP/.env (600, nove chaves agora) pelo caminho aprovado: par RSA-3072 efemero
+gerado NA UBUNTU, privada nunca saiu de la, cifragem no Windows, envelope conferido por
+sha256 na transferencia, digitais conferidas nas duas pontas contra a rotacao de 22/10, e
+par efemero destruido. Nenhum valor de chave trafegou pelo chat nem foi impresso.
+
+SEIS SERVIDORES DO ECOSSISTEMA NO CLAUDE CODE DA UBUNTU, todos escopo user, todos com
+Environment VAZIO em ~/.claude.json porque as chaves vem do involucro bin/mcp_local.sh:
+argon-auditor, kimi-assistant, here-network, google-maps, tomtom-transport, e o
+transport-modeling que ja existia. Provados por chamada real, nao por Connected:
+geocodificar_here e geocodificar_google devolveram o mesmo eixo de via com cerca de 90 m
+entre os centros geometricos, e obter_coordenadas_polos_salvador devolveu os 8 polos.
+
+ERRO MEU NO CAMINHO, E A LICAO. A primeira versao do executavel de cifragem abortou com
+"a publica embutida nao bate com a declarada". O guarda estava certo, o numero declarado
+e que estava errado: eu calculei o sha256 sobre os BYTES do PEM na Ubuntu, que terminam
+com salto de linha, e transcrevi o PEM para um literal no script sem esse salto. Mesma
+classe do CRLF contra LF. Provado, nao suposto: o sha do PEM sem o salto final e
+exatamente o ec46ddc9b6b739cc que o Windows viu.
+REGRA: nunca comparar impressao digital de TEXTO transcrito entre maquinas. Para chave
+publica, comparar o sha256 do DER da chave CARREGADA, que e canonico e imune a fim de
+linha, a salto final e a espaco em branco.
+
+================================ CLAUDE SCIENCE =================================
+
+VERIFICADO NO BANCO, nao suposto. O build 0.1.70 guarda estado em
+~/.claude-science/orgs/<org>/operon-cli.db, 67 tabelas.
+
+SERVIDOR MCP PROPRIO SO POR HTTP. A tabela custom_mcp_servers tem url NOT NULL, transport,
+oauth_server_url, client_id, scopes, headers_helper, e NAO tem coluna de comando nem de
+argumentos. Logo stdio nao e representavel: os nove servidores do ecossistema, que sao
+todos stdio, NAO podem ser declarados la sem uma ponte HTTP. Hoje a tabela tem 0 linhas.
+O Claude Science traz 17 servidores locais proprios, todos de biologia e quimica
+(_mcp-genomes, _mcp-variants, _mcp-literature, _mcp-chemistry e afins), mais um
+__byoc_helper__.
+
+CONCESSAO DE PASTA, estado ambiguo e NAO resolvido. A tabela host_grants esta VAZIA, mas
+~/.claude-science/sandbox-grant-scans.json guarda um registro de
+/media/mateus/DADOS_01/12 - LOGISTICA/ECOPLAN_CORREDORES, writable true, 279 arquivos
+varridos, seenAt 24/10 00:08:13Z, que e o instante de arranque do daemon. host_call_log
+tem 2374 chamadas, mas a ultima e de 16/09. Leitura mais provavel: o JSON e cache de uma
+varredura antiga e nao ha concessao persistente ativa. NAO AFIRMAR isso sem conferir na
+interface: as duas fontes discordam e so a interface desempata.
+
+ERRO MEU: afirmei que directory_attachments guardava as pastas anexadas. Nao guarda. O
+esquema e (server_uuid, agent_name, user_id, excluded_tools): e atribuicao de servidor
+MCP a agente. Palpite sobre nome de tabela nao e leitura de esquema.
+
+ONDE PROCURAR NA INTERFACE. Nao existe "Customize" na tela inicial do Claude Science, que
+so tem Projects e Recent sessions. O controle de permissoes vive dentro de um projeto ou
+sessao, e as concessoes aparecem como cartao de aprovacao no momento em que o modelo pede
+o arquivo ou o host.
+
+O CLAUDE SCIENCE JA ESTAVA EM USO, o que muda a ordem das coisas. Cinco projetos
+(ECOPLAN Logistica, Nino, Marco Legal, PD MODOS URBANOS, PD Rodovias), 199 frames, 8278
+mensagens, sessoes de agosto e setembro. O protocolo de ~/ciencia pressupoe comeco do
+zero e o historico nao esta no zero: material de cliente ja passou por la antes de o
+protocolo existir. O protocolo vale dali para a frente; o passado e passado e nao se
+reescreve.
