@@ -1162,11 +1162,25 @@ mas NAO sincroniza arquivo ignorado, nem para apagar. Entao:
 Invertido, o arquivo congela no destino e fica la para sempre. Gravar .stignore antes de a
 exclusao chegar em todos os dispositivos e o erro a evitar.
 
-ESTADO EM 24/10, incompleto de proposito.
+ESTADO EM 24/10, incompleto de proposito, e pior do que "offline no momento".
   Duebendorf  exclusao CHEGOU, conferida pela ponte: o .env nao esta mais la.
-  fedora      OFFLINE no momento, ainda tem a copia.
-  vivobook-go OFFLINE no momento, ainda tem a copia.
-  .stignore   AINDA NAO GRAVADO, de proposito, para nao congelar a copia nos dois offline.
+  Zurich      (antigo 'fedora', renomeado a pedido do Mateus em 24/10)
+              NAO SINCRONIZA HA 20 DIAS: visto por ultimo em 04/10, 69,9% completo,
+              655 itens pendentes. Ainda tem a copia do .env.
+  vivobook-go idem: visto por ultimo em 04/10, 655 itens pendentes.
+  .stignore   AINDA NAO GRAVADO, de proposito, para nao congelar a copia nos dois.
+
+DIAGNOSTICO DA DESCONEXAO, com uma hipotese ja falseada. O Zurich tinha endereco FIXO num
+IP do Tailscale (tcp://100.89.23.85:22000), e levantei a hipotese de que o IP tivesse
+mudado. Acrescentei 'dynamic' ao lado do fixo e observei: a descoberta devolve ZERO
+anuncios daquele dispositivo. Se o Syncthing dele estivesse no ar com rota de saida, ele
+apareceria na descoberta mesmo sem rota direta. Hipotese do endereco FALSEADA; o endereco
+alternativo fica porque e inocuo. Sobra a explicacao simples: o Syncthing daquela maquina
+nao esta rodando, ou ela nao tem rota. Maquina ligada nao e Syncthing no ar.
+
+CONSEQUENCIA QUE NAO DEVE SER ESQUECIDA. Aquelas duas maquinas tem uma copia do ecossistema
+de 20 dias atras, nao so o .env. Quando reconectarem, recebem 655 itens de uma vez, e so
+entao a exclusao da credencial chega.
 Enquanto os dois nao conectarem e receberem a exclusao, as duas chaves continuam naquelas
 maquinas. Apagar na origem reduz a exposicao futura; so a ROTACAO mata a exposicao que ja
 existe. Decisao pendente do Mateus.
