@@ -905,3 +905,71 @@ PENDENTE. here-network, google-maps e tomtom-transport ainda nao declarados la: 
 chaves de rede nao estao na Ubuntu. Transporte pelo caminho aprovado de credencial
 cifrada, par RSA-3072 efemero gerado NA UBUNTU com a privada nunca saindo de lá,
 executavel D:\95 - TEMP\rede_cifrar.bat.
+
+
+================================================================================
+24/10 - CLAUDE SCIENCE NO ECOSSISTEMA, E A TRAVA QUE O TORNA USAVEL
+================================================================================
+
+O FATO QUE DECIDE TUDO. O Claude Science e daemon local, sandbox local de execucao de
+codigo e MODELO REMOTO. Nao ha engine local: o help nao oferece modelo proprio, nem modo
+offline, nem pin de engine, e ele exige login na Anthropic. Logo, o que ele LE sai da
+maquina.
+
+A FALACIA A EVITAR. "Roda local, logo protege dado sob NDA" e falso, e e a mesma falacia
+que ja esta registrada aqui: o que protege nao e rodar local, e o modelo nao alcancar o
+microdado. Pior, num aspecto ele e MAIS FROUXO que um script: script tem escopo fixo, le
+a base inteira e devolve tres numeros; o Claude Science da ao modelo acesso de leitura
+DISCRICIONARIO, e a decisao sobre o que sai passa a ser do modelo a cada passo.
+
+O QUE SALVA O ARRANJO, e e verificado no help do serve, nao suposto: "outbound network
+hosts and host files need your approval, an approval card in the UI, before Claude can
+reach them". A contencao e ESTRUTURAL e POR CAMINHO, nao disciplinar. Arquivo nao
+aprovado e inalcancavel; rede nao aprovada tambem.
+
+PROTOCOLO ADOTADO (decisao do Mateus em 24/10): dado de cliente E permitido, com a regra
+de que o modelo so le agregado produzido antes por rotina local, nunca o microdado.
+  1. ~/ciencia/<projeto>/ e a UNICA arvore que recebe cartao de aprovacao.
+  2. NUNCA aprovar caminho acima dela. Aprovar $HOME uma vez anula o protocolo inteiro.
+     Este e o unico ponto de disciplina, e e UMA decisao, nao uma por analise.
+  3. O microdado fica onde sempre esteve, fora dali, e nunca e aprovado.
+  4. Nada entra a mao. Entra por bin/ciencia_liberar.py.
+  5. Entregavel que usar material dali cita o manifesto da liberacao.
+
+bin/ciencia_liberar.py, A TRAVA. Recebe --origem (microdado), --candidato (agregado) e
+--projeto; copia para ~/ciencia/<projeto>/ so se passar, e RECUSA em vez de avisar:
+  nome de coluna identificador (lista explicita, nao heuristica de prefixo)
+  coluna de texto com alta unicidade e comprimento tipico de nome ou endereco, que pega
+    o caso em que o nome da coluna e inocente
+  candidato nao suficientemente menor que a origem, que pega copia disfarcada de agregado
+  celula de contagem abaixo de 5, por controle de divulgacao estatistica
+  candidato que ja esteja dentro de ~/ciencia antes de passar pela trava
+Todo resultado, liberado ou nao, vai para ~/ciencia/_manifestos/ com sha256 da origem e do
+candidato, contagens, colunas e os motivos. --forcar "<justificativa>" libera com as
+recusas registradas, e a justificativa tem de ser citada no entregavel.
+
+MEDICAO DA TRAVA, 24/10: bateria sintetica de 7 casos, 7/7 conforme esperado, com as duas
+metades presentes (5 defeitos plantados detectados, 2 controles corretos liberados).
+
+DEFEITO ENCONTRADO E CORRIGIDO NA PROPRIA BATERIA. A primeira versao nomeava o manifesto
+so com horario em segundos mais o nome do candidato: duas decisoes sobre o mesmo arquivo
+no mesmo segundo se sobrescreviam EM SILENCIO, perdendo registro de auditoria sem erro
+nenhum. So apareceu porque a bateria conferiu a CONTAGEM de manifestos contra a de casos
+(6 para 7), e nao apenas o conteudo do ultimo. Corrigido com sufixo sequencial e provado
+com tres execucoes no mesmo segundo gerando tres manifestos. Licoes: conferir contagem e
+nao so conteudo; e compilar nao e funcionar.
+
+PENDENTE E NAO VERIFICADO. O cache de conectores do Claude Science lista apenas conectores
+de nuvem do diretorio (Adobe, Claude Docs, COMPOSIO, Gamma, BigQuery, Drive, Notion,
+Gmail, Calendar, visualize). Nao encontrei suporte a servidor MCP stdio local neste build
+(0.1.70), e a rota que responderia isso, mcp-env-check, devolve HTTP 401 quando chamada
+pelo shell, porque exige o token da sessao do navegador. Nao afirmar que os servidores do
+ecossistema estao disponiveis la ate isso ser verificado na interface.
+Tambem anotado: daemon.engine.prefetch em estado failed, sem efeito observado ainda.
+
+LISTA DE FERRAMENTAS PROXIADAS DEPOIS DE REINICIAR O CLAUDE DESKTOP. Logo apos o
+reinicio, servidores podem aparecer como desconectados na lista de ferramentas enquanto
+get_device_info ja os mostra como announced: a lista foi calculada antes de o handshake
+terminar. Reconsultar com RefreshMcpTools antes de concluir que um servidor caiu. Ocorrido
+em 24/10 com argon-auditor e tomtom-transport, e resolvido pela reconsulta, sem nenhuma
+intervencao.
