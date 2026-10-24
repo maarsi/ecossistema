@@ -1293,3 +1293,49 @@ PENDENTE, apenas um.
                se o Syncthing dele subiu (pode estar disabled como o Zurich estava),
                conferir se a identidade tambem foi recriada, e apagar ~/ecossistema/.env a
                mao em vez de esperar propagacao.
+
+
+================================================================================
+24/10 - A FAXINA DE CREDENCIAL ERROU PARA O LADO PERMISSIVO, E FOI CORRIGIDA
+================================================================================
+
+O DEFEITO. A primeira versao de bin/chaves_faxina classificava como credencial TODO valor
+do bloco env com 16 caracteres ou mais. Na execucao real, isso preservou o
+claude_desktop_config.json antigo, que carrega as chaves da rotacao passada em texto puro,
+porque ele coincidia com a configuracao viva em CROSSREF_MAILTO, MEMORY_FILE_PATH,
+SSH_KEY_PATH, OLLAMA_HOST, UBUNTU_JOBS_DIR, UBUNTU_CUOPT_PY e UBUNTU_ECOSSISTEMA. Nenhum
+deles e credencial: sao caminhos, uma URL e um e-mail.
+
+POR QUE ISTO E GRAVE E NAO COSMETICO. O guarda errou para o lado PERMISSIVO: manteve um
+arquivo que devia apagar. Guarda que erra para o lado restritivo gera ruido e irritacao;
+guarda que erra para o lado permissivo gera falsa seguranca, que e pior, porque o
+relatorio diz "mantido porque contem credencial em uso" e a pessoa acredita.
+
+MESMA CLASSE DO DEFEITO DO DETECTOR DO ECOPLAN, no mesmo dia. Nos dois casos eu classifiquei
+pela propriedade FACIL DE MEDIR em vez da propriedade que IMPORTA: la, unicidade de texto
+no lugar de "contem registro individual"; aqui, tamanho do valor no lugar de "e credencial".
+REGRA QUE FICA: ao escrever classificador, perguntar explicitamente se a propriedade medida
+e a propriedade de interesse ou apenas uma correlata conveniente.
+
+A CORRECAO. Classificacao pelo NOME da variavel mais a FORMA do valor, exigindo as duas:
+  nome com forma de segredo   API_KEY, TOKEN, SECRET, PASSWORD, CREDENTIAL, _KEY
+  e NAO ter forma de nao-segredo   PATH, DIR, HOST, URL, MAILTO, FILE, HOME, PORT, MODEL,
+                                   CORE, _PY
+  valor sem espaco, com 20 caracteres ou mais, que nao pareca caminho, URL nem e-mail.
+Medido: 14 de 14 casos, incluindo os sete falsos positivos exatos que causaram a falha.
+Teste estrutural refeito: o config antigo passa a ser APAGADO, o arquivo com chave viva
+continua MANTIDO, e OLLAMA_HOST e SSH_KEY_PATH somem da contagem de credenciais.
+
+ACHADO QUE VALE MAIS QUE A PROPRIA FAXINA. Existe em
+%LOCALAPPDATA%\Claude-Data\claude_pzs8sxrjxfjjc\ uma copia de seguranca
+claude_desktop_config.antes_da_rotacao_20261023_001808.json que carrega EM TEXTO PURO as
+chaves EM USO de TOMTOM, NVIDIA, PERPLEXITY, NGC, MOONSHOT, HERE, GOOGLE_MAPS e GEMINI.
+Copia de seguranca de configuracao e exposicao igual a do original, e e facil de esquecer
+porque ninguem pensa nela como arquivo de credencial. A faxina passa a sinalizar isso como
+RISCO ATIVO, e nao apaga sozinha: decisao do Mateus.
+
+TAMBEM APURADO NA EXECUCAO REAL, sem acao necessaria: os arquivos de 'api keys' conferem
+com a configuracao viva (gemini, google, here, moonshot, nvidia, perplexity, tomtom EM
+USO), e deepseek, manus e ubuntu_key nao aparecem la porque vivem no ~/TransportMCP/.env
+da Ubuntu. 'Nao aparece na config viva' nao e sinonimo de morta, e por isso a rotina nunca
+apaga arquivo de 'api keys'.
