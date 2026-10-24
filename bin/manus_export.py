@@ -15,18 +15,23 @@ from pathlib import Path
 import requests
 
 BASE = "https://api.manus.ai/v1"
-ENV = Path.home() / "ecossistema" / ".env"
+# ~/TransportMCP/.env PRIMEIRO, porque nao e sincronizado. Ate 24/10 esta rotina lia
+# SOMENTE ~/ecossistema/.env, que o Syncthing envia para quatro dispositivos, e nao tinha
+# queda nenhuma: era o unico consumidor que travava a remocao daquele arquivo.
+ENVS = [Path.home() / "TransportMCP" / ".env", Path.home() / "ecossistema" / ".env"]
 PAUSA = 0.3
 
 
 def chave():
     if os.environ.get("MANUS_API_KEY"): return os.environ["MANUS_API_KEY"]
-    if ENV.exists():
-        for l in ENV.read_text(encoding="utf-8").splitlines():
-            if l.startswith("MANUS_API_KEY="):
-                v = l.split("=", 1)[1].strip().strip('"').strip("'")
-                if v: return v
-    sys.exit(f"ERRO: MANUS_API_KEY nao encontrada em {ENV}")
+    for ENV in ENVS:
+        if ENV.exists():
+            for l in ENV.read_text(encoding="utf-8").splitlines():
+                if l.startswith("MANUS_API_KEY="):
+                    v = l.split("=", 1)[1].strip().strip('"').strip("'")
+                    if v: return v
+    sys.exit("ERRO: MANUS_API_KEY nao encontrada no ambiente nem em "
+             + ", ".join(str(e) for e in ENVS))
 
 
 CAB = {"x-manus-api-key": chave()}

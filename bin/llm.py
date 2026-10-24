@@ -60,7 +60,11 @@ def chave_env(nome):
     ou encerra dizendo onde procurou."""
     if os.environ.get(nome):
         return os.environ[nome]
-    for p in [RAIZ / ".env", Path.home() / "TransportMCP" / ".env"]:
+    # ORDEM DELIBERADA: ~/TransportMCP/.env PRIMEIRO. Ele nao e sincronizado.
+    # ~/ecossistema/.env fica dentro da pasta que o Syncthing envia para quatro
+    # dispositivos, entao credencial ali se replica em maquina que talvez nem precise
+    # dela. Ate 24/10 a ordem era a inversa e o arquivo EXPOSTO era o que vencia.
+    for p in [Path.home() / "TransportMCP" / ".env", RAIZ / ".env"]:
         if p.exists():
             for l in p.read_text(encoding="utf-8").splitlines():
                 if l.startswith(nome + "="):

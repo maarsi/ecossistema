@@ -1127,3 +1127,46 @@ e pasta com endereco dentro de texto livre bloqueia.
 LIMITES QUE CONTINUAM VALENDO. So examina tabela: PDF, DOCX, shapefile e imagem nao sao
 examinados, e ausencia de marca nao e atestado sobre eles. Na primeira varredura real
 houve ainda 126 arquivos ilegiveis, que sao buraco silencioso e nao ausencia de marca.
+
+
+================================================================================
+24/10 - CREDENCIAL DENTRO DA PASTA SINCRONIZADA
+================================================================================
+
+O ACHADO. ~/ecossistema/.env existia com MANUS_API_KEY, NGC_API_KEY e NVIDIA_API_KEY, modo
+600 AQUI, e a pasta e sendonly do Syncthing para Duebendorf, fedora e vivobook-go. Logo as
+chaves estavam replicadas em tres outras maquinas, uma delas portatil, com a permissao e a
+cifragem de disco que aquelas maquinas tiverem. Confirmado por verificacao e nao por
+suposicao: C:\Users\mateu\ecossistema\.env existia, 279 bytes, igual ao original.
+
+AUTOCRITICA, E E A PARTE QUE IMPORTA. O bin/llm.py JA AVISAVA, na mensagem de erro, que
+~/ecossistema/.env e sincronizado para quatro dispositivos. O risco estava escrito dentro
+do proprio codigo e nunca foi consertado. AVISO EM MENSAGEM DE ERRO NAO E GUARDA: so e
+lido por quem ja errou, e nao impede nada. Pior, a ordem de busca preferia RAIZ/.env, ou
+seja, o arquivo EXPOSTO era o que vencia.
+
+O QUE FOI FEITO.
+  1. Ordem de busca invertida em bin/llm.py e bin/argon_core.py: ~/TransportMCP/.env, que
+     NAO e sincronizado, passa a vir primeiro.
+  2. bin/manus_export.py ganhou queda. Ele lia SOMENTE ~/ecossistema/.env, sem alternativa,
+     e era o unico consumidor que travava a remocao do arquivo.
+  3. Precedencia provada com sentinela em HOME falso, 4 de 4, mais prova de que a queda ao
+     ~/ecossistema/.env continua funcionando quando a variavel so existe la.
+  4. ~/ecossistema/.env REMOVIDO. As tres chaves ja estavam em ~/TransportMCP/.env com as
+     mesmas digitais, entao nao houve perda. Conferido depois: llm.chave_env e
+     argon_core.chave() seguem achando tudo.
+
+A ORDEM DAS OPERACOES E CONTRAINTUITIVA E E O PONTO CENTRAL. O Syncthing PROPAGA EXCLUSAO,
+mas NAO sincroniza arquivo ignorado, nem para apagar. Entao:
+  APAGAR PRIMEIRO, e so DEPOIS gravar o .stignore.
+Invertido, o arquivo congela no destino e fica la para sempre. Gravar .stignore antes de a
+exclusao chegar em todos os dispositivos e o erro a evitar.
+
+ESTADO EM 24/10, incompleto de proposito.
+  Duebendorf  exclusao CHEGOU, conferida pela ponte: o .env nao esta mais la.
+  fedora      OFFLINE no momento, ainda tem a copia.
+  vivobook-go OFFLINE no momento, ainda tem a copia.
+  .stignore   AINDA NAO GRAVADO, de proposito, para nao congelar a copia nos dois offline.
+Enquanto os dois nao conectarem e receberem a exclusao, as duas chaves continuam naquelas
+maquinas. Apagar na origem reduz a exposicao futura; so a ROTACAO mata a exposicao que ja
+existe. Decisao pendente do Mateus.
