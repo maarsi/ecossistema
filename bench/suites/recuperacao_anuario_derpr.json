@@ -1,0 +1,201 @@
+{
+  "suite": "recuperacao_anuario_derpr",
+  "criado_em": "2026-10-24T18:13:14-03:00",
+  "corpus": {
+    "arquivo": "DERPR_Anuario_Estatistico_Seguranca_Rodoviaria_2022_v2.pdf",
+    "paginas": 58,
+    "publico": true,
+    "caracteristica": "substancia em imagem fatiada; texto extraivel so titulo e rotulo, 145 a 1107 caracteres por pagina"
+  },
+  "pre_registro": "AS 30 PERGUNTAS FORAM ESCRITAS SEM ABRIR O DOCUMENTO, a partir do que se pergunta a um anuario de seguranca viaria. O sha256 deste arquivo e registrado ANTES de qualquer pagina ser lida, para que a cegueira seja verificavel e nao apenas afirmada. Escrever a pergunta olhando a pagina enviesaria a favor do braco que ve a pagina.",
+  "proporcao": "A proporcao entre resposta em texto, em imagem e ausente e RESULTADO, nao premissa: escrevendo as cegas nao se pode fixa-la. O que foi controlado e o TIPO da pergunta (D = definicao e escopo; N = numero especifico). A localizacao real de cada resposta sera verificada depois e reportada como caiu, inclusive se ficar desequilibrada.",
+  "bracos": {
+    "A": "Docling SEM OCR -> qwen3-embedding:4b  (producao hoje)",
+    "B": "Docling COM OCR -> qwen3-embedding:4b  (incumbente justo, ja disponivel)",
+    "C": "ColQwen2.5-v0.2 sobre imagem de pagina, multivetor no LanceDB"
+  },
+  "metrica": "acerto@1, acerto@5 e posicao do certo, com granularidade de PAGINA nos tres bracos. Para as perguntas sem resposta no documento: fracao em que o sistema devolve algo acima do limiar de similaridade.",
+  "repeticao": "3 passadas; latencia registrada separando fria (com carga) de quente.",
+  "perguntas": [
+    {
+      "id": "D01",
+      "texto": "Qual orgao publica este anuario e qual o periodo de referencia dos dados?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D02",
+      "texto": "Qual a definicao adotada para vitima fatal, inclusive o prazo de obito considerado?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D03",
+      "texto": "Qual a fonte primaria dos registros de acidente utilizados?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D04",
+      "texto": "Qual a extensao da malha rodoviaria estadual considerada no levantamento?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D05",
+      "texto": "Como as rodovias sao classificadas quanto a jurisdicao neste documento?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D06",
+      "texto": "Que criterio define um segmento critico ou ponto critico?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D07",
+      "texto": "O documento apresenta serie historica? De quantos anos?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D08",
+      "texto": "Ha nota metodologica sobre mudanca de criterio em relacao a anos anteriores?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D09",
+      "texto": "Em quais regionais ou superintendencias a malha e dividida?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "D10",
+      "texto": "Ha ressalva sobre subnotificacao ou cobertura dos registros?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N01",
+      "texto": "Quantos acidentes foram registrados no ano de referencia?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N02",
+      "texto": "Quantas vitimas fatais foram registradas no ano de referencia?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N03",
+      "texto": "Qual o numero de acidentes com vitimas feridas?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N04",
+      "texto": "Qual o tipo de acidente mais frequente e sua participacao percentual?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N05",
+      "texto": "Qual a participacao dos atropelamentos no total de acidentes?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N06",
+      "texto": "Em que faixa horaria ocorre o maior numero de acidentes?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N07",
+      "texto": "Qual o dia da semana com maior numero de acidentes?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N08",
+      "texto": "Qual o mes com maior numero de acidentes no ano?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N09",
+      "texto": "Qual rodovia estadual apresentou o maior numero de acidentes?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N10",
+      "texto": "Qual rodovia apresentou o maior numero de obitos?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N11",
+      "texto": "Qual a participacao das motocicletas nos acidentes com vitima?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N12",
+      "texto": "Qual a taxa de mortalidade por 100 mil habitantes, se apresentada?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N13",
+      "texto": "Qual a proporcao de acidentes ocorridos no periodo noturno?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N14",
+      "texto": "Quantos acidentes envolveram veiculos de carga?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N15",
+      "texto": "Qual a variacao percentual do numero de acidentes em relacao ao ano anterior?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N16",
+      "texto": "Qual a variacao do numero de obitos em relacao ao ano anterior?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N17",
+      "texto": "Qual a participacao de acidentes em pista simples contra pista dupla?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N18",
+      "texto": "Quantos acidentes ocorreram sob condicao meteorologica adversa?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N19",
+      "texto": "Qual a letalidade da colisao frontal em relacao aos demais tipos?",
+      "gabarito_pagina": null,
+      "onde": null
+    },
+    {
+      "id": "N20",
+      "texto": "Qual o numero de acidentes por 100 milhoes de veiculos-quilometro?",
+      "gabarito_pagina": null,
+      "onde": null
+    }
+  ]
+}
