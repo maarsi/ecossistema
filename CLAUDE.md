@@ -798,3 +798,36 @@ baixo. Se isso se repetir, a tese de que um auditor de linhagem diferente traz f
 complementar ENFRAQUECE, e o segundo auditor passa a ser eco caro em vez de informacao. E
 amostra de um, nao conclusao, e e exatamente o que a suite de auditoria mais dificil tera de
 medir. Enquanto a suite estiver no teto, essa pergunta fica aberta.
+
+### ESPELHO NAO E PRODUCAO (23/10/2026, erro meu, segunda vez na mesma semana)
+
+A pasta mcp/windows/ do ecossistema e ESPELHO DE VERSIONAMENTO, nao o codigo que roda. Os
+servidores sao lancados de C:\TransportMCP e D:\TransportMCP, declarados nos args do
+claude_desktop_config.json. Editar o espelho versiona a correcao e NAO a coloca no ar: o
+Syncthing leva o arquivo para C:\Users\mateu\ecossistema, que e outro caminho.
+Aconteceu com o kimi_server.py: as travas foram escritas, commitadas e nao estavam valendo, e so
+apareceu porque o esquema da ferramenta continuou sem os parametros novos depois do reinicio.
+E a MESMA classe de erro do claude_desktop_config.json de 22/10: eu editei o arquivo errado,
+sem erro nenhum aparecer, so sem efeito.
+UNICA EXCECAO: argon_mcp.py roda da copia sincronizada, porque foi configurado assim de
+proposito. Nele, editar na Ubuntu e reiniciar basta.
+REGRA: depois de alterar servidor MCP, conferir o arquivo que o config aponta, nao o espelho, e
+confirmar pelo ESQUEMA da ferramenta apos o reinicio, que e a unica prova de que a versao nova
+subiu.
+
+### COMPARAR ARQUIVO ENTRE MAQUINAS EXIGE NORMALIZAR FIM DE LINHA
+
+Na mesma varredura, o tomtom_network_server.py apareceu como divergente entre espelho e
+producao. Era falso: 341 linhas "diferentes" e exatamente 341 bytes de diferenca, ou seja, CRLF
+contra LF, conteudo identico. A propria instrucao ja avisava disso e eu comparei sha256 cru
+assim mesmo. Varredura de divergencia normaliza antes: tr -d '\r' e corte de espaco a direita,
+e so entao o hash.
+Resultado da varredura normalizada de 23/10: todos os servidores iguais entre espelho e
+producao, exceto o kimi_server.py, corrigido nas duas pastas.
+
+### PENDENCIA ESTRUTURAL IDENTIFICADA
+
+Enquanto os servidores rodarem de C:\TransportMCP e D:\TransportMCP, toda correcao exige copia
+manual e a divergencia pode voltar. Apontar todos para a copia sincronizada do ecossistema, como
+ja e feito com o argon-auditor, elimina a classe de erro: edita-se na Ubuntu, o Syncthing
+propaga, reinicia. Exige uma edicao do config com o aplicativo FECHADO. Nao feito ainda.
