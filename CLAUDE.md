@@ -1038,3 +1038,38 @@ mensagens, sessoes de agosto e setembro. O protocolo de ~/ciencia pressupoe come
 zero e o historico nao esta no zero: material de cliente ja passou por la antes de o
 protocolo existir. O protocolo vale dali para a frente; o passado e passado e nao se
 reescreve.
+
+
+================================================================================
+24/10 - DUAS DECISOES SOBRE O CLAUDE SCIENCE
+================================================================================
+
+1. SEM PONTE HTTP POR ENQUANTO. Servidor MCP proprio no Claude Science so por HTTP
+(custom_mcp_servers tem url NOT NULL e nenhuma coluna de comando), e os nossos nove sao
+stdio. Construir a ponte custaria um servico novo sempre no ar, com autenticacao e mais
+uma superficie para manter, para um ganho pequeno: quando faltar HERE, Google, TomTom ou
+Argon numa analise, o pedido vai para o chat ou para o Claude Code, que ja os tem.
+Reavaliar quando aparecer um caso concreto em que a falta doa, e nao no abstrato.
+
+2. O CRITERIO DE FRONTEIRA E "CONTEM REGISTRO INDIVIDUAL", NAO "E DE CLIENTE". Acervo de
+cliente publico ou ja agregado (fluxo de carga, PNL, matriz OD consolidada, documento de
+contrato, saida de simulacao) pode receber cartao de aprovacao direto. Pesquisa bruta,
+cadastro e microdado, nao. A formulacao importa: "e de cliente" seria juizo caso a caso, e
+juizo caso a caso e regra descumprida de rotina; "contem registro individual" e conferivel
+por rotina.
+
+A ROTINA QUE TORNA O ITEM 2 ESTRUTURAL. bin/ciencia_liberar.py ganhou o modo
+  --varrer <pasta>
+que confere uma pasta ANTES de ela receber cartao de aprovacao. Le so o cabecalho de cada
+tabela e devolve nome de arquivo e tipo de marca, nunca nome de coluna nem valor, para a
+propria conferencia nao virar vazamento. Codigo 0 libera a concessao, 1 significa nao
+conceder. Medido em caso sintetico: pasta limpa 0 marcas codigo 0, pasta suja 2 marcas
+codigo 1, pegando tanto a coluna identificadora quanto o texto livre em coluna de nome
+inocente.
+LIMITE DECLARADO, e que nao deve ser esquecido ao citar: so examina tabela. PDF, DOCX,
+shapefile e imagem nao sao examinados, e ausencia de marca nao e atestado sobre eles.
+
+NOTA SOBRE O REGISTRO DE VARREDURA DO PROPRIO CLAUDE SCIENCE. O sandbox-grant-scans.json
+declara listed 279 para a pasta ECOPLAN_CORREDORES, que tem 2549 arquivos. Ou a varredura
+dele parou antes, ou conta outra coisa. Mais uma razao para nao tratar aquele arquivo como
+retrato fiel do que esta concedido.

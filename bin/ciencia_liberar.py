@@ -86,15 +86,92 @@ def ler_tabela(p):
     return None, None
 
 
+def varrer(pasta, celula_minima):
+    """Confere uma PASTA antes de ela receber cartao de aprovacao no Claude Science.
+
+    O criterio NAO e "e de cliente", que seria juizo caso a caso e por isso regra
+    descumprida de rotina. O criterio e "contem registro individual". Esta varredura le
+    APENAS o cabecalho de cada tabela e nao devolve nome de coluna nem valor: so o nome
+    do arquivo e o tipo de marca, para a propria varredura nao virar vazamento.
+    """
+    pasta = pathlib.Path(pasta).expanduser()
+    if not pasta.is_dir():
+        print(f"ERRO: nao e pasta: {pasta}")
+        return 2
+    tabelas, marcados, ilegiveis, outros = 0, [], 0, 0
+    for f in sorted(pasta.rglob("*")):
+        if not f.is_file():
+            continue
+        if f.suffix.lower() not in (".csv", ".tsv", ".txt", ".xlsx", ".xls"):
+            outros += 1
+            continue
+        tabelas += 1
+        try:
+            cols, linhas = ler_tabela(f)
+        except Exception:
+            ilegiveis += 1
+            continue
+        if cols is None:
+            ilegiveis += 1
+            continue
+        marcas = []
+        if any(IDENT.search(str(c)) for c in cols):
+            marcas.append("coluna identificadora")
+        for i, c in enumerate(cols):
+            vals = [str(r[i]) for r in linhas[:500] if i < len(r) and r[i] not in (None, "")]
+            if len(vals) < 20:
+                continue
+            unic = len(set(vals)) / len(vals)
+            comp = sum(len(v) for v in vals) / len(vals)
+            nao_num = sum(1 for v in vals if not re.fullmatch(r"[-+0-9.,eE ]+", v))
+            if unic > 0.8 and comp > 12 and nao_num > len(vals) * 0.5:
+                marcas.append("texto livre de alta unicidade")
+                break
+        if marcas:
+            marcados.append((f.relative_to(pasta), sorted(set(marcas))))
+
+    print("=" * 74)
+    print(f"VARREDURA DE PASTA - {pasta}")
+    print("=" * 74)
+    print(f"  tabelas examinadas : {tabelas}")
+    print(f"  outros arquivos    : {outros} (nao examinados: a varredura so le tabela)")
+    print(f"  ilegiveis          : {ilegiveis}")
+    print(f"  COM MARCA          : {len(marcados)}")
+    for rel, marcas in marcados[:40]:
+        print(f"    {str(rel)[:70]:72s} {', '.join(marcas)}")
+    if len(marcados) > 40:
+        print(f"    ... e mais {len(marcados)-40}")
+    print()
+    if marcados:
+        print("  NAO conceder cartao de aprovacao a esta pasta como ela esta. Ou mover os")
+        print("  arquivos marcados para fora, ou conceder so a subpasta sem eles, ou passar")
+        print("  o material por --origem/--candidato.")
+    else:
+        print("  Nenhuma marca de registro individual nas tabelas examinadas. ATENCAO: os")
+        print(f"  {outros} arquivos de outro tipo (pdf, docx, shp, imagem) NAO foram examinados;")
+        print("  a ausencia de marca aqui nao e atestado sobre eles.")
+    print("=" * 74)
+    return 1 if marcados else 0
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--origem", required=True)
-    ap.add_argument("--candidato", required=True)
-    ap.add_argument("--projeto", required=True)
+    ap.add_argument("--varrer", default=None,
+                    help="confere uma pasta antes de ela receber cartao de aprovacao")
+    ap.add_argument("--origem", required=False)
+    ap.add_argument("--candidato", required=False)
+    ap.add_argument("--projeto", required=False)
     ap.add_argument("--limiar-linhas", type=float, default=0.10)
     ap.add_argument("--celula-minima", type=int, default=5)
     ap.add_argument("--forcar", default="")
     a = ap.parse_args()
+
+    if a.varrer:
+        return varrer(a.varrer, a.celula_minima)
+    for obrig in ("origem", "candidato", "projeto"):
+        if not getattr(a, obrig):
+            print(f"ERRO: --{obrig} e obrigatorio fora do modo --varrer")
+            return 2
 
     org = pathlib.Path(a.origem).expanduser()
     cand = pathlib.Path(a.candidato).expanduser()
