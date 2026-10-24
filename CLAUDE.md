@@ -1069,7 +1069,15 @@ inocente.
 LIMITE DECLARADO, e que nao deve ser esquecido ao citar: so examina tabela. PDF, DOCX,
 shapefile e imagem nao sao examinados, e ausencia de marca nao e atestado sobre eles.
 
-NOTA SOBRE O REGISTRO DE VARREDURA DO PROPRIO CLAUDE SCIENCE. O sandbox-grant-scans.json
-declara listed 279 para a pasta ECOPLAN_CORREDORES, que tem 2549 arquivos. Ou a varredura
-dele parou antes, ou conta outra coisa. Mais uma razao para nao tratar aquele arquivo como
-retrato fiel do que esta concedido.
+NOTA SOBRE O REGISTRO DE VARREDURA DO PROPRIO CLAUDE SCIENCE, corrigida pelo Mateus.
+O sandbox-grant-scans.json declara listed 279 para a pasta ECOPLAN_CORREDORES, que hoje
+tem 2549 arquivos. Eu levantei duas hipoteses, varredura truncada ou contagem de outra
+coisa, e as duas estavam erradas. A varredura foi feita para um projeto especifico, na
+epoca, e a pasta cresceu desde entao.
+
+O QUE FICA DISSO, e e o util. No mesmo registro convivem complete true, wasComplete true,
+listed 279 e seenAt 24/10 00:08:13Z, que e o arranque do daemon de hoje. Ou seja, o seenAt
+e reaproveitado no arranque enquanto o listed permanece do levantamento original: OS DOIS
+CAMPOS ENVELHECEM EM RITMOS DIFERENTES. Ler o par como retrato do mesmo instante induz ao
+erro que eu cometi. Para saber o que esta concedido agora, a fonte e a interface, nao este
+arquivo.
