@@ -9,6 +9,7 @@
 !/instrucoes_claude.txt
 !/README.md
 !/.gitignore
+!/.stignore
 # exclusoes dentro do que foi permitido
 bench/imagens/
 bench/dados/

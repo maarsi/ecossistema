@@ -1,0 +1,30 @@
+// .stignore da pasta ecossistema
+//
+// POR QUE EXISTE. Em 24/10 constatou-se que ~/ecossistema/.env, com tres chaves de API,
+// estava replicado em tres outras maquinas, uma delas portatil. O arquivo foi removido e
+// as credenciais passaram a viver so em ~/TransportMCP/.env, que fica FORA desta pasta.
+// Este arquivo impede a reincidencia.
+//
+// EFEITO COLATERAL A NAO ESQUECER: arquivo ignorado NAO e sincronizado, nem para apagar.
+// Se algum padrao abaixo ja existir numa maquina de destino, ele CONGELA la e tem de ser
+// removido a mao. Por isso a ordem correta e sempre APAGAR PRIMEIRO e IGNORAR DEPOIS.
+//
+// O .stignore nao e sincronizado entre dispositivos: cada maquina tem o seu. Como esta e
+// a origem (sendonly), ignorar aqui basta para o arquivo nunca mais sair.
+
+// --- credencial, nunca sincroniza ---
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*_key.txt
+*_token.txt
+
+// --- lixo de execucao: espelha as exclusoes do .gitignore ---
+cache
+__pycache__
+*.log
+*.tmp
+bench/imagens
+bench/dados

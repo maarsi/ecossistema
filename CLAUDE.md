@@ -1230,3 +1230,51 @@ PENDENTE E EXPLICITAMENTE NAO PROVADO. No Windows o pip.ini foi ESCRITO nos dois
 pela ponte, mas NAO foi testado la: a prova exige rodar pip naquela maquina. Ate que isso
 aconteca, a trava do Windows esta declarada e nao verificada, e nao deve ser citada como
 verificada.
+
+
+================================================================================
+24/10 - IDENTIDADE DO SYNCTHING RECRIADA, E O .stignore FINALMENTE GRAVADO
+================================================================================
+
+A DESCOBERTA QUE MUDOU O PLANO. O Mateus ligou o portatil 'fedora' (renomeado para
+'Zurich' a pedido dele) e o Syncthing la nao conectava. A sequencia de diagnostico, cada
+passo descartando uma hipotese:
+  1. Ping no IP do Tailscale: responde, 0% de perda. Rota existe.
+  2. Porta 22000: "Connection refused", nao tempo esgotado. Firewall DESCARTA e da tempo
+     esgotado; RECUSADA significa maquina viva sem ninguem escutando. Hipotese de rede
+     descartada.
+  3. systemctl --user status syncthing no Zurich: inactive (dead) e disabled. Era isso.
+     Janela aberta nao e servico rodando.
+  4. Depois de `systemctl --user enable --now syncthing`, ainda nao conectava, mas o log
+     daqui passou a registrar conexoes recusadas vindas daquele IP com um identificador
+     DIFERENTE do cadastrado: BY6KN7X no lugar de SV2VXF5.
+
+IDENTIDADE RECRIADA, E A CONSEQUENCIA E GRAVE PARA O PLANO ANTERIOR. Configuracao e
+certificado daquele Syncthing foram refeitos (instalacao limpa, pasta de configuracao
+apagada ou outro usuario). Quando isso acontece, O VINCULO QUE CARREGARIA A EXCLUSAO
+DEIXA DE EXISTIR: esperar que a remocao do .env "chegue" e esperar por algo que nunca vai
+ocorrer, porque nao ha mais par. A espera prudente vira espera inutil.
+Por isso o plano mudou: APAGAR A MAO na maquina de destino e gravar o .stignore, em vez de
+aguardar propagacao. Vale para o vivobook-go, que esta desligado ha 5 dias no Tailscale e
+sem sincronizar ha 20, e que e candidato ao mesmo problema.
+
+RE-PAREAMENTO, decidido pelo Mateus. Cadastro morto SV2VXF5 removido, identidade nova
+BY6KN7X cadastrada como 'Zurich' com 'dynamic' ao lado do IP fixo, pasta compartilhada.
+Conectou e fechou 100% com 0 itens pendentes em cerca de 25 s, o que confirma que os
+arquivos ja estavam no disco dele e o Syncthing novo apenas os reconheceu.
+
+.stignore GRAVADO E PROVADO. 13 padroes: credencial (.env, .env.*, *.pem, *.key, *.p12,
+*_key.txt, *_token.txt) e lixo de execucao espelhando as exclusoes do .gitignore (cache,
+__pycache__, *.log, *.tmp, bench/imagens, bench/dados). O criterio fica facil de lembrar:
+o que nao e versionado nao e replicado.
+PROVA, e nao suposicao: criei um .env sintetico na pasta, forcei varredura, e o indice
+global continuou com o arquivo deletado e tamanho 0, ou seja, ele nao entrou. Arquivo de
+teste removido em seguida.
+O .stignore NAO e sincronizado entre dispositivos; cada maquina tem o seu. Como esta e a
+origem sendonly, ignorar aqui basta para o arquivo nunca mais sair.
+
+PENDENTE.
+  Zurich       confirmar a mao que ~/ecossistema/.env nao existe mais la. O indice diz que
+               o Zurich recebeu a exclusao, mas indice diz o que ele RECEBEU, nao o que
+               sobrou no disco dele.
+  vivobook-go  desligado. Ao ligar, apagar ~/ecossistema/.env a mao.
