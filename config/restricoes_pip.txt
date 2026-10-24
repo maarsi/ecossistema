@@ -1,0 +1,10 @@
+# RESTRICOES DE INSTALACAO DOS AMBIENTES DE PRODUCAO DO ECOSSISTEMA
+#
+# Este arquivo e lido pelo pip a cada instalacao, por estar declarado em
+# install.constraint na configuracao do pip de cada ambiente. Nao e documentacao:
+# e o que faz um `pip install -U mcp` NAO subir para a versao que quebra tudo.
+#
+# mcp 2.x renomeou FastMCP para MCPServer e removeu mcp.server.fastmcp. Os nove
+# servidores MCP do ecossistema usam FastMCP: um upgrade sem restricao derruba os
+# nove de uma vez, nas duas maquinas, sem aviso previo.
+mcp<2

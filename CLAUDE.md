@@ -1170,3 +1170,49 @@ ESTADO EM 24/10, incompleto de proposito.
 Enquanto os dois nao conectarem e receberem a exclusao, as duas chaves continuam naquelas
 maquinas. Apagar na origem reduz a exposicao futura; so a ROTACAO mata a exposicao que ja
 existe. Decisao pendente do Mateus.
+
+
+================================================================================
+24/10 - O PINO DO mcp DEIXA DE SER ANOTACAO E VIRA TRAVA
+================================================================================
+
+O MECANISMO. config/restricoes_pip.txt, versionado e sincronizado, contem `mcp<2`. Cada
+ambiente de producao declara esse arquivo em install.constraint na configuracao do proprio
+pip, de modo que ele e lido em TODA instalacao daquele interpretador, inclusive num
+`pip install -U mcp` distraido. Anotacao em arquivo de texto nao impedia nada; isto impede.
+  Ubuntu   ~/TransportMCP/.venv/pip.conf
+  Windows  C:\TransportMCP\.venv\pip.ini e D:\TransportMCP\.venv\pip.ini
+
+PROVA POR DIFERENCA, na Ubuntu, com --dry-run:
+  com a trava   Would install mcp-1.30.0
+  sem a trava   Would install mcp-2.3.0 httpx2-2.16.0 httpcore2-2.16.0 mcp-types-2.3.0
+Ou seja, a afirmacao de que um upgrade sem restricao derruba os nove servidores estava
+certa, e agora esta medida e nao suposta.
+
+MODO DE FALHA, DECLARADO. Se o arquivo de restricao sumir, o pip passa a RECUSAR qualquer
+instalacao naquele ambiente, com erro claro. E falha fechada de proposito: melhor recusar
+a instalar do que subir a versao que derruba tudo. Para desfazer, apagar o pip.conf ou o
+pip.ini; nada mais depende deles.
+
+DOIS ERROS MEUS NO CAMINHO, e o segundo e o grave.
+
+1. TESTEI A TRAVA COM O COMANDO REAL, EM PRODUCAO. Rodei `pip install -U mcp` de verdade
+   para ver se a trava segurava. Ela segurou, mas o comando MUDOU O ESTADO: o mcp saiu de
+   1.29.0 para 1.30.0 e quebrou a paridade com o Windows. Restaurado para 1.29.0 e os
+   cinco servidores reconferidos. Para testar guarda existe --dry-run. Testar com a acao
+   de verdade em producao e o tipo de premissa que eu critico nos outros.
+
+2. O MEU BRACO DE CONTROLE NAO ERA CONTROLE. Para medir "o que aconteceria sem a trava" eu
+   passei --constraint /dev/null, supondo que a linha de comando SUBSTITUI a configuracao.
+   Ela nao substitui: o pip SOMA os arquivos de restricao. O braco "sem trava" estava com
+   a trava ativa o tempo todo, devolveu mcp-1.30.0, e eu quase conclui que o risco que eu
+   mesmo havia levantado era falso.
+   O jeito correto de ignorar a configuracao e PIP_CONFIG_FILE=/dev/null.
+   LICAO QUE GENERALIZA: isto e comparacao com condicoes NAO equalizadas, que ja esta na
+   lista de gatilhos do contraditorio deste arquivo por causa de cuOpt contra OR-Tools.
+   Antes de ler qualquer diferenca, conferir que o braco de controle e mesmo controle.
+
+PENDENTE E EXPLICITAMENTE NAO PROVADO. No Windows o pip.ini foi ESCRITO nos dois ambientes
+pela ponte, mas NAO foi testado la: a prova exige rodar pip naquela maquina. Ate que isso
+aconteca, a trava do Windows esta declarada e nao verificada, e nao deve ser citada como
+verificada.
