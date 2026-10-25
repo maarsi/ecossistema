@@ -1339,3 +1339,44 @@ com a configuracao viva (gemini, google, here, moonshot, nvidia, perplexity, tom
 USO), e deepseek, manus e ubuntu_key nao aparecem la porque vivem no ~/TransportMCP/.env
 da Ubuntu. 'Nao aparece na config viva' nao e sinonimo de morta, e por isso a rotina nunca
 apaga arquivo de 'api keys'.
+
+
+================================================================================
+24/10 - r5py VALIDADO COM DADO REAL, E O QUE O DADO REVELOU
+================================================================================
+
+FERRAMENTAS QUE JA ESTAVAM INSTALADAS E PARADAS. O env_transporte ja tinha aequilibrae
+1.6.0, r5py 1.1.7, gtfs-kit, partridge, osmnx, pandana, networkx e duckdb com extensao
+espacial, mais QGIS 3.40, osmium, Java 25, o JAR r5-v7.5.1 em cache e uma build OSRM do
+Nordeste. A lacuna do ecossistema nao era ferramenta, era uso.
+
+r5py VALIDADO, em bench/r5_validacao.py. Recorte OSM por osmium (442 MB para 9,4 MB),
+rede R5 em 6 s, matriz 8x8 em menos de 1 s. Quatro assercoes, todas passaram: diagonal
+nula; MONOTONICIDADE, acrescentar oferta nao aumentou tempo em nenhum dos 64 pares;
+cobertura subindo de 38/64 para 64/64 ao somar o segundo feed; velocidade aparente em
+linha reta entre 2 e 60 km/h nos 56 pares.
+A MONOTONICIDADE E O ACHADO DE METODO: e verificacao interna, nao depende de fonte
+externa, e e mais forte que comparar com um roteador de mercado, porque o roteador pode
+estar consumindo o MESMO GTFS e a comparacao mediria reimplementacao, nao correcao.
+
+QUATRO DEFEITOS NO GTFS ENTREGUE, achados por tentar usar o dado a serio. Registrados
+aqui pelo METODO; o detalhe por projeto fica no projeto.
+  1. Pacote com DOIS feeds de operador em subpastas, e nao arquivos na raiz do zip. O R5
+     recusa. O gtfs-kit, permissivo, leu sem reclamar e devolveu os numeros de apenas UM
+     dos dois, mascarando o problema: FERRAMENTA TOLERANTE ESCONDE DEFEITO DE DADO, e
+     numero obtido dela nao e atestado de integridade.
+  2. Um dos operadores com vigencia de DOIS DIAS no calendar.txt, so dias uteis. NAO HA
+     DATA em que todos os feeds do pacote tenham servico ao mesmo tempo.
+  3. Tabelas opcionais presentes e VAZIAS, que consumidor estrito recusa. Pela
+     especificacao, tabela opcional vazia equivale a ausente, entao omitir e normalizacao.
+  4. SO ONIBUS. As 510 linhas sao route_type 3; nao ha metro, travessia nem ascensor,
+     embora varios polos principais SEJAM estacoes de metro. Analise montada sobre o
+     pacote leva passageiro de onibus entre estacoes de metro, e o resultado sai plausivel.
+
+ERRO MEU NO CAMINHO: afirmei que calendar_dates.txt era obrigatorio. E CONDICIONALMENTE
+obrigatorio, exigido so quando calendar.txt falta. Apliquei regra de especificacao de
+memoria em vez de aplicar a condicao.
+
+CONFIDENCIALIDADE NA VERSAO: o script foi generalizado antes de comitar, sem nome de
+gestor, de operador, de cidade nem caminho de projeto, porque nao consegui confirmar se o
+repositorio e publico. VISIBILIDADE NAO CONFERIDA SE TRATA COMO PUBLICA.
