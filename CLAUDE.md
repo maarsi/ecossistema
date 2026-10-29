@@ -1380,3 +1380,68 @@ memoria em vez de aplicar a condicao.
 CONFIDENCIALIDADE NA VERSAO: o script foi generalizado antes de comitar, sem nome de
 gestor, de operador, de cidade nem caminho de projeto, porque nao consegui confirmar se o
 repositorio e publico. VISIBILIDADE NAO CONFERIDA SE TRATA COMO PUBLICA.
+
+================================================================================
+29/10/2026  PERDA DA PONTE POR VPN DE TERCEIRO: WinError 10013
+================================================================================
+
+SINTOMA. Todo servidor MCP do Windows que abre socket para 100.66.93.31 falhou com
+WinError 10013, nas portas 22 e 11434. Ultima execucao boa pela ponte: 26/10 as 21h12.
+CAUSA REAL: a VPN do Norton ativou no Windows e capturou a rota. Desligada, a ponte
+voltou na primeira tentativa.
+
+O ERRO DE PRIORIZACAO, QUE E O ACHADO PRINCIPAL. Havia tres causas candidatas: (A) faixa
+de porta efemera reservada por Hyper-V/WSL, (B) regra de saida do firewall por
+executavel, (C) filtro de terceiro, antivirus ou VPN. Eu construi um diagnostico de 20 KB
+centrado em (A), a mais exotica das tres. O checklist que outra sessao havia enviado
+tinha "verificar se ha outra VPN ativa" como PASSO 2, e era exatamente isso.
+REGRA: ordenar hipotese por probabilidade a priori, nao por sofisticacao. Causa comum
+primeiro. VPN de terceiro, antivirus com modulo de rede e reinicio de servico vem antes
+de qualquer explicacao de pilha de rede.
+REGRA DERIVADA: VPN de terceiro passa a ser suspeito de primeira linha em QUALQUER falha
+de ponte. Norton, e produtos equivalentes, assumem a rota padrao e o driver de filtro
+devolve WSAEACCES ao processo. Tailscale perde o caminho sem nada mudar de configuracao.
+
+O QUE 10013 SIGNIFICA, E POR QUE ISSO JA EXCLUIA A UBUNTU. 10013 e WSAEACCES: permissao
+negada pela PROPRIA pilha do Windows na criacao ou conexao do socket. Nao e timeout nem
+recusa do destino. Falha que nunca sai da maquina nao se diagnostica no outro lado.
+
+TESTE DE DISCRIMINACAO DO ICMP, que corrigiu um erro meu. Eu desqualifiquei o ping da
+outra sessao dizendo que firewall que libera ICMP e bloqueia TCP e comum, logo ping nao
+prova rota. O controle negativo provou o contrario: ICMP para 100.66.93.31 respondia e
+ICMP para 100.66.93.99, inexistente na MESMA faixa, dava 100% de perda. O ping
+DISCRIMINA, entao a resposta vinha da Ubuntu de verdade.
+REGRA: ping sozinho nao vale; ping COM controle negativo no mesmo prefixo vale. Se os
+dois enderecos respondem, a resposta e local e a evidencia e nula. Se so o real responde,
+a rota esta de pe. O custo do controle e uma linha.
+
+A VM DE APOIO NAO SERVE PARA TESTAR A REDE DELE. TCP da VM para 100.66.93.31:22 deu
+"Connection refused" em 0,00 s, e o MESMO resultado saiu para 10.255.255.254,
+192.168.254.254 e para a porta 22 do proprio gateway da VM, enquanto 1.1.1.1:443 e
+8.8.8.8:53 abriram. E lista de egresso da sandbox: RST gerado localmente, nunca sai.
+Recusa real de Salvador levaria pelo menos o RTT de 2 a 9 ms.
+REGRA: resultado de TCP da VM para endereco privado ou CGNAT e artefato, nao fato. So
+destino publico vale de la.
+
+SINTOMA DETERMINISTICO NAO ACEITA CAUSA PROBABILISTICA. A hipotese (A) dependia de
+sobreposicao da faixa efemera com bloco reservado. Sobreposicao PARCIAL produz falha
+INTERMITENTE, porque a porta de origem e sorteada. A falha era em TODA chamada, logo (A)
+exigiria sobreposicao quase total. Eu havia posto limiar de 25%, que aceitaria como causa
+algo incapaz de explicar o sintoma; corrigi para 90% e para a contagem empirica de bind.
+REFUTACAO EMPIRICA POSTERIOR: ao voltar, SSH_CONNECTION mostrou porta de origem 64540,
+dentro da faixa efemera. O bind alto funciona. (A) estava morta de qualquer jeito.
+
+O QUE NINGUEM TESTOU, E ERA BARATO. Se o sshd e o Ollama estavam escutando. ICMP prova
+que a maquina responde, nao que o servico esta de pe. Ao voltar, ss -ltn mostrou 22,
+11434 e 22000 em LISTEN e ollama active: nunca haviam caido. Tres dias de diagnostico sem
+ninguem conferir a unica coisa verificavel no teclado da propria Ubuntu.
+REGRA: diante de falha de conexao, conferir o servico no destino antes de teorizar sobre
+o caminho, mesmo que o caminho pareca ser o suspeito.
+
+PREVENCAO. Desligar a reconexao automatica da VPN do Norton, ou excluir 100.64.0.0/10 do
+tunel se o produto permitir tunel dividido. Religamento automatico apos atualizacao ou
+rede nova derruba a ponte inteira outra vez, sem nenhuma mudanca de configuracao nossa.
+
+FERRAMENTA QUE FICOU. D:\95 - TEMP\rede_10013.bat, so leitura, separa (A), (B) e (C) em
+um minuto e nomeia o filtro quando roda como administrador. Obsoleta para esta ocorrencia,
+util se a VPN religar sozinha.
