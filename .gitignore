@@ -27,3 +27,5 @@ bench/derpr/textos/
 bench/derpr/prevoo/paginas/
 bench/derpr/*.pdf
 bench/derpr/prevoo/*.pdf
+bench/derpr/prevoo/saidas/
+bench/derpr/prevoo/camada_texto.json
