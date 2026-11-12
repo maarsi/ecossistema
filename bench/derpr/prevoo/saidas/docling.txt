@@ -1,0 +1,77 @@
+<!-- image -->
+
+## DEFINIÇÕES SINISTRO DE TRÂNSITO:
+
+Em âmbito nacional, a própria expressão 'sinistro de trânsito' foi recentemente redefinida, em substituição à 'acidente de trânsito', por meio de atualização publicada pela ABNT NBR 10.697/2020.
+
+Tal modificação se deu justamente em razão do sentido da expressão anteriormente utilizada, acidente, que remetia a algo que não pode ser controlado ou previsto, o que não corresponde à realidade encontrada nos sinistros de transito, que são em sua grande maioria causados por ação humana e passiveis de prevenção, se tomadas todas as medidas cabíveis par minimizar a ocorrência.
+
+Sendo assim, pela referida norma técnica, a expressão 'sinistros de trânsito' foi definida como:
+
+'Todo evento que resulte em dano ao veículo ou à sua carga e/ou em lesões a pessoas e/ou animais, e  que  possa  trazer  dano  material  ou  prejuízos  ao trânsito,  à  via  ou  ao  meio  ambiente,  em  que  pelo menos uma das partes está em movimento nas vias terrestres ou em áreas abertas ao público'.
+
+## DAS PESSOAS ENVOLVIDAS NO SINISTRO:
+
+## Ileso
+
+Vítima sem lesões decorrentes do sinistro de trânsito.
+
+## Ferido
+
+Vítima com lesões, decorrentes de sinistro de trânsito, que não venha a óbito em ate 30 dias após a sua ocorrência.
+
+## Óbito
+
+Vítima que venha a falecer em razão das lesões e/ou em decorrência do sinistro de trânsito, no momento do sinistro de trânsito ou até 30 dias após a sua ocorrência.
+
+I
+
+## SINISTROS POR RODOVIA ESTADUAL
+
+## POR OCORRÊNCIAS
+
+<!-- image -->
+
+Fonte: Coordenadoria de Engenharia de Tráfego e Segurança Rodoviária - DER/PR Nota: Utilização e conversão de dados do BATEU/BPRv
+
+## por Rodovia
+
+| RODOVIA   |   SINISTROS |   ILESOS |   FERIDOS |   ÓBITOS |
+|-----------|-------------|----------|-----------|----------|
+| PR-317    |         388 |      449 |       318 |       26 |
+| PR-151    |         370 |      408 |       220 |       31 |
+| PR-323    |         364 |      421 |       253 |       25 |
+| PR-092    |         327 |      418 |       177 |       23 |
+| PR-445    |         214 |      262 |       167 |       20 |
+| PR-412    |         196 |      233 |       125 |        2 |
+| PR-090    |         167 |      148 |       169 |       22 |
+| PRC-466   |         167 |      189 |       132 |       28 |
+| PR-180    |         155 |      186 |       136 |       11 |
+| PR-182    |         153 |      162 |       140 |       18 |
+
+Fonte: Coordenadoria de Engenharia de Tráfego e Segurança Rodoviária - DER/PR Nota: Utilização e conversão de dados do BATEU/BPRv
+
+*10 rodovias com maior frequência de sinistros.
+
+<!-- image -->
+
+## SÉRIE HISTÓRICA
+
+## SÉRIE HISTÓRICA ANUAL
+
+|   ANO |   SINISTROS |   ILESOS |   FERIDOS |   ÓBITOS |
+|-------|-------------|----------|-----------|----------|
+|  2019 |        8653 |     9124 |      5963 |      567 |
+|  2020 |        6799 |     7362 |      5236 |      568 |
+|  2021 |        6960 |     7387 |      5185 |      668 |
+|  2022 |        6208 |     6518 |      5084 |      641 |
+
+Fonte: Coordenadoria de Engenharia de Tráfego e Segurança Rodoviária - DER/PR Nota: Utilização e conversão de dados do BATEU/BPRv
+
+## por Ocorrências
+
+<!-- image -->
+
+Fonte: Coordenadoria de Engenharia de Tráfego e Segurança Rodoviária - DER/PR Nota: Utilização e conversão de dados do BATEU/BPRv
+
+<!-- image -->

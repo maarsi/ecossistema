@@ -1,0 +1,43 @@
+</s><s><predict_bbox><predict_classes><output_markdown><predict_text_in_pic><x_0.0322><y_0.0125>DER/PR  -  Departamento de Estradas de Rodagem<x_0.3584><y_0.025><class_Page-header>
+
+<x_0.125><y_0.068>**DEFINIÇÕES**
+SINISTRO DE TRÂNSITO:<x_0.4131><y_0.118><class_Section-header>
+
+<x_0.124><y_0.1445>Em âmbito nacional, a própria expressão ‘sinistro de trânsito’ foi recentemente
+redefinida, em substituição à ‘acidente de trânsito’, por meio de atualização publicada
+pela ABNT NBR 10.697/2020.<x_0.875><y_0.2188><class_Text>
+
+<x_0.123><y_0.2305>Tal modificação se deu justamente em razão do sentido da expressão anteriormente
+utilizada, acidente, que remetia a algo que não pode ser controlado ou previsto, o
+que não corresponde à realidade encontrada nos sinistros de transito, que são em
+sua grande maioria causados por ação humana e passíveis de prevenção, se tomadas
+todas as medidas cabíveis par minimizar a ocorrência.<x_0.876><y_0.3609><class_Text>
+
+<x_0.124><y_0.3727>Sendo assim, pela referida norma técnica, a expressão ‘sinistros de trânsito’ foi
+definida como:<x_0.874><y_0.4172><class_Text>
+
+<x_0.2441><y_0.4555>_“Todo evento que resulte em dano ao veículo ou à_
+_sua carga e/ou em lesões a pessoas e/ou animais,_
+_e que possa trazer dano material ou prejuízos ao_
+_trânsito, à via ou ao meio ambiente, em que pelo_
+_menos uma das partes está em movimento nas vias_
+_terrestres ou em áreas abertas ao público”._<x_0.7549><y_0.5687><class_Text>
+
+<x_0.126><y_0.6266>DAS PESSOAS ENVOLVIDAS NO SINISTRO:<x_0.623><y_0.6445><class_Section-header>
+
+<x_0.127><y_0.6703>Ileso<x_0.1846><y_0.6875><class_Section-header>
+
+<x_0.124><y_0.7008>Vítima sem lesões decorrentes do sinistro de trânsito.<x_0.6074><y_0.7164><class_Text>
+
+<x_0.126><y_0.7406>Ferido<x_0.2051><y_0.7586><class_Section-header>
+
+<x_0.124><y_0.7719>Vítima com lesões, decorrentes de sinistro de trânsito, que não venha a óbito em ate
+30 dias após a sua ocorrência.<x_0.873><y_0.8172><class_Text>
+
+<x_0.126><y_0.8391>Óbito<x_0.1953><y_0.8586><class_Section-header>
+
+<x_0.124><y_0.8719>Vítima que venha a falecer em razão das lesões e/ou em decorrência do sinistro de
+trânsito, no momento do sinistro de trânsito ou até 30 dias após a sua ocorrência.<x_0.8721><y_0.9164><class_Text>
+
+<x_0.0332><y_0.9352>DER-PR km
+10<x_0.0869><y_0.9844><class_Picture></s>

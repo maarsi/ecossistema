@@ -1,0 +1,28 @@
+## SINISTROS POR RODOVIA ESTADUAL
+
+## POR OCORRÊNCIAS
+
+<!-- image -->
+
+Fonte: Coordenadoria de Engenharia de Tráfego e Segurança Rodoviária - DER/PR Nota: Utilização e conversão de dados do BATEU/BPRv
+
+## por Rodovia
+
+| RODOVIA   |   SINISTROS |   ILESOS |   FERIDOS |   ÓBITOS |
+|-----------|-------------|----------|-----------|----------|
+| PR-317    |         388 |      449 |       318 |       26 |
+| PR-151    |         370 |      408 |       220 |       31 |
+| PR-323    |         364 |      421 |       253 |       25 |
+| PR-092    |         327 |      418 |       177 |       23 |
+| PR-445    |         214 |      262 |       167 |       20 |
+| PR-412    |         196 |      233 |       125 |        2 |
+| PR-090    |         167 |      148 |       169 |       22 |
+| PRC-466   |         167 |      189 |       132 |       28 |
+| PR-180    |         155 |      186 |       136 |       11 |
+| PR-182    |         153 |      162 |       140 |       18 |
+
+Fonte: Coordenadoria de Engenharia de Tráfego e Segurança Rodoviária - DER/PR Nota: Utilização e conversão de dados do BATEU/BPRv
+
+*10 rodovias com maior frequência de sinistros.
+
+<!-- image -->

@@ -1,0 +1,179 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_07",
+ "assunto": "resultado da bateria",
+ "suite_original": "recuperacao_anuario_derpr.json",
+ "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+ "corpus_sha256": "c19be5398997a7ae18117ac9cdd48ee866757a293652e5f4b26f7e689368649c",
+ "executado_em": "2026-11-12T06:37 a 07:24",
+ "passadas": 3,
+ "perguntas_pontuaveis": 28,
+ "ausentes": [
+  "D09",
+  "N20"
+ ],
+ "resultado": {
+  "A": {
+   "nome": "Docling sem OCR",
+   "passadas": 3,
+   "acerto1": 17.9,
+   "acerto5": 39.3,
+   "acerto1_desvio": 0.0,
+   "pos_mediana": 8.0,
+   "pos_media": 16.28,
+   "rankings_identicos_entre_passadas": false,
+   "bytes_por_pagina": 10240,
+   "vetores_por_pagina": 1,
+   "dim": 2560,
+   "proj_10k_GB": 0.095,
+   "proj_50k_GB": 0.477,
+   "cabe_no_limite": true,
+   "seg_indexacao": 9.11,
+   "seg_consulta": 6.29
+  },
+  "B": {
+   "nome": "Docling com OCR",
+   "passadas": 3,
+   "acerto1": 50.0,
+   "acerto5": 75.0,
+   "acerto1_desvio": 0.0,
+   "pos_mediana": 1.5,
+   "pos_media": 6.5,
+   "rankings_identicos_entre_passadas": false,
+   "bytes_por_pagina": 10240,
+   "vetores_por_pagina": 1,
+   "dim": 2560,
+   "proj_10k_GB": 0.095,
+   "proj_50k_GB": 0.477,
+   "cabe_no_limite": true,
+   "seg_indexacao": 16.21,
+   "seg_consulta": 6.29
+  },
+  "C": {
+   "nome": "ColQwen2.5 (interacao tardia)",
+   "passadas": 3,
+   "acerto1": 17.9,
+   "acerto5": 64.3,
+   "acerto1_desvio": 0.0,
+   "pos_mediana": 5.0,
+   "pos_media": 10.43,
+   "rankings_identicos_entre_passadas": true,
+   "bytes_por_pagina": 191232,
+   "vetores_por_pagina": 747.0,
+   "dim": 128,
+   "proj_10k_GB": 1.781,
+   "proj_50k_GB": 8.905,
+   "cabe_no_limite": true,
+   "seg_indexacao": 21.35,
+   "seg_consulta": 205.56
+  },
+  "D": {
+   "nome": "nemotron embed-vl (denso)",
+   "passadas": 3,
+   "acerto1": 32.1,
+   "acerto5": 71.4,
+   "acerto1_desvio": 0.0,
+   "pos_mediana": 3.0,
+   "pos_media": 7.25,
+   "rankings_identicos_entre_passadas": true,
+   "bytes_por_pagina": 8192,
+   "vetores_por_pagina": 1,
+   "dim": 2048,
+   "proj_10k_GB": 0.076,
+   "proj_50k_GB": 0.381,
+   "cabe_no_limite": true,
+   "seg_indexacao": 23.85,
+   "seg_consulta": 17.88
+  },
+  "E": {
+   "nome": "D + reordenador VL",
+   "passadas": 3,
+   "acerto1": 17.9,
+   "acerto5": 71.4,
+   "acerto1_desvio": 0.0,
+   "pos_mediana": 4.0,
+   "pos_media": 7.43,
+   "rankings_identicos_entre_passadas": true,
+   "bytes_por_pagina": 8192,
+   "vetores_por_pagina": 1,
+   "dim": 2048,
+   "proj_10k_GB": 0.076,
+   "proj_50k_GB": 0.381,
+   "cabe_no_limite": true,
+   "seg_indexacao": 23.85,
+   "seg_consulta": 126.71
+  },
+  "G": {
+   "nome": "Nemotron-3.5-Parse",
+   "passadas": 3,
+   "acerto1": 35.7,
+   "acerto5": 66.7,
+   "acerto1_desvio": 0.0,
+   "pos_mediana": 2.0,
+   "pos_media": 8.5,
+   "rankings_identicos_entre_passadas": false,
+   "bytes_por_pagina": 10240,
+   "vetores_por_pagina": 1,
+   "dim": 2560,
+   "proj_10k_GB": 0.095,
+   "proj_50k_GB": 0.477,
+   "cabe_no_limite": true,
+   "seg_indexacao": 15.45,
+   "seg_consulta": 6.29
+  }
+ },
+ "vencedor": {
+  "braco": "B",
+  "nome": "Docling com OCR",
+  "acerto1": "50%",
+  "acerto5": "75%",
+  "criterio": "maior acerto@5 entre os bracos cuja projecao para 50 mil paginas caiba em 200 GB",
+  "observacao": "TODOS os seis bracos couberam no limite. O criterio de armazenamento nao chegou a ser acionado."
+ },
+ "correcoes_de_afirmacoes_anteriores_do_claude": [
+  {
+   "o_que_eu_afirmei": "que os bracos de texto iam perder porque a substancia esta em imagem",
+   "o_que_o_teste_mostrou": "o braco A, sem OCR, de fato fracassa (18% de acerto@1, posicao media 16,3 de 58). Mas o braco B, o MESMO Docling com OCR ligado, VENCEU a bateria inteira com 50%.",
+   "licao": "a premissa estava certa e a inferencia estava errada. 'A informacao nao esta na camada de texto' nao implica 'ferramentas de texto vao perder': o OCR recupera o que a camada nao tem."
+  },
+  {
+   "o_que_eu_afirmei": "que interacao tardia custa de 198 a 708 GB de indice em 50 mil paginas",
+   "o_que_o_teste_mostrou": "o ColQwen2.5 projeta 8,9 GB, vinte vezes menos. Ele usa 747 vetores por pagina com dimensao 128; a familia ColEmbed V2 usa dimensao 2560 a 4096.",
+   "licao": "o custo e governado por vetores_por_pagina x dimensao, nao pela arquitetura. Atribuir a conta de uma familia a um paradigma inteiro foi generalizacao indevida."
+  },
+  {
+   "o_que_eu_afirmei": "hipotese de que o reordenador do braco E falha em tabela por nao conseguir discriminar (amplitude baixa de notas)",
+   "o_que_o_teste_mostrou": "REFUTADA. A amplitude media e identica nos dois grupos, 1,03. Ele discrimina com a mesma confianca e erra. A amplitude quando ESTRAGOU foi 1,23, MAIOR que os 0,81 de quando consertou.",
+   "licao": "ele nao e indeciso, e confiantemente errado em pagina de tabela."
+  }
+ ],
+ "achado_principal_sobre_o_reordenador": {
+  "fato": "o braco E tem o mesmo acerto@5 do D (71%) e METADE do acerto@1 (18% contra 32%)",
+  "decomposicao": {
+   "resposta_em_texto": "D 40%, E 40%, sem efeito",
+   "resposta_em_imagem": "D 30%, E 13%, queda de mais da metade"
+  },
+  "material_disponivel": "a pagina certa estava no top-10 do D em 24 das 28 perguntas",
+  "balanco": "o reordenador afundou a pagina certa em 5 perguntas (D04, N02, N04, N05, N13) e consertou 1 (N09)",
+  "consequencia_pratica": "o reordenador VL NAO deve entrar em producao para acervo de tabela e grafico. Em prosa e inofensivo; em tabela e prejudicial.",
+  "ressalva": "medido em um corpus de 58 paginas e 28 perguntas, com k=10. Nao generaliza para outro tipo de documento sem novo teste."
+ },
+ "reprodutibilidade": {
+  "extracao": "DETERMINISTICA. Os textos de A, B e G sao byte a byte identicos nas 3 passadas (sha256 conferido).",
+  "buscador": "NAO deterministico. O qwen3-embedding:4b servido pelo Ollama produz embeddings ligeiramente diferentes para o mesmo texto entre chamadas.",
+  "efeito": "a ordem da cauda varia em 30 de 30 perguntas; a PRIMEIRA posicao varia em 0 (braco A), 2 (B) e 4 (G) perguntas de 30",
+  "impacto_nas_metricas": "desvio de 0,0 pontos percentuais no acerto@1 entre as 3 passadas em todos os bracos",
+  "licao": "uma passada unica teria produzido o mesmo numero por sorte. A exigencia de 3 passadas, declarada em 24/10, e o que permite afirmar isso."
+ },
+ "limitacoes_a_declarar_em_qualquer_uso_deste_resultado": [
+  "58 paginas. A bateria E INCAPAZ de revelar problema de armazenamento: todos os bracos cabem nessa escala, e as projecoes para 10 mil e 50 mil paginas sao calculo declarado, nao medicao.",
+  "28 perguntas pontuaveis. Diferenca de 1 pergunta vale 3,6 pontos percentuais: diferencas menores que isso entre bracos sao empate tecnico.",
+  "braco H (nemotron-ocr-v2) NAO EXECUTADO por incompatibilidade de ferramental CUDA. A decomposicao entre 'entende estrutura' e 'le letra melhor' permanece INDISPONIVEL: nao e possivel dizer quanto do desempenho do braco G vem de cada coisa.",
+  "braco F (colembed-vl-4b) eliminado por licenca nao comercial. Sem ele, nao ha medida do teto da interacao tardia de geracao atual, e o braco C representa a geracao anterior.",
+  "um unico documento, de um unico tipo (anuario estatistico). Nao generaliza para edital, decisao de tribunal ou relatorio tecnico sem novo teste."
+ ],
+ "recomendacao_ao_coordenador": {
+  "o_que_o_resultado_sustenta": "manter o Docling COM OCR como ferramenta de recuperacao, e verificar se o OCR esta efetivamente ligado onde o ecossistema o usa hoje",
+  "o_que_o_resultado_NAO_sustenta": "adotar reordenador VL; adotar recuperacao visual em substituicao ao texto; concluir que o paradigma visual perde (o braco C e geracao anterior e o braco F foi eliminado por licenca)",
+  "decisao": "e do Mateus, com este numero na mao. Este relatorio nao altera papeis.json."
+ }
+}

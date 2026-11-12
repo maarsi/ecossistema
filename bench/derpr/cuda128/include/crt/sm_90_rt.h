@@ -1,0 +1,1 @@
+/home/mateus/env_nemotron_ocr/lib/python3.12/site-packages/nvidia/cuda_nvcc/include/./crt/sm_90_rt.h

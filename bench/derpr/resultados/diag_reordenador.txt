@@ -1,0 +1,11 @@
+grupo                      n   amplitude media  acerto@1 D  acerto@1 E
+------------------------------------------------------------------------
+resposta em texto          5              1.03         40%         40%
+resposta em imagem        23              1.03         30%         13%
+TODAS                     28              1.03         32%         18%
+
+o reordenador ESTRAGOU: ['D04', 'N02', 'N04', 'N05', 'N13']
+o reordenador CONSERTOU: ['N09']
+amplitude media quando estragou: 1.23
+amplitude media quando consertou: 0.81
+paginas certas que estavam no top-10 do D: 24 de 28

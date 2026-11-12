@@ -1,0 +1,6 @@
+nvidia/llama-nemotron-embed-vl-1b-v2 | other | gated=false
+nvidia/llama-nemotron-rerank-vl-1b-v2 | other | gated=false
+nvidia/nemotron-colembed-vl-4b-v2 | cc-by-nc-4.0 | gated=false
+nvidia/Nemotron-3.5-Parse | openmdw-1.1 | gated=false
+nvidia/nemotron-ocr-v2 | other | gated=false
+vidore/colqwen2.5-v0.2 | mit | gated=false

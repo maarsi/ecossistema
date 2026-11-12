@@ -1,0 +1,332 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_04",
+ "assunto": "gabarito das 30 perguntas, estabelecido por leitura humana, com o campo onde recalculado por instrumento",
+ "suite_original": "recuperacao_anuario_derpr.json",
+ "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+ "corpus_sha256": "c19be5398997a7ae18117ac9cdd48ee866757a293652e5f4b26f7e689368649c",
+ "criado_em": "2026-11-11T19:21:56-03:00",
+ "estado_na_criacao": {
+  "execucoes_anteriores": 0
+ },
+ "procedencia_do_gabarito": {
+  "quem": "Mateus Araujo e Silva",
+  "como": "leitura humana das 58 paginas, questao a questao, em 11/11/2026",
+  "por_que_humano": "quem estabelece a verdade nao pode ser um dos bracos. Um modelo de visao lendo imagem de pagina e estruturalmente o que os bracos C, D, E e F fazem, e o gabarito sairia enviesado a favor deles.",
+  "o_que_e_verdade_de_referencia": "A PAGINA. E so ela. O campo onde NAO e julgamento humano, ver abaixo."
+ },
+ "defeito_do_instrumento_de_coleta": {
+  "o_que_foi": "a folha de gabarito oferecia tres opcoes: no texto, em imagem, ausente.",
+  "por_que_estava_errada": "'no texto' contra 'em imagem' e ambiguo para quem le a pagina renderizada: tabela parece TEXTO para o olho humano e e PIXEL para o extrator. Deveria oferecer quatro opcoes: texto corrido, tabela, grafico ou figura, ausente.",
+  "de_quem_foi": "do Claude, que construiu a folha",
+  "consequencia": "26 de 30 vieram marcadas como 'texto'. Verificado mecanicamente, 23 das 28 com pagina estao em paginas cuja camada extraivel tem de 0 a 59 caracteres, so titulo e rodape de fonte.",
+  "prova": "na pagina 13 o extrator devolve apenas titulo, Fonte, Nota e o rotulo 'por Ocorrencias'. Os valores anotados pelo leitor (6028, 641, 5084) NAO aparecem no texto extraido, nem com separador de milhar removido.",
+  "como_foi_corrigido": "o campo onde foi RECALCULADO por instrumento declarado. O rotulo humano foi preservado em onde_leitura_humana, porque ele informa como a pagina e percebida, que nao e a mesma pergunta."
+ },
+ "erro_de_conduta_do_claude_registrado": {
+  "o_que": "ao receber o gabarito, declarei em voz alta que minha previsao ('boa parte cairá em imagem') havia falhado, com base nos rotulos humanos.",
+  "por_que_estava_errado": "a previsao estava CERTA. O rotulo e que nao media o que eu supunha, por defeito da folha que eu mesmo construi.",
+  "licao": "retratar-se depressa parece honestidade e aqui foi a mesma pressa de concluir sem medir. Verificar a definicao do rotulo antes de aceitar que ele refuta uma previsao."
+ },
+ "instrumento_do_campo_onde": {
+  "regra": "remove-se a moldura da pagina (numero, linhas Fonte: e Nota: com suas continuacoes recuadas, e titulos em caixa alta com menos de 60 caracteres). O que sobra e substancia extraivel. Abaixo de 80 caracteres o campo onde recebe 'imagem'.",
+  "extrator": "pypdf extract_text, ambiente ~/env_transporte, Python 3.14.4",
+  "medido_em": "2026-11-11T19:20-03:00",
+  "limitacao_declarada": "a regra mede 'ha texto substantivo nesta pagina', nao 'a resposta esta nele'. Nas 27 das 28 as duas coisas coincidem.",
+  "caso_limitrofe": "N17, pagina 22, 85 caracteres contra limiar de 80, classificada 'texto'. O que o extrator devolve ali e uma legenda ('por Extensao da Rodovia, 25 rodovias com maior frequencia de sinistros por km linear'), nao a resposta. O limiar NAO foi ajustado para arrumar este caso: mexer no instrumento depois de ver o resultado invalidaria o instrumento."
+ },
+ "distribuicao_resultante": {
+  "texto": 5,
+  "imagem": 23,
+  "ausente": 2,
+  "leitura": "a premissa da suite se confirma. 23 das 28 perguntas com pagina tem a resposta em pagina de camada extraivel vazia. Os bracos A e B so as alcancam se o OCR funcionar, e os bracos visuais tem o que provar. A SUITE DISCRIMINA.",
+  "perguntas_pontuaveis": 28,
+  "ausentes": [
+   "D09 regionais ou superintendencias",
+   "N20 acidentes por 100 milhoes de veiculos-quilometro"
+  ],
+  "observacao_sobre_ausentes": "nao pontuam acerto por pagina em braco nenhum e saem do calculo de acerto@k. Duas em trinta e perda pequena."
+ },
+ "respostas_com_ressalva_do_leitor": "varias notas registram que o documento responde de forma indireta ou parcial: D04 nao traz numero de extensao, apenas mapa; N13 traz faixa horaria mas nao periodo; N15 e N16 trazem numeros absolutos e nao variacao percentual; N17 traz ocorrencia por extensao e nao participacao. Para uma bateria de RECUPERACAO isso nao invalida nada, porque o que se pontua e a pagina recuperada e nao a resposta redigida. Fica registrado para a leitura dos resultados.",
+ "respostas": [
+  {
+   "id": "D01",
+   "gabarito_pagina": 1,
+   "onde": "imagem",
+   "onde_leitura_humana": "imagem",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 0,
+   "nota": "DER-PR, DER Parana"
+  },
+  {
+   "id": "D02",
+   "gabarito_pagina": 10,
+   "onde": "texto",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 1314,
+   "bruto_extraivel_car": 1404,
+   "nota": ""
+  },
+  {
+   "id": "D03",
+   "gabarito_pagina": 8,
+   "onde": "texto",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 2483,
+   "bruto_extraivel_car": 2526,
+   "nota": ""
+  },
+  {
+   "id": "D04",
+   "gabarito_pagina": 21,
+   "onde": "imagem",
+   "onde_leitura_humana": "imagem",
+   "substancia_extraivel_car": 59,
+   "bruto_extraivel_car": 379,
+   "nota": "nao ha um numero da extensao da malha rodoviaria, mas o mapa cobre todo o estado do Parana"
+  },
+  {
+   "id": "D05",
+   "gabarito_pagina": 21,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 59,
+   "bruto_extraivel_car": 379,
+   "nota": "as tabelas apresentam apenas rodovias com a sigla PR, PRC, que sao rodovias estaduais"
+  },
+  {
+   "id": "D06",
+   "gabarito_pagina": 21,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 59,
+   "bruto_extraivel_car": 379,
+   "nota": "por quantidade de sinistros. uma nota de rodape aponta: 10 rodovias com maior frequencia de sinistros"
+  },
+  {
+   "id": "D07",
+   "gabarito_pagina": 55,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 6,
+   "bruto_extraivel_car": 452,
+   "nota": "2019-2022 esta na tabela."
+  },
+  {
+   "id": "D08",
+   "gabarito_pagina": 12,
+   "onde": "texto",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 1368,
+   "bruto_extraivel_car": 1383,
+   "nota": ""
+  },
+  {
+   "id": "D09",
+   "gabarito_pagina": null,
+   "onde": "ausente",
+   "onde_leitura_humana": "ausente",
+   "substancia_extraivel_car": null,
+   "nota": ""
+  },
+  {
+   "id": "D10",
+   "gabarito_pagina": 12,
+   "onde": "texto",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 1368,
+   "bruto_extraivel_car": 1383,
+   "nota": ""
+  },
+  {
+   "id": "N01",
+   "gabarito_pagina": 13,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 15,
+   "bruto_extraivel_car": 316,
+   "nota": "Ano 2022 - 6208"
+  },
+  {
+   "id": "N02",
+   "gabarito_pagina": 13,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 15,
+   "bruto_extraivel_car": 316,
+   "nota": "Ano 2022 - 641"
+  },
+  {
+   "id": "N03",
+   "gabarito_pagina": 13,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 15,
+   "bruto_extraivel_car": 316,
+   "nota": "Ano 2022 - 5084"
+  },
+  {
+   "id": "N04",
+   "gabarito_pagina": 37,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 152,
+   "nota": ""
+  },
+  {
+   "id": "N05",
+   "gabarito_pagina": 37,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 152,
+   "nota": ""
+  },
+  {
+   "id": "N06",
+   "gabarito_pagina": 16,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 320,
+   "nota": ""
+  },
+  {
+   "id": "N07",
+   "gabarito_pagina": 16,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 320,
+   "nota": ""
+  },
+  {
+   "id": "N08",
+   "gabarito_pagina": 15,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 285,
+   "nota": ""
+  },
+  {
+   "id": "N09",
+   "gabarito_pagina": 21,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 59,
+   "bruto_extraivel_car": 379,
+   "nota": ""
+  },
+  {
+   "id": "N10",
+   "gabarito_pagina": 25,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 55,
+   "bruto_extraivel_car": 336,
+   "nota": ""
+  },
+  {
+   "id": "N11",
+   "gabarito_pagina": 45,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 308,
+   "nota": ""
+  },
+  {
+   "id": "N12",
+   "gabarito_pagina": 55,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 6,
+   "bruto_extraivel_car": 452,
+   "nota": ""
+  },
+  {
+   "id": "N13",
+   "gabarito_pagina": 17,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 273,
+   "nota": "o documento nao tras o periodo, apenas a faixa horaria."
+  },
+  {
+   "id": "N14",
+   "gabarito_pagina": 45,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 308,
+   "nota": "caminhao + utilitarios"
+  },
+  {
+   "id": "N15",
+   "gabarito_pagina": 55,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 6,
+   "bruto_extraivel_car": 452,
+   "nota": "nao ha informacao sobre percentual, apenas numeros absolutos"
+  },
+  {
+   "id": "N16",
+   "gabarito_pagina": 55,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 6,
+   "bruto_extraivel_car": 452,
+   "nota": "nao ha informacao sobre percentual, apenas numeros absolutos"
+  },
+  {
+   "id": "N17",
+   "gabarito_pagina": 22,
+   "onde": "texto",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 85,
+   "bruto_extraivel_car": 218,
+   "nota": "nao ha informacao sobre percentual, ha uma tabela com numero de ocorrencias por extensao rodoviaria, dividido em trechos. a informacao nao eh direta."
+  },
+  {
+   "id": "N18",
+   "gabarito_pagina": 35,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 317,
+   "nota": ""
+  },
+  {
+   "id": "N19",
+   "gabarito_pagina": 37,
+   "onde": "imagem",
+   "onde_leitura_humana": "texto",
+   "substancia_extraivel_car": 0,
+   "bruto_extraivel_car": 152,
+   "nota": ""
+  },
+  {
+   "id": "N20",
+   "gabarito_pagina": null,
+   "onde": "ausente",
+   "onde_leitura_humana": "ausente",
+   "substancia_extraivel_car": null,
+   "nota": ""
+  }
+ ],
+ "correcoes": [
+  {
+   "quando": "2026-11-11T23:23:31-03:00",
+   "campo": "respostas[N01].nota",
+   "de": "Ano 2022 - 6028",
+   "para": "Ano 2022 - 6208",
+   "motivo": "erro de digitacao na anotacao, confirmado pelo Mateus em 11/11/2026 as 23:23",
+   "como_foi_detectado": "Docling com OCR e Nemotron-3.5-Parse leram a tabela da pagina 13 de forma independente e ambos devolveram 6208. Os outros dois valores anotados pelo leitor (641 obitos, 5084 feridos) conferiram exatos.",
+   "o_que_NAO_mudou": "gabarito_pagina de N01 segue 13, e o campo onde segue 'imagem'. A nota e acessoria: o que se pontua na bateria e a PAGINA recuperada, nao o valor anotado. Nenhuma pontuacao e afetada.",
+   "sha256_antes": "f0c4a8703428c405b002aa4433821e6cd2aaddd2a9c8400e3d0066b9992dc7bc"
+  }
+ ]
+}

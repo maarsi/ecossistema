@@ -1,0 +1,12 @@
+22:09:14 | fase 0 OK: pre-registro e corpus intactos
+22:09:16 | fase 1 OK: licencas lidas em licencas/licencas.txt
+22:11:24 | fase 2: nemotron_vl pronto
+22:12:56 | fase 2: nemotron_parse pronto
+22:17:12 | fase 2: colpali pronto
+22:20:27 | fase 2: nemotron_ocr base pronta
+22:20:28 | fase 3: nvidia/llama-nemotron-embed-vl-1b-v2 baixado
+22:22:53 | fase 3: nvidia/llama-nemotron-rerank-vl-1b-v2 baixado
+22:24:04 | fase 3: nvidia/Nemotron-3.5-Parse baixado
+22:24:30 | fase 3: nvidia/nemotron-ocr-v2 baixado
+22:24:39 | fase 3: vidore/colqwen2.5-v0.2 baixado
+22:24:39 | ROTEIRO TERMINADO

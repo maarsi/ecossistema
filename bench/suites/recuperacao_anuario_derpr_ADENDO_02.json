@@ -1,0 +1,92 @@
+{
+  "adendo": "recuperacao_anuario_derpr_ADENDO_02",
+  "suite_original": "recuperacao_anuario_derpr.json",
+  "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+  "adendo_anterior": "recuperacao_anuario_derpr_ADENDO_01.json",
+  "criado_em": "2026-11-11T16:03:39-03:00",
+  "estado_na_criacao": {
+    "execucoes_anteriores": 0,
+    "verificacao": "bench/resultados nao contem resultado desta suite em 11/11/2026"
+  },
+  "o_que_este_adendo_acrescenta": "A pilha de documento NAO precisa de experimento proprio: os bracos A e B ja sao Docling sem e com OCR, sobre as mesmas 30 perguntas e o mesmo corpus. Trocar o extrator por um modelo novo e, portanto, mais um braco diretamente comparavel. O corpus e ideal para isso: a substancia esta em imagem fatiada e o texto extraivel e so titulo e rotulo, de 145 a 1107 caracteres por pagina.",
+  "bracos_acrescentados": {
+    "G": {
+      "modelo": "nvidia/Nemotron-3.5-Parse",
+      "cadeia": "parse -> qwen3-embedding:4b (MESMO embedder de A e B, de proposito)",
+      "responde": "se a compreensao ESTRUTURAL (classe de elemento, caixa delimitadora, ordem de leitura, tabela e grafico convertidos) supera o Docling na recuperacao, com o embedder mantido constante",
+      "por_que_o_embedder_e_o_mesmo": "sem isso a comparacao mediria 'trocamos duas coisas' e atribuiria o ganho ao extrator sem base",
+      "licenca_2_0": "OpenMDW-1.1 mais tokenizer CC-BY-4.0; a pagina declara 'ready for commercial or non-commercial use'",
+      "hardware_2_0": "0,9B de parametros, ~1,8 GB em fp16 [estimativa]; Blackwell suportada",
+      "execucao_2_0": "transformers 5.6.1, vLLM 0.20 a 0.26, e versoes quantizadas para Ollama e llama.cpp",
+      "RISCO_DECLARADO": "o portugues continua NAO nomeado entre os idiomas avaliados. O CER de 1,46 em escrita latina (MOSCAR) reduz o risco em relacao ao 2.0, que tinha 4,25, mas nao o elimina. Ver pre_voo_de_validade.",
+      "FIXADO_EM": "2026-11-11T16:20-03:00, antes de qualquer execucao",
+      "licenca": "OpenMDW License Agreement 1.1, tokenizer CC-BY-4.0; a pagina declara 'ready for commercial or non-commercial use'",
+      "hardware": "630,8M de parametros, ~1,3 GB em fp16 [estimativa]; Blackwell listada; pesos no Hugging Face desde 20/10/2026",
+      "resolucao_recomendada": "entrada maxima 1664x2048, contexto de 16384 tokens na avaliacao do fabricante",
+      "por_que_o_3_5_e_nao_o_2_0": {
+        "regra_aplicada": "a regra escrita as 16:03 mandava usar o 3.5 se licenca e requisitos conferissem. Conferiram.",
+        "comparacao_publicada": {
+          "ParseBench_media": [
+            64.46,
+            69.05
+          ],
+          "tabelas": [
+            70.41,
+            72.6
+          ],
+          "graficos": [
+            31.59,
+            49.89
+          ],
+          "paginas_por_s": [
+            3.97,
+            14.21
+          ],
+          "MOSCAR_CER_menor_melhor": [
+            4.25,
+            1.46
+          ]
+        },
+        "o_que_pesa_neste_corpus": "o anuario e estatistico e a substancia esta em grafico e tabela. 31,59 contra 49,89 em grafico e a diferenca entre inutil e utilizavel. O 3.5 ainda e MENOR e 3,6 vezes mais rapido."
+      }
+    },
+    "H": {
+      "modelo": "nvidia/nemotron-ocr-v2",
+      "cadeia": "OCR -> qwen3-embedding:4b",
+      "responde": "quanto do eventual ganho de G vem da ESTRUTURA e quanto vem apenas de um OCR melhor",
+      "por_que_separar_de_G": "e a mesma separacao que A e B fazem entre Docling sem e com OCR. Sem H, um ganho de G seria atribuido a compreensao estrutural sem prova, que e o erro de transposicao de causa.",
+      "licenca": "NVIDIA Open Model License; o cartao declara 'ready for commercial use'",
+      "condicao_de_execucao": "RESOLVIDA quanto a licenca. Permanece condicional ao pre_voo_de_validade abaixo.",
+      "CONFERIDO_EM": "2026-11-11T16:20-03:00",
+      "hardware": "53,8M (variante inglesa) ou 83,9M (multilingue) [estimativa de VRAM: desprezivel]; Blackwell listada",
+      "saida": "caixa delimitadora de quatro cantos, texto, confianca, mais ordem de leitura e agrupamento de layout pelo modelo relacional",
+      "granularidade": "variante inglesa no nivel de palavra, multilingue no nivel de linha",
+      "execucao": "clone do repositorio com git-lfs, Python 3.12, torch com CUDA, pip install do diretorio, ou docker compose",
+      "RISCO_DECLARADO": "o cartao do modelo SE CONTRADIZ sobre o portugues: a secao de arquitetura nomeia ingles, chines simplificado e tradicional, japones, coreano e russo para a multilingue, enquanto as etiquetas de metadado incluem pt. O conjunto nomeado e CJK mais cirilico, o que sugere mira em escrita nao latina. O risco concentra-se em DIACRITICO (a com til, c cedilha, o com til, vogais acentuadas), que e onde um modelo anglofono falha em portugues.",
+      "por_que_isso_e_mais_grave_em_H_que_em_G": "H existe para DECOMPOR o ganho de G entre compreensao estrutural e OCR melhor. Se H perder por nao ler acento, a conclusao 'estrutura vence OCR' fica sem base e o proposito do braco se perde."
+    }
+  },
+  "o_que_este_adendo_NAO_faz": [
+    "nao altera as 30 perguntas nem o gabarito",
+    "nao altera a metrica, as 3 passadas nem a separacao de latencia fria e quente",
+    "nao altera o limite de indice confirmado no ADENDO_01",
+    "nao remove nem reordena nenhum braco anterior"
+  ],
+  "pre_voo_de_validade": {
+    "o_que_e": "verificacao da VALIDADE DO INSTRUMENTO, nao da hipotese. Roda ANTES da suite e nao usa as 30 perguntas.",
+    "por_que_existe": "tanto o Nemotron-3.5-Parse quanto o nemotron-ocr-v2 nao nomeiam o portugues. Sem este passo, um braco que perca por nao ler acento seria lido como 'o metodo e pior', que e transposicao de causa.",
+    "procedimento": [
+      "1. escolher 3 paginas do anuario com densidade de diacritico: texto corrido, legenda de figura e celula de tabela",
+      "2. extrair com G e com H, e tambem com o Docling dos bracos A e B, como referencia conhecida",
+      "3. Mateus confere a olho a fidelidade do acento e da cedilha nas tres saidas",
+      "4. medir a taxa de caractere acentuado preservado contra a leitura humana das mesmas 3 paginas"
+    ],
+    "criterio_declarado_antes": {
+      "aprovado": "preserva 95% ou mais dos caracteres acentuados: o braco e valido e entra na suite",
+      "ressalva": "entre 80% e 95%: o braco entra COM a taxa registrada, e qualquer derrota dele passa a ter duas explicacoes concorrentes declaradas no resultado",
+      "reprovado": "abaixo de 80%: o braco SAI, e o resultado diz que a decomposicao nao esta disponivel, em vez de atribuir a derrota ao metodo"
+    },
+    "observacao_sobre_a_variante_do_H": "testar as DUAS variantes do ocr-v2 no pre-voo, a inglesa no nivel de palavra e a multilingue no nivel de linha. Portugues e escrita latina, entao a inglesa pode sair melhor que a multilingue apesar do nome, e escolher a variante olhando o pre-voo e legitimo porque o pre-voo nao usa as 30 perguntas."
+  },
+  "decisao_do_braco_G_resolvida_em": "2026-11-11T16:20-03:00"
+}

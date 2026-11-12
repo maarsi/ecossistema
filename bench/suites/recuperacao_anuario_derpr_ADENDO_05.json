@@ -1,0 +1,73 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_05",
+ "assunto": "resolucao das condicoes de licenca declaradas nos ADENDOS 01 e 02; eliminacao do braco F",
+ "suite_original": "recuperacao_anuario_derpr.json",
+ "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+ "criado_em": "2026-11-11T22:10:34-03:00",
+ "estado_na_criacao": {
+  "execucoes_anteriores": 0,
+  "instalacao": "em andamento, fase 2"
+ },
+ "como_foi_apurado": {
+  "metodo": "consulta a API publica de modelos do Hugging Face, campo license do cardData, em 11/11/2026 as 22:09",
+  "por_que_esse_caminho": "o blog da NVIDIA sobre a familia ColEmbed V2 NAO declarava licenca e descrevia os modelos como 'intended for researchers'. Cartao de modelo e fonte primaria; blog nao e.",
+  "registro_bruto": "derpr/licencas/licencas.txt"
+ },
+ "licencas_apuradas": {
+  "nvidia/llama-nemotron-embed-vl-1b-v2": {
+   "api": "other",
+   "cartao": "NVIDIA Open Model License + Llama 3.2 Community, 'ready for commercial use'",
+   "veredito": "PERMITE"
+  },
+  "nvidia/llama-nemotron-rerank-vl-1b-v2": {
+   "api": "other",
+   "cartao": "NVIDIA Open Model License + Llama 3.2 Community, 'ready for commercial use'",
+   "veredito": "PERMITE"
+  },
+  "nvidia/nemotron-colembed-vl-4b-v2": {
+   "api": "cc-by-nc-4.0",
+   "cartao": "nao declarava",
+   "veredito": "PROIBE USO COMERCIAL"
+  },
+  "nvidia/Nemotron-3.5-Parse": {
+   "api": "openmdw-1.1",
+   "cartao": "OpenMDW 1.1, 'ready for commercial or non-commercial use'",
+   "veredito": "PERMITE"
+  },
+  "nvidia/nemotron-ocr-v2": {
+   "api": "other",
+   "cartao": "NVIDIA Open Model License, 'ready for commercial use'",
+   "veredito": "PERMITE"
+  },
+  "vidore/colqwen2.5-v0.2": {
+   "api": "mit",
+   "cartao": "MIT",
+   "veredito": "PERMITE"
+  }
+ },
+ "decisao_sobre_o_braco_F": {
+  "resultado": "ELIMINADO",
+  "fundamento": "cc-by-nc-4.0 e Creative Commons Atribuicao NAO COMERCIAL. O ecossistema alimenta entregavel de consultoria sob contrato (Casa Civil-BA via FUNDACE, INFRA S.A., entre outros). Indexar acervo de projeto com esse modelo e uso comercial, vedado pela licenca.",
+  "a_condicao_que_disparou": "ADENDO_01 e ADENDO_02: 'F SO roda se a licenca for conferida no cartao do modelo e permitir uso compativel. Se nao permitir, F fica como referencia bibliografica e NAO como braco, e isso e registrado no resultado.' A condicao foi escrita em 11/11 as 16:00, antes de qualquer execucao, e disparou as 22:09.",
+  "nao_houve_substituicao": "F NAO foi trocado por outro modelo. Braco eliminado e braco eliminado; substituir seria escolher concorrente depois de saber o resultado da condicao.",
+  "o_que_se_perde": "a medicao do TETO. F existia para quantificar quanto os bracos D e E deixam na mesa. Sem ele, o relatorio nao podera dizer qual e a distancia para o estado da arte em interacao tardia, e deve declarar essa lacuna em vez de omiti-la.",
+  "pesos_publicos_nao_baixados": "o roteiro de instalacao nao baixa o colembed-4b. Nao faz sentido ocupar disco com peso que nao pode ser usado."
+ },
+ "consequencia_para_o_braco_C": {
+  "o_que_muda": "NADA no que o braco C e, no que ele roda ou em como e pontuado. Ele segue exatamente como declarado em 24/10.",
+  "o_que_muda_na_leitura": "com F fora, C passa a ser o UNICO braco de interacao tardia executavel. O peso interpretativo dele aumenta: a comparacao entre as duas arquiteturas (vetor unico por pagina contra multivetor com MaxSim) agora depende so dele.",
+  "limitacao_a_declarar_no_relatorio": "C e a geracao anterior. Em bancada publica (MIRACL-Vision) o ColQwen2-v1.0 marca 0,4728 NDCG@10 contra 0,6127 a 0,6860 da familia ColEmbed V2. Portanto, se os bracos D e E vencerem o C, isso NAO prova que vetor unico supera interacao tardia: prova que supera a interacao tardia da geracao anterior. Confundir as duas coisas seria erro de leitura, e o relatorio tem de dizer isso."
+ },
+ "quadro_final_dos_bracos": {
+  "A": "Docling SEM OCR -> qwen3-embedding:4b",
+  "B": "Docling COM OCR -> qwen3-embedding:4b",
+  "C": "ColQwen2.5-v0.2, interacao tardia, MIT",
+  "D": "llama-nemotron-embed-vl-1b-v2, denso",
+  "E": "D + llama-nemotron-rerank-vl-1b-v2",
+  "F": "ELIMINADO em 11/11 por licenca nao comercial",
+  "G": "Nemotron-3.5-Parse -> qwen3-embedding:4b (condicional ao pre-voo)",
+  "H": "nemotron-ocr-v2 -> qwen3-embedding:4b (condicional ao pre-voo)",
+  "total_executavel": 7
+ },
+ "regra_que_passa_a_valer": "Licenca de modelo se apura no CARTAO e na API do repositorio, antes de baixar o peso. Blog de fabricante nao e fonte de licenca. Em 11/11 o blog da familia ColEmbed V2 nao declarava licenca alguma e o campo da API dizia cc-by-nc-4.0."
+}

@@ -1,0 +1,97 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_06",
+ "assunto": "resultado do pre-voo de diacritico; braco H nao executado",
+ "suite_original": "recuperacao_anuario_derpr.json",
+ "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+ "corpus_sha256": "c19be5398997a7ae18117ac9cdd48ee866757a293652e5f4b26f7e689368649c",
+ "gabarito_sha256": "406d2d39738641a7",
+ "criado_em": "2026-11-12T00:27:28-03:00",
+ "estado_na_criacao": {
+  "execucoes_da_bateria": 0
+ },
+ "pre_voo": {
+  "o_que_era": "verificacao da VALIDADE DO INSTRUMENTO, declarada no ADENDO_02 em 11/11 as 16:03, antes de qualquer execucao. Nem o Nemotron-3.5-Parse nem o nemotron-ocr-v2 nomeiam o portugues entre os idiomas avaliados.",
+  "paginas": [
+   10,
+   21,
+   13
+  ],
+  "por_que_essas": "uma de texto corrido com camada de texto real (p.10, 1407 caracteres), uma de legenda e mapa (p.21) e uma de tabela (p.13). So a p.10 permite medicao automatica, porque so ela tem referencia.",
+  "instrumento": "contagem de caracteres com diacritico (combinantes Unicode mais cedilha) na saida de cada ferramenta contra a camada de texto do PDF da p.10, extraida com pypdf",
+  "criterio_declarado_antes": {
+   "aprovado": ">= 95% dos tipos preservados",
+   "com_ressalva": "80% a 95%",
+   "reprovado": "< 80%"
+  },
+  "resultados": {
+   "Docling (incumbente, braco B)": {
+    "acentuados": 59,
+    "taxa": "100%",
+    "tipos_preservados": "100%",
+    "veredito": "APROVADO"
+   },
+   "Nemotron-3.5-Parse (braco G)": {
+    "acentuados": 60,
+    "taxa": "102%",
+    "tipos_preservados": "100%",
+    "veredito": "APROVADO"
+   },
+   "nemotron-ocr-v2 ingles (braco H)": {
+    "veredito": "NAO EXECUTADO"
+   },
+   "nemotron-ocr-v2 multilingue (braco H)": {
+    "veredito": "NAO EXECUTADO"
+   }
+  },
+  "limitacao_do_instrumento": "a contagem detecta QUEM PERDE acento, nao quem TROCA um acento por outro. A conferencia visual do Mateus nas paginas 21 e 13, que nao tem referencia, continua necessaria."
+ },
+ "braco_H_nao_executado": {
+  "resultado": "NAO EXECUTADO",
+  "causa_raiz": "descompasso de ferramental da workstation: a GPU e Blackwell (RTX 5060 Ti, compute capability 12.0, sm_120) e o CUDA instalado no sistema e 12.4, que e anterior ao suporte a essa arquitetura. O pacote do nemotron-ocr-v2 exige compilar uma extensao CUDA propria.",
+  "tentativas": [
+   {
+    "n": 1,
+    "abordagem": "compilar com o ferramental padrao",
+    "falha": "o gcc 15 do sistema e recusado pelo CUDA 12.4, que exige versao menor que 14"
+   },
+   {
+    "n": 2,
+    "abordagem": "usar gcc-13, que existe na maquina",
+    "falha": "nvcc fatal: Unsupported gpu architecture 'compute_120'. O pacote pip nvidia-cuda-nvcc-cu12 nao resolve: ele traz apenas o ptxas, nao o binario nvcc"
+   },
+   {
+    "n": 3,
+    "abordagem": "nvcc 13.4 do toolkit presente no env_cuopt, com torch 2.14+cu130",
+    "falha": "o torch 2.14 traz cabecalhos que exigem C++20 e o pacote compila com -std=c++17. Erros em operator!= sobre intrusive_ptr e em at::symint"
+   },
+   {
+    "n": 4,
+    "abordagem": "nvcc 13.4 com torch 2.9.1+cu130, da geracao C++17",
+    "falha": "incompatibilidade entre o nvcc 13.4 e os cabeçalhos do torch 2.9.1 em ATen/core/List_inl.h"
+   }
+  ],
+  "limite_respeitado": "o numero de tentativas foi limitado deliberadamente. A terceira tentativa foi seguida de uma quarta por decisao explicita e declarada ao Mateus, porque a falha havia MUDADO de natureza e havia uma correcao obvia nao tentada. Depois da quarta, parou.",
+  "nao_houve_substituicao": "o braco H NAO foi trocado por outro modelo de OCR. Braco que nao roda e reportado como nao executado."
+ },
+ "consequencia_para_a_bateria": {
+  "bracos_executaveis": [
+   "A",
+   "B",
+   "C",
+   "D",
+   "E",
+   "G"
+  ],
+  "total": 6,
+  "o_que_se_perde": "a DECOMPOSICAO do eventual ganho do braco G entre compreensao estrutural e OCR melhor. Se G vencer A e B, nao sera possivel dizer quanto do ganho vem de entender tabela e quanto vem de ler letra melhor. O relatorio final tem de declarar essa lacuna em vez de atribuir a causa.",
+  "quem_pediu_essa_decomposicao": "o proprio Mateus, em 11/11, ao escolher acrescentar o braco do OCR junto com o do extrator. A lacuna e exatamente o que ele quis evitar, e por isso ela se declara."
+ },
+ "achado_de_ecossistema": {
+  "titulo": "a workstation tem GPU Blackwell e CUDA de geracao anterior",
+  "fato": "nvcc do sistema: 12.4. GPU: sm_120. O primeiro CUDA com suporte a Blackwell de consumo e o 12.8.",
+  "por_que_fica_invisivel": "o PyTorch distribui o proprio CUDA embutido, entao treinar e inferir funcionam normalmente. O descompasso so aparece ao COMPILAR extensao CUDA de terceiros, e a mensagem de erro nao diz isso de forma obvia.",
+  "onde_existe_nvcc_mais_novo": "~/env_cuopt/lib/python3.14/site-packages/nvidia/cu13/bin/nvcc, versao 13.4, verificado compilando um arquivo de teste para sm_120",
+  "previsao": "qualquer pacote futuro que compile extensao CUDA nesta maquina vai falhar do mesmo jeito ate o CUDA do sistema ser atualizado",
+  "registrar_em": "CLAUDE.md do ecossistema"
+ }
+}

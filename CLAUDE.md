@@ -1445,3 +1445,92 @@ rede nova derruba a ponte inteira outra vez, sem nenhuma mudanca de configuracao
 FERRAMENTA QUE FICOU. D:\95 - TEMP\rede_10013.bat, so leitura, separa (A), (B) e (C) em
 um minuto e nomeia o filtro quando roda como administrador. Obsoleta para esta ocorrencia,
 util se a VPN religar sozinha.
+
+================================================================================
+11-12/11/2026  BATERIA DE RECUPERACAO DO ANUARIO DER-PR: NOVE LICOES
+================================================================================
+
+RESULTADO. Seis bracos, 3 passadas, 28 perguntas pontuaveis. Vence o Docling COM
+OCR: 50% de acerto@1 e 75% de acerto@5. Registro completo em
+bench/suites/recuperacao_anuario_derpr_ADENDO_07.json.
+
+O PRE-REGISTRO SOBREVIVEU, E E ESSE O ACHADO DE PROCESSO. O arquivo de 24/10
+continua byte a byte identico, dde54454c84ddd7e, depois de SETE adendos que
+acrescentaram bracos, corpus, gabarito, eliminacao por licenca, resultado de
+pre-voo e resultado final. Padrao a repetir: o pre-registro NUNCA se edita;
+mudanca vira adendo datado, com a razao escrita e o hash do estado anterior.
+
+1. PREMISSA CERTA NAO GARANTE INFERENCIA CERTA. A suite partia de "a substancia
+   esta em imagem", e estava certa: o braco SEM OCR acerta 18% e fica na posicao
+   media 16 de 58. Eu inferi dai que ferramentas de texto perderiam. O MESMO
+   Docling COM OCR venceu tudo com 50%. "A informacao nao esta na camada de
+   texto" nao implica "ferramenta de texto perde": o OCR recupera o que falta.
+
+2. O CUSTO E DO MODELO, NAO DO PARADIGMA. Calculei 198 a 708 GB de indice para
+   interacao tardia e desenhei o criterio em cima disso. O ColQwen2.5 projetou
+   8,9 GB, vinte vezes menos: 747 vetores por pagina com DIMENSAO 128, contra
+   2560 a 4096 da familia ColEmbed. Custo = vetores_por_pagina x dimensao.
+   Atribuir a conta de uma familia ao paradigma inteiro foi generalizacao minha.
+
+3. CONFIANTEMENTE ERRADO E PIOR QUE INDECISO. O reordenador VL manteve o
+   acerto@5 e cortou o acerto@1 pela metade. Hipotetizei amplitude baixa de
+   notas em tabela; o teste REFUTOU: amplitude identica nos dois grupos (1,03), e
+   MAIOR quando estragou (1,23) do que quando consertou (0,81). A pagina certa
+   estava disponivel em 24 das 28, e ele afundou 5 para consertar 1.
+
+4. QUEM FAZ O GABARITO NAO PODE SER UM DOS BRACOS. Modelo de visao lendo pagina e
+   estruturalmente o que os bracos visuais fazem. O gabarito foi feito por
+   leitura humana das 58 paginas. Nao e formalidade: e o que impede escrever a
+   prova e corrigir a prova.
+
+5. O INSTRUMENTO DE COLETA TAMBEM TEM VIES. Ofereci ao leitor humano tres
+   opcoes, "no texto", "em imagem" e "ausente". Tabela PARECE texto para o olho e
+   E imagem para o extrator. Vieram 26 de 30 como "texto"; recalculado por
+   programa, 5 texto e 23 imagem. As PAGINAS anotadas valiam todas; o rotulo e
+   que foi perguntado a quem nao podia responder. Pergunta de maquina nao se faz
+   a humano.
+
+6. HASH DO CORPUS, NAO SO DA SUITE. Em 24/10 registrei o hash da suite e nao o do
+   PDF. Em 11/11 o arquivo nao estava em nenhuma das duas maquinas. Salvou-se
+   porque a caracterizacao registrada ("145 a 1107 caracteres") continha dois
+   valores que existem EXATAMENTE no vetor do arquivo rebaixado. Sorte, nao
+   metodo. Regra: hash do corpus, e INSTRUMENTO declarado em toda caracterizacao.
+
+7. LICENCA SE LE NO CARTAO E NA API, ANTES DE BAIXAR O PESO. O blog da NVIDIA
+   sobre a familia ColEmbed V2 nao declarava licenca e dizia "intended for
+   researchers". O campo da API dizia cc-by-nc-4.0, NAO COMERCIAL, o que elimina
+   o modelo para entregavel sob contrato. Blog de fabricante nao e fonte de
+   licenca.
+
+8. ESTA MAQUINA TEM GPU BLACKWELL E CUDA DE GERACAO ANTERIOR. nvcc do sistema:
+   12.4. GPU: sm_120. O suporte a Blackwell comeca no CUDA 12.8. Fica invisivel
+   no uso normal porque o PyTorch traz o proprio CUDA, e QUEBRA toda compilacao
+   de extensao CUDA de terceiros, com mensagem que nao diz isso. Custou quatro
+   tentativas e o braco H ficou NAO EXECUTADO. Existe nvcc 13.4 em
+   ~/env_cuopt/.../nvidia/cu13/bin/nvcc, que compila para sm_120 (testado).
+   Encadeamento das falhas, para a proxima vez: gcc 15 recusado pelo CUDA 12.4;
+   nvcc 12.4 nao conhece compute_120; pacote pip nvidia-cuda-nvcc-cu12 traz so o
+   ptxas; torch 2.14 exige C++20 e o pacote compila em C++17; torch 2.9.1 colide
+   com o nvcc 13.4 em ATen/core/List_inl.h.
+
+9. NAO CONSTRUIR MEDIDOR PROPRIO QUANDO HA FONTE AUTORITATIVA. Errei a medicao
+   QUATRO vezes nesta rodada: supus que a divergencia da camada de texto vinha de
+   extrator diferente (refutado em 4 extratores); medi tamanho de modelo com du
+   sobre atalhos; repeti com du sobre blobs; comparei saida de 3 paginas do
+   Docling contra referencia de 1 pagina. Em todos, a resposta certa veio de
+   perguntar a quem e dono do dado: hf_hub_download devolveu o caminho real, o
+   proprio vetor de caracteres continha os valores, o Docling rodado pagina a
+   pagina deu 100%. Cheguei a anunciar ao Mateus que quatro de cinco downloads
+   tinham falhado; estavam todos completos.
+
+NAO DETERMINISMO DO EMBEDDER DE PRODUCAO. Textos extraidos: byte a byte identicos
+nas 3 passadas, Docling e Parse sao deterministicos. O qwen3-embedding:4b servido
+pelo Ollama NAO e: a ordem da cauda muda em 30 de 30 perguntas e a primeira
+posicao muda em ate 4 de 30. O desvio no acerto@1 foi 0,0 pontos, mas uma passada
+unica teria dado o mesmo numero POR SORTE. As 3 passadas declaradas em 24/10 sao o
+que permite afirmar isso.
+
+O QUE O RESULTADO NAO SUSTENTA. Nao sustenta adotar reordenador VL; nao sustenta
+que o paradigma visual perde (o braco C e geracao anterior, o F foi eliminado por
+licenca e o teto nao foi medido); nao generaliza para edital, decisao de tribunal
+ou relatorio tecnico, porque e um unico documento de um unico tipo.

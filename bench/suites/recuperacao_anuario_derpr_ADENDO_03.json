@@ -1,0 +1,53 @@
+{
+  "adendo": "recuperacao_anuario_derpr_ADENDO_03",
+  "assunto": "identidade do corpus e correcao de dois defeitos do pre-registro de 24/10",
+  "suite_original": "recuperacao_anuario_derpr.json",
+  "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+  "criado_em": "2026-11-11T17:52:26-03:00",
+  "estado_na_criacao": {
+    "execucoes_anteriores": 0
+  },
+  "defeitos_do_pre_registro_de_24_10": [
+    "O sha256 do PDF do corpus NAO foi registrado. Registrou-se o hash da suite, nao o do documento. Em 11/11 o arquivo nao estava em nenhuma das duas maquinas, e sem hash nao haveria como provar que um download novo era o mesmo documento.",
+    "A caracterizacao da camada de texto ('145 a 1107 caracteres por pagina') foi registrada SEM declarar o instrumento que a produziu nem o conjunto de paginas medido. Medicao sem instrumento declarado nao e reproduzivel.",
+    "Os dois defeitos sao do Claude, na redacao daquele pre-registro."
+  ],
+  "corpus": {
+    "arquivo": "DERPR_Anuario_Estatistico_Seguranca_Rodoviaria_2022_v2.pdf",
+    "fonte_oficial": "https://www.der.pr.gov.br/sites/der/arquivos_restritos/files/documento/2024-08/DERPR_Anuario_Estatistico_Seguranca_Rodoviaria_2022_v2.pdf",
+    "obtido_em": "2026-11-11T17:50-03:00",
+    "local": "~/ecossistema/bench/dados/DERPR_Anuario_Estatistico_Seguranca_Rodoviaria_2022_v2.pdf",
+    "bytes": 45338219,
+    "sha256": "c19be5398997a7ae18117ac9cdd48ee866757a293652e5f4b26f7e689368649c",
+    "paginas": 58
+  },
+  "prova_de_identidade_com_o_corpus_de_24_10": {
+    "problema": "sem hash registrado, era preciso provar por outro caminho que o download de 11/11 e o documento caracterizado em 24/10",
+    "evidencia_1": "contagem de paginas: 58 declaradas, 58 medidas",
+    "evidencia_2": "os dois valores extremos declarados em 24/10, 145 e 1107 caracteres, EXISTEM EXATAMENTE no vetor de caracteres por pagina do arquivo baixado, nas paginas 39 e 11 respectivamente",
+    "forca": "duas coincidencias numericas exatas mais a contagem de paginas. Probabilidade desprezivel em documento diferente. Identidade considerada ESTABELECIDA.",
+    "hipotese_testada_e_REFUTADA": "supus que a divergencia da faixa (medida 0 a 2526, declarada 145 a 1107) viesse de extrator diferente. Testei pypdf, pymupdf com e sem ordenacao, pdfplumber e pdfminer: NENHUM reproduz 145 a 1107, todos dao 0 a cerca de 2500. A explicacao do instrumento esta refutada.",
+    "explicacao_residual": "a faixa de 24/10 e de um SUBCONJUNTO de paginas, nao das 58. Nos valores ordenados, 145 e o 10o menor e 1107 o 4o maior. Qual foi o subconjunto nao esta registrado e nao e recuperavel."
+  },
+  "caracterizacao_refeita_com_instrumento_declarado": {
+    "instrumento": "pypdf, extract_text por pagina, contagem de caracteres apos strip",
+    "ambiente": "~/env_transporte, Python 3.14.4",
+    "medido_em": "2026-11-11T17:50-03:00",
+    "todas_as_58_paginas": {
+      "min": 0,
+      "max": 2526,
+      "mediana": 296,
+      "media": 361
+    },
+    "paginas_com_menos_de_50_caracteres": 6,
+    "distribuicao": {
+      "0_a_100": 6,
+      "100_a_300": 23,
+      "300_a_600": 24,
+      "600_a_1000": 1,
+      "acima_de_1000": 4
+    },
+    "conclusao": "a premissa da suite se confirma: a substancia esta em imagem. A camada de texto tem mediana de 296 caracteres por pagina e 6 paginas sem nada extraivel."
+  },
+  "regra_que_passa_a_valer": "Toda suite deste ecossistema registra o sha256 do CORPUS, nao apenas o da suite, e declara o instrumento de qualquer caracterizacao."
+}

@@ -1,0 +1,91 @@
+{
+  "adendo": "recuperacao_anuario_derpr_ADENDO_01",
+  "suite_original": "recuperacao_anuario_derpr.json",
+  "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+  "original_intocado": true,
+  "sha256_conferido_em": "2026-11-11T15:57:00-03:00",
+  "criado_em": "2026-11-11T16:00:00-03:00",
+  "estado_na_criacao": {
+    "execucoes_anteriores": 0,
+    "verificacao": "bench/resultados nao contem nenhum resultado desta suite em 11/11/2026",
+    "consequencia": "este adendo e anterior a qualquer execucao, entao ACRESCENTAR braco nao enviesa resultado algum desta suite"
+  },
+  "por_que_acrescentar_e_nao_substituir": [
+    "O catalogo da NVIDIA de 11/11/2026 trouxe uma familia de recuperacao visual posterior ao pre-registro de 24/10.",
+    "Numeros PUBLICOS de bancada (ViDoRe V3 e MIRACL-Vision, artigo arXiv 2602.03992) colocam o ColQwen2 como geracao anterior: 0,4728 NDCG@10 em MIRACL-Vision contra 0,6127 a 0,6860 da familia nova.",
+    "Esse numero e informacao EXTERNA, nao resultado desta suite. Ainda assim, trocar o braco C depois de ver benchmark seria escolher o concorrente olhando a resposta, que e exatamente o que o pre-registro existe para impedir.",
+    "Por isso o braco C e MANTIDO como declarado em 24/10 e passa a ter papel explicito de LINHA DE BASE DA GERACAO ANTERIOR, que e funcao legitima e informativa.",
+    "Os bracos novos sao acrescimo declarado, com data e razao, antes de qualquer execucao."
+  ],
+  "bracos_mantidos": {
+    "A": "Docling SEM OCR -> qwen3-embedding:4b  (producao hoje)",
+    "B": "Docling COM OCR -> qwen3-embedding:4b  (incumbente justo)",
+    "C": "ColQwen2.5-v0.2 sobre imagem de pagina, multivetor no LanceDB  (linha de base da geracao anterior)"
+  },
+  "bracos_acrescentados": {
+    "D": {
+      "modelo": "nvidia/llama-nemotron-embed-vl-1b-v2",
+      "tipo": "bi-encoder denso sobre imagem de pagina, 1 vetor por pagina, dim 2048",
+      "responde": "quanto se consegue sem interacao tardia, com indice em megabytes",
+      "licenca": "NVIDIA Open Model License + Llama 3.2 Community; pagina do modelo declara 'ready for commercial use'",
+      "hardware": "Blackwell listada entre as microarquiteturas suportadas; ~3,4 GB em fp16 (estimativa por contagem de parametros, a medir)",
+      "execucao": "transformers >= 4.56 com trust_remote_code, ou vLLM >= 0.17 com --max-model-len 10240"
+    },
+    "E": {
+      "modelo": "D seguido de nvidia/llama-nemotron-rerank-vl-1b-v2",
+      "tipo": "duas etapas: recuperacao densa e reordenacao por cross-encoder sobre imagem de pagina",
+      "responde": "se a reordenacao recupera a distancia para a interacao tardia sem pagar o armazenamento dela",
+      "licenca": "NVIDIA Open Model License + Llama 3.2 Community; declara 'ready for commercial use'",
+      "hardware": "os dois modelos residentes somam ~7 GB em fp16 (estimativa), contra 15,9 GB disponiveis na RTX 5060 Ti",
+      "observacao": "esta e a arquitetura candidata a producao; D existe para isolar quanto do resultado vem do reranqueador"
+    },
+    "F": {
+      "modelo": "nvidia/nemotron-colembed-vl-4b-v2",
+      "tipo": "interacao tardia com MaxSim, multivetor, dim 2560, ~773 vetores por pagina (Qwen3-VL)",
+      "responde": "o teto de acuracia desta familia, para medir o que D e E deixam na mesa",
+      "licenca": "NAO DECLARADA no material publico consultado em 11/11; o blog descreve a familia como 'intended for researchers'",
+      "condicao_de_execucao": "F SO roda se a licenca for conferida no cartao do modelo e permitir uso compativel. Se nao permitir, F fica como referencia bibliografica e NAO como braco, e isso e registrado no resultado.",
+      "hardware": "4,82B de parametros, ~9,6 GB em fp16 [estimativa], contra 15,9 GB disponiveis",
+      "CORRECAO_REGISTRADA": {
+        "o_que_mudou": "o braco F foi declarado as 16:00 como llama-nemotron-colembed-vl-3b-v2 e foi trocado as 16:05 pelo 4b-v2",
+        "por_que": "o 3b foi escolhido por contagem de parametros, ignorando vetores por pagina, que e o termo DOMINANTE do armazenamento. O 3b usa ladrilhamento Eagle 2 e gera ~2304 vetores por pagina contra ~773 do 4b: projeta ~708 GB em 50 mil paginas, 3,5 vezes acima do limite confirmado, enquanto o 4b projeta ~198 GB e cabe. O 4b tambem cabe na VRAM.",
+        "quando": "antes de qualquer execucao desta suite; nenhum resultado existia ou existe",
+        "de_quem_foi_o_erro": "do Claude, na proposta das 16:00"
+      }
+    }
+  },
+  "metrica_acrescentada": {
+    "nome": "custo de indice",
+    "o_que_medir": "bytes de indice por pagina, medidos de fato em cada braco sobre as 58 paginas",
+    "o_que_projetar": "extrapolacao declarada para 10.000 e 50.000 paginas",
+    "ADVERTENCIA_DE_METODO": "o corpus tem 58 paginas. Nessa escala o indice cabe em qualquer braco, entao ESTA SUITE E INCAPAZ DE REVELAR O PROBLEMA DE ARMAZENAMENTO. A projecao e calculo declarado, NAO resultado medido, e tem de ser reportada como tal. Sem isso, o braco de maior acuracia vence uma comparacao que ignora o custo dele, e o problema so aparece na escala real do acervo.",
+    "ordem_de_grandeza_publicada": "por milhao de paginas: ~3,8 GB no denso contra ~5.897 GB no colembed 8b (artigo arXiv 2602.03992). O proprio artigo adverte que os dois 1B comparados diferem tambem em dado de treino e codificador de imagem, entao nao e teste limpo de interacao tardia."
+  },
+  "criterio_de_decisao_declarado_antes": {
+    "o_que_decide": "qual braco entra no papeis.json como papel de recuperacao visual",
+    "regra": "vence o maior acerto@5 ENTRE OS BRACOS CUJA PROJECAO DE INDICE PARA 50.000 PAGINAS CAIBA NO LIMITE ABAIXO",
+    "limite_de_indice_para_50k_paginas_GB": 200,
+    "status_do_limite": "CONFIRMADO POR MATEUS em 2026-11-11T16:05-03:00, antes de qualquer execucao",
+    "empate": "diferenca de um unico braco em uma unica passada e empate tecnico, nao vitoria. Valem as 3 passadas ja declaradas na suite original.",
+    "se_nenhum_couber": "entra o melhor que couber, e a distancia para o teto fica registrada no resultado como divida tecnica, nao como derrota",
+    "aritmetica_do_custo_de_indice": {
+      "formula": "bytes_por_pagina = vetores_por_pagina * dimensao * 2 (fp16)",
+      "projecao_50k_paginas_GB": {
+        "denso_1b (D, E)": 0.205,
+        "colembed_3b": 707.8,
+        "colembed_4b": 197.9,
+        "colembed_8b": 316.6
+      },
+      "conferencia_independente": "o artigo publica ~5897 GB por milhao de paginas no 8b; esta formula da 6332 GB por milhao. Mesma ordem por caminho independente.",
+      "rotulo": "[estimativa] vetores por pagina sao valores tipicos do artigo e dependem do documento. A projecao tem de ser MEDIDA nas 58 paginas, nao assumida.",
+      "advertencia": "o colembed_4b projeta 197,9 GB contra limite de 200, ou seja 99% do limite. Variacao pequena em vetores por pagina REPROVA o braco F pelo criterio declarado. Isso e o criterio funcionando."
+    }
+  },
+  "o_que_este_adendo_NAO_faz": [
+    "nao altera as 30 perguntas",
+    "nao altera o gabarito, que segue None em todas",
+    "nao altera a metrica original (acerto@1, acerto@5, posicao, granularidade de pagina)",
+    "nao altera as 3 passadas nem a separacao de latencia fria e quente",
+    "nao remove nem reordena nenhum braco original"
+  ]
+}
