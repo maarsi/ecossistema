@@ -18,3 +18,12 @@ __pycache__/
 *.log
 *.tmp
 .env
+
+# bateria DER-PR: material de trabalho, nao e codigo nem registro
+bench/derpr/cuda128/
+bench/derpr/fonte_ocr/
+bench/derpr/paginas/
+bench/derpr/textos/
+bench/derpr/prevoo/paginas/
+bench/derpr/*.pdf
+bench/derpr/prevoo/*.pdf
