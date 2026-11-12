@@ -1857,3 +1857,58 @@ ESTADO FINAL DA PASTA ecossistema, medido pela origem:
   Zurich      100,00%
   geneve      100,00%   (estava 96,89% no inicio da sessao)
   Duebendorf   99,97%   1 item de 51361 bytes, conectada, em transito
+
+
+================================================================================
+12/11 (continuacao) - A VARREDURA QUE NUNCA TERMINAVA: MONTAGEM DE NUVEM NA HOME
+================================================================================
+
+O SINTOMA. Duas varreduras 'find' na home, uma na Ubuntu e outra no Zurich,
+passaram de 32 e de 19 minutos sem produzir UMA LINHA de saida. Eu interpretei
+como "home grande, travessia lenta" e deixei correr. Errado nas duas vezes.
+
+A CAUSA, achada por /proc. Lendo /proc/<pid>/fd do processo find, vi onde ele
+estava: /home/mateusaraujoesilva/gdrive/iCloudDrive/BANCO_DE_DADOS/Aeroportos.
+O find estava caminhando por DENTRO DE UMA MONTAGEM DE REDE, pela rede, arquivo
+por arquivo. Confirmado por findmnt:
+
+  Zurich  /home/mateusaraujoesilva/gdrive   fuse.rclone
+  Ubuntu  /home/mateus/GoogleDrive          fuse.rclone
+  Ubuntu  /media/mateus/DADOS_01            cifs
+
+As DUAS maquinas tem o Google Drive montado por rclone dentro da home. Varrer a
+home sem restricao significa varrer 30 TiB de Drive pela rede. Nao termina.
+
+A CORRECAO, com medicao do antes e depois. A mesma busca com -xdev, que proibe o
+find de atravessar fronteira de sistema de arquivos:
+
+  sem -xdev   19 minutos, ZERO linhas, tres processos empilhados e presos
+  com -xdev   MENOS DE UM SEGUNDO, 4214 arquivos encontrados
+
+REGRA PERMANENTE. Toda varredura de home nestas maquinas usa -xdev. Sem excecao.
+E conferir o resultado com 'grep -c /gdrive/' ou 'grep -c GoogleDrive': se der
+diferente de zero, a montagem foi atravessada e a lista nao presta.
+
+TRES DIAGNOSTICOS MEUS QUE ESTAVAM ERRADOS POR ESSA CAUSA.
+  1. "A home da Ubuntu e grande, por isso demora." Era a montagem, nao o tamanho.
+  2. "Indicio forte de que nao ha conflito na Ubuntu, porque o find nao produziu
+     nada em 32 minutos." Raciocinio invalido: o find nao tinha chegado a varrer
+     a home de verdade, estava perdido no Drive. A conclusao certa veio da
+     varredura DIRIGIDA em seis diretorios, que respondeu em segundos, e foi
+     depois confirmada pela varredura completa com -xdev: ZERO conflitos, e zero
+     tambem dentro da pasta ecossistema.
+  3. "1375 conflitos no Zurich." Numero de uma busca limitada a tres diretorios
+     com profundidade 6. O correto, com -xdev na home inteira: 4214 arquivos,
+     482,2 MB, todos de 04/10/2026.
+
+LICAO DE METODO, a terceira da mesma familia nesta sessao. Processo que nao
+produz saida nao esta necessariamente trabalhando no que eu mandei. Antes de
+atribuir lentidao a volume, LER /proc/<pid>/fd ou /proc/<pid>/cwd e descobrir
+onde o processo esta de fato. Custa uma chamada. As outras duas da familia foram
+o 'pgrep' que casava com o proprio comando de teste, e o 'cat' pendurado que
+simulou progresso por 40 minutos.
+
+ESTADO FINAL DOS CONFLITOS DE 04/10, apos a correcao do metodo:
+  geneve  5496 apagados, 442,5 MB, manifesto 58b82c9ee3ede4a2, conferido: 0 restam
+  Zurich  4214 a apagar, 482,2 MB, com manifesto, em curso
+  Ubuntu  ZERO, por varredura completa com -xdev. Nao foi reciproco.
