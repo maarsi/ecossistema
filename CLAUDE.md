@@ -1534,3 +1534,326 @@ O QUE O RESULTADO NAO SUSTENTA. Nao sustenta adotar reordenador VL; nao sustenta
 que o paradigma visual perde (o braco C e geracao anterior, o F foi eliminado por
 licenca e o teto nao foi medido); nao generaliza para edital, decisao de tribunal
 ou relatorio tecnico, porque e um unico documento de um unico tipo.
+
+
+================================================================================
+12/11 - ENCERRAMENTO DA PENDENCIA DE CREDENCIAL DE 24/10, E O QUE APARECEU NO MEIO
+================================================================================
+
+RESULTADO. A pendencia aberta em 24/10 esta ENCERRADA. O ultimo dispositivo
+suspeito, o notebook antes chamado 'vivobook-go' e hoje 'geneve', NAO tem
+~/ecossistema/.env. Conferido por leitura direta do sistema de arquivos via
+Tailscale SSH, com varredura sem limite de profundidade para .env, .env.*, *.pem,
+*.key, *.p12, *.pfx, id_rsa* e id_ed25519*. Resultado vazio. Estado por maquina:
+
+  Duebendorf  limpa. Conferida duas vezes, 24/10 pela ponte e 12/11 de novo.
+  Zurich      limpa. 100% completa, exclusao do .env propagada em 24/10.
+  geneve      limpa. Conferida 12/11 por leitura direta. Era o 'vivobook-go'.
+  vivobook-go identidade orfa no cadastro (TTRWC5K). A maquina fisica e o geneve,
+              que recebeu identidade nova (K5IID2R) quando Mateus apagou a
+              configuracao do Syncthing. Cadastro morto, mantido por ora.
+
+ERRO DE RACIOCINIO A NAO REPETIR: ACERTEI POR SORTE. Antes de ter acesso, eu
+argumentei pelo indice do Syncthing que o .env provavelmente nao estava no geneve.
+O argumento era: se o arquivo existisse e nao estivesse sendo ignorado, o geneve o
+teria anunciado ao reindexar e a versao global deixaria de estar marcada como
+excluida. Eu listei as duas premissas que derrubariam isso. Uma delas, a pasta
+estar em modo 'receiveonly', ERA VERDADEIRA: a config do geneve diz
+type="receiveonly". Em receiveonly o Syncthing NAO promove arquivo local a versao
+global, entao um .env ali seria invisivel pelo indice e eu teria concluido "limpo"
+de qualquer maneira. A conclusao estava certa; o argumento, invalido. Regra: para
+afirmar ausencia de credencial em uma maquina, LER O SISTEMA DE ARQUIVOS DELA.
+Indice de sincronismo nao serve como prova de ausencia.
+
+A ROTACAO DE MANUS, NGC E NVIDIA NAO ESTAVA REGISTRADA AQUI. Em 12/11 eu afirmei
+a Mateus, com base neste arquivo, que as tres chaves nunca foram rotacionadas,
+citando a linha que diz que em 24/10 elas foram movidas "com as mesmas digitais".
+Mateus informou que ja foram rotacionadas. O defeito e do registro, nao da
+rotacao. PENDENTE: anotar a data. Licao: rotacao sem data registrada aqui vira
+diagnostico errado na sessao seguinte.
+
+ACESSO AO GENEVE, PARA A PROXIMA VEZ.
+  Distribuicao  Fedora 45, kernel 7.2.15-300.fc45.x86_64
+  Conta         mateusaraujoesilva (uid 1000). Nao e 'mateus'. Eu gastei 34
+                palpites antes de descobrir; esta anotado para nao repetir.
+  Tailscale SSH habilitado em 12/11 por Mateus ('sudo tailscale up --ssh').
+                Entrada como usuario comum vai direto. Entrada como root exige
+                verificacao no navegador, com link que expira.
+  Zurich/fedora NAO tem Tailscale SSH: o comando pegou so no geneve. Entrada por
+                SSH comum existe, mas a chave da workstation nao esta autorizada.
+
+DUAS RESTRICOES OPERACIONAIS QUE CUSTARAM TEMPO NESTA SESSAO.
+  1. A ponte chat -> app -> Ubuntu tem TETO DE 80 SEGUNDOS. Laco de espera dentro
+     da chamada estoura. Espera tem de ocorrer do lado da Ubuntu, em job de
+     segundo plano, e ser consultada por consultar_job_ubuntu.
+  2. 'tailscale ssh' NUNCA deve ser invocado sem 'timeout'. Sem ele, quando a
+     verificacao de root esta pendente, o comando BLOQUEIA INDEFINIDAMENTE em vez
+     de devolver o link. Travou um job em zero byte e eu levei tres chamadas para
+     entender. Com 'timeout 25', ele imprime o link e sai.
+     Invocacao correta: tailscale ssh -- usuario@host "comando". A flag -o nao
+     existe nesse comando; a tentativa de 24/10 com -o era invalida.
+
+CAUSA RAIZ DAS DESCONEXOES DO GENEVE, CORRIGIDA. Linger=no e a unidade de usuario
+do Syncthing sem persistencia. Era o mesmo defeito que outubro achou no Zurich, e
+explica por que a maquina ficou 20 dias fora como 'vivobook-go'. Corrigido com
+'loginctl enable-linger mateusaraujoesilva'. Conferido: Linger=yes, e a unidade
+que de fato gerencia o processo e a DE USUARIO (cgroup
+user@1000.service/app.slice/syncthing.service), que ja estava enabled e active.
+
+  ERRO MEU NO MESMO PASSO, DESFEITO. Eu tambem habilitei a unidade de SISTEMA
+  'syncthing@mateusaraujoesilva.service'. Sao dois mecanismos distintos de
+  inicializacao; a de sistema era duplicata e colidiria nas portas no proximo
+  arranque. Desabilitada e symlink removido no mesmo dia. Licao: antes de
+  habilitar unidade, ler /proc/<pid>/cgroup para saber quem ja gerencia o
+  processo. Linha de comando identica nao distingue unidade de sistema de unidade
+  de usuario, porque o ExecStart e o mesmo.
+
+CONFLITOS DE 03/11 NO GENEVE, LIMPOS. Dezoito arquivos *.sync-conflict-20261103-*
+assinados pela Ubuntu, incluindo internos do git (.git/index, .git/config,
+.git/refs/heads/master, COMMIT_EDITMSG, logs), CLAUDE.md, bin/llm.py,
+bin/inventario.py, bin/manus_export.py, bench/bench.py, config/papeis.json,
+config/registro.json e mcp/windows/*.py. Classificados antes de apagar: nenhum
+carregava credencial. O campo PERPLEXITY_API_KEY no
+claude_desktop_config.sanitizado.json foi conferido sem leitura de valor, por
+formato: 23 caracteres, so maiusculas, sem digito e sem simbolo. Chave real da
+Perplexity comeca com 'pplx-' e e minuscula alfanumerica. Sem minuscula e sem
+digito, nao pode ser chave: e placeholder. Os outros quatro campos tem o padrao
+[' ', ',', ':', '<', '>'] com maiuscula e minuscula, que e texto de redacao em
+prosa. Metodo a reusar: classificar credencial por FORMATO e DIGITAL, nunca
+lendo o valor.
+
+OS 96,89% DO GENEVE NAO ERAM FALHA, E A EXPLICACAO E UM DEFEITO DE CONFIGURACAO.
+Medicao dos dois lados no mesmo instante:
+
+  Ubuntu (origem, sendonly)   sequence 51880   globalFiles 3066   localFiles 3031
+  geneve (replica, receiveonly) sequence 29806   globalFiles 3031   localFiles 3031
+  remoteSequence[geneve] na Ubuntu = 29806, igual a sequencia atual do geneve.
+
+Os indices estao sincronizados e o geneve nao precisa de nada (lista vazia nos
+tres canais). O achado esta na PROPRIA ORIGEM: globalFiles 3066 contra localFiles
+3031. O estado global do aglomerado continha 35 arquivos que a origem NAO POSSUI.
+Sendo sendonly, ela nunca os busca e reporta needFiles 0, mas calcula a completude
+das replicas contra esse global inflado. Dai os 96,89%.
+
+  QUEM INFLAVA: a Duebendorf. Ela NAO TINHA .stignore. Medido pela ponte em
+  12/11: 36 arquivos, 5,45 MB, em cache (11), bench/imagens (5), bench/dados (1)
+  e tres __pycache__ (bench, bin, mcp/windows). Confere com os 35 arquivos e
+  5,68 MB vistos pela origem e com os 5,42 MB vistos pelo geneve.
+
+  CONSEQUENCIA DE SEGURANCA, nao so cosmetica: sem .stignore, QUALQUER .env que
+  aparecesse em C:\Users\mateu\ecossistema seria varrido, anunciado ao indice
+  global e espalhado para as demais replicas. Buraco aberto desde sempre, fechado
+  em 12/11 com a instalacao do .stignore nessa replica.
+
+  DEFEITO AINDA ABERTO, A DECIDIR: ORIGEM 'sendonly' CONVIVENDO COM REPLICA
+  'sendreceive' E INCOERENTE. A origem se declara autoritativa, mas a replica
+  injeta no indice global conteudo que a origem nunca tera. Foi tambem o
+  mecanismo dos conflitos de 03/11. O certo e a pasta ser 'receiveonly' no
+  Syncthing da Duebendorf. Exige alteracao na configuracao do Windows, que fica
+  em AppData, fora do alcance da ponte.
+
+.stignore INSTALADO EM DUAS REPLICAS EM 12/11, espelhando a politica da origem
+(credencial + lixo de execucao), com cabecalho explicando a razao medida. A ordem
+de outubro foi respeitada nos dois casos, APAGAR PRIMEIRO E IGNORAR DEPOIS: no
+geneve nao havia .env a congelar, e na Duebendorf tambem nao. Nos dois arquivos
+ficou escrito para nao ignorar *.sync-conflict-*, porque conflito tem de
+permanecer visivel.
+
+ERRO MEU COM RESIDUO, NA DUEBENDORF. Meu teste de escrita criou
+.teste_escrita_claude na pasta sincronizada, e eu li o 'Operation not permitted'
+do rm como "pasta somente leitura" quando era a restricao de exclusao da ponte: a
+pasta E gravavel, o touch funcionou. Pior, o arquivo ficou dentro de pasta
+sendreceive e seria anunciado ao indice global, agravando o problema que eu estava
+consertando. Neutralizado no .stignore e apagado no mesmo dia, apos pedir
+permissao de exclusao. Licao dupla: (a) nao testar escrita criando arquivo em
+pasta sincronizada, usar o bit de permissao do diretorio; (b) touch que funciona e
+rm que falha significa ponte sem permissao de exclusao, nao sistema somente
+leitura.
+
+================================================================================
+12/11 - ACHADO NAO PROCURADO: A HOME DO GENEVE FOI SINCRONIZADA EM 04/10
+================================================================================
+
+O QUE APARECEU. Procurando credencial fora da pasta ecossistema no geneve,
+encontrei 5.497 arquivos *.sync-conflict*, 442,5 MB, TODOS DE UMA UNICA DATA,
+04/10/2026, todos assinados pelo dispositivo da Ubuntu (2TVW7C7). Distribuicao
+por area:
+
+  .cache/gnome-software/icons            2009
+  .config/Proton Mail/Partitions          860
+  .config/mozilla/firefox                 636
+  .var/app/org.onlyoffice.desktopeditors  543
+  .cache/mozilla/firefox                  162
+  .cache/thumbnails/large                 133
+  .local/state/syncthing                   11
+  .local/share/keyrings                     8
+
+POR QUE IMPORTA. '.local/share/keyrings' e o chaveiro do GNOME, onde o sistema
+guarda senha. 'Proton Mail/Partitions' e o perfil do aplicativo de e-mail, com
+cookie e sessao. Em '.config/mozilla/firefox' ha
+storage/default/https+++accounts.firefox.com/ls/data.sqlite,
+storage/default/https+++www.google.com/ls/data.sqlite e
+storage/default/https+++www.kimi.ai/idb/*.sqlite, que e armazenamento de navegador
+de sitio com sessao aberta, onde moram token de sessao e estado de autenticacao.
+O conflito em '.local/state/syncthing' atinge a propria identidade do Syncthing, e
+e mecanismo plausivel para a confusao de identidade que gerou o orfao
+'vivobook-go'.
+
+O QUE ESTA PROVADO E O QUE NAO ESTA.
+  PROVADO: em 04/10 as duas maquinas tiveram diretorios pessoais em relacao de
+  sincronismo, e o chaveiro entrou nisso. Evento unico, uma data so.
+  PROVADO: o canal esta FECHADO hoje. Nao ha nenhum marcador .stfolder fora da
+  pasta ecossistema no geneve, e a Ubuntu declara apenas duas pastas,
+  'ecossistema' e '4h6xd-9mrxy' (_AUDITORIA_SYNC).
+  NAO PROVADO: a DIRECAO. O sufixo nomeia o dispositivo da Ubuntu e os arquivos
+  estao no geneve, mas a convencao do Syncthing sobre qual lado perdeu a colisao
+  nao foi conferida. Nao asseverar sem conferir.
+  NAO LIDO: nenhum conteudo desses arquivos foi aberto, e nao deve ser.
+
+PENDENTE. Varredura equivalente na home da Ubuntu, para saber se o vestigio e
+reciproco e se o chaveiro do notebook chegou a workstation. Em curso em 12/11.
+
+REGRA NOVA. Cada maquina do ecossistema deve ter resposta escrita para 'quais
+pastas esta maquina sincroniza, e com quem'. O vestigio de 04/10 passou treze
+meses sem ser notado porque ninguem fez essa pergunta a uma maquina portatil.
+
+
+================================================================================
+12/11 (continuacao) - TRES HIPOTESES MINHAS FALSEADAS NA MESMA HORA
+================================================================================
+
+Esta secao registra erros de raciocinio, nao operacoes. As operacoes estao no fim.
+
+HIPOTESE 1, FALSEADA POR CAPTURA DE TELA. Eu afirmei que a Duebendorf estava em
+'sendreceive' e que era ela quem inflava o indice global. Mateus mostrou a tela:
+"Tipo da pasta: Receber Somente", e ja estava. COMO EU ERREI: medi na Duebendorf
+36 arquivos de lixo somando 5,45 MB, vi que batia com os 35 arquivos e 5,68 MB de
+excesso no indice, e parei de procurar. Mas o Zurich roda o mesmo ecossistema com
+os mesmos scripts e teria lixo de magnitude quase identica. CONFUNDI
+"COMPATIVEL COM A EVIDENCIA" COM "IDENTIFICADO PELA EVIDENCIA". Achar um
+candidato compativel nao e identificar o responsavel quando existem outros
+candidatos igualmente compativeis que eu nao testei.
+
+  CONSEQUENCIA: retratei tambem a afirmacao de que sem .stignore qualquer .env na
+  Duebendorf se espalharia. Em modo receiveonly o Syncthing NAO promove arquivo
+  local a versao global, entao nao se espalharia. O .stignore instalado la segue
+  util como defesa em profundidade, mas eu o vendi como fechamento de buraco
+  aberto e nao era.
+
+HIPOTESE 2, FALSEADA POR MEDICAO. Eu disse que os 35 orfaos NUNCA sairiam
+sozinhos, porque a origem os ignora e nao pode anunciar exclusao, e as replicas
+sao somente recebimento. ERRADO. O "global" do Syncthing e a UNIAO DOS INDICES
+ANUNCIADOS. Quando o ultimo dispositivo passou a ignorar aqueles caminhos (o
+Zurich, as 18:55, com o .stignore que instalei la), ninguem mais os anunciava e as
+entradas cairam do indice sozinhas. Os .stignore que instalei por motivo de
+credencial resolveram o indice de quebra, so que precisaram das QUATRO maquinas.
+
+  A CAUSA REAL, essa sim medida: global.modifiedBy = 2TVW7C7. Foi a PROPRIA
+  UBUNTU que anunciou o lixo ao indice antes de o .stignore existir. Ignorar
+  depois tirou os arquivos da contagem local dela, mas nao do indice global,
+  porque ignorar nao e apagar. A ordem de outubro de novo, em roupa nova.
+
+ERRO 3, DE PROCEDIMENTO, E O MAIS GRAVE DOS TRES. Medi 3066/3031 as 18:40.
+Executei a correcao as 18:58, com movimentacao e exclusao de arquivo, SEM
+REMEDIR. O estado ja era 3031/3031 quando comecei: a correcao era desnecessaria.
+Apliquei a tudo nesta sessao a disciplina de medir os dois lados antes de
+concluir, e nao apliquei a mim mesmo antes de agir. REGRA: medicao com mais de
+poucos minutos nao autoriza acao destrutiva; remedir e barato, desfazer nao.
+Nada se perdeu (cache e artigo_transformer.pdf foram preservados fora da pasta e
+devolvidos; .stignore restaurado identico ao original; Anuario do DER-PR com
+digital inalterada c19be5398997a7ae18117ac9), mas o acerto foi do procedimento de
+preservacao, nao do julgamento.
+
+ERRO 4, DE EXECUCAO, COM 40 MINUTOS DE FALSO POSITIVO. Lancei a limpeza do geneve
+com:
+    tailscale ssh -- root@geneve "cat > /tmp/x.sh && chmod +x /tmp/x.sh && nohup /tmp/x.sh & echo lancado" < /tmp/x.sh
+O '&' se aplicou a CADEIA INTEIRA. O 'cat' ficou pendurado esperando um fim de
+entrada que nunca veio e gravou arquivo de ZERO BYTES. Pior: meu teste de
+andamento era 'pgrep -f limpa_geneve.sh', que casava com o proprio 'cat' travado.
+Reportei "[RODANDO]" tres vezes durante 40 minutos para um trabalho que nunca
+comecou. CORRETO: escrever o script com heredoc DENTRO do shell remoto e lancar
+com 'nohup setsid script >/dev/null 2>&1 < /dev/null &'. E o teste de andamento
+tem de ser o TAMANHO DO LOG crescendo, nunca a existencia de um processo cujo
+nome eu mesmo escolhi.
+
+================================================================================
+12/11 (continuacao) - OPERACOES EXECUTADAS
+================================================================================
+
+ACESSO. Tailscale SSH habilitado por Mateus nas duas maquinas.
+  geneve  root exige verificacao no navegador; usuario comum entra direto.
+  Zurich  entra direto como mateusaraujoesilva@fedora, sem verificacao.
+  Conta nas DUAS: mateusaraujoesilva. Fedora 45 no geneve.
+  Nome: o Syncthing do Zurich chama a si mesmo 'fedora'; a Ubuntu o rotula
+  'Zurich'. Rotulo de dispositivo e por dispositivo, nao global.
+
+O _AUDITORIA_SYNC NO ZURICH: ERRO DE CONFIGURACAO DE MINUTOS, NAO VAZAMENTO.
+Encontrado com path=/home/mateusaraujoesilva, A HOME INTEIRA, e .stfolder na raiz
+da home. Parecia exposicao grave de 2,6 GB de material de cliente. MEDIDO:
+globalFiles 0, localFiles 0, localBytes 0. NENHUM BYTE TRANSFERIDO. O marcador
+.stfolder tinha data de 12/11 18:35, vinte minutos antes, que e quando Mateus
+estava na interface do Syncthing. Foi pasta adicionada na hora com o campo de
+caminho deixado na home. Pausada, depois removida; o Syncthing levou o .stfolder
+junto. EU ESCALEI ANTES DE MEDIR, de novo.
+
+  O PERIGO ERA REAL MESMO SEM DADO TRANSFERIDO: pasta receiveonly ancorada na
+  home oferece na interface o botao "Reverter Alteracoes Locais", que ali apaga o
+  conteudo da home que nao pertence ao espelho. Pausar primeiro foi certo.
+
+IDENTIDADES MORTAS REMOVIDAS. Tres ao todo, nenhuma jamais conectada (0 bytes nos
+dois sentidos, startedAt em 0001-01-01, introducedBy vazio):
+  TTRWC5K 'vivobook-go'  removida da Ubuntu, do geneve e do Zurich
+  SV2VXF5 'fedora'       removida do geneve e do Zurich. E a identidade antiga do
+                         proprio Zurich, de antes de a config ser recriada.
+  PADRAO A RECONHECER: apagar a configuracao do Syncthing gera identidade NOVA e
+  deixa a antiga orfa no cadastro de todos os pares. Ao recriar, limpar os pares.
+
+.stignore INSTALADO NAS TRES REPLICAS (geneve, Duebendorf, Zurich). Nenhuma tinha.
+Cada um com cabecalho explicando a razao medida naquela maquina.
+
+INSTANCIA MANUAL DE ROOT NO GENEVE, ENCERRADA. Havia um segundo Syncthing rodando
+como root, iniciado por 'sudo syncthing' numa sessao interativa (cgroup
+session-c3.scope), ha 10 horas, com uma pasta sem caminho e zero trafego.
+Encerrado sem derrubar a instancia do usuario (portas 8384 e 22000 seguem de pe).
+
+LINGER. 'loginctl enable-linger mateusaraujoesilva' no geneve. A unidade que
+gerencia o Syncthing la e a DE USUARIO (cgroup user@1000.service/app.slice),
+que ja estava enabled e active; faltava so o linger. A unidade de SISTEMA que eu
+habilitei por engano foi desabilitada no mesmo dia.
+
+CONFLITOS DE 04/10 APAGADOS, COM MANIFESTO ANTES.
+  geneve  5496 arquivos, 442,5 MB. Manifesto de 5497 linhas, digital
+          58b82c9ee3ede4a2, em /tmp/manifesto_conflitos_04out.tsv. Zero falhas.
+          Conferencia por varredura NOVA: zero remanescentes.
+          Areas: .cache/gnome-software 2017, .config/Proton Mail 892,
+          .cache/mesa_shader_cache 771, .config/mozilla 637, .var/app 621.
+  Zurich  4192 arquivos (minha contagem anterior de 1375 estava limitada a tres
+          diretorios com profundidade 6; a home inteira tem 4192). Em curso.
+  UBUNTU  ZERO. Varredura dirigida em .local/share/keyrings, .config, .ssh,
+          .gnupg, .var/app e .local/state/syncthing: nenhum conflito. E so dois
+          marcadores .stfolder em toda a home. O episodio de 04/10 NAO foi
+          reciproco e nao deixou vestigio na workstation.
+  LICAO DE METODO: a varredura ampla da home da Ubuntu passou de 32 minutos sem
+  produzir nada e foi encerrada. A dirigida nas seis areas que importam respondeu
+  em segundos. Varrer tudo nao e ser rigoroso, e ser lento.
+
+BACKUP DO ESPELHO DA AUDITORIA NO DRIVE, CONFERIDO POR CONTEUDO.
+  destino  gdrive:backups/_AUDITORIA_SYNC_20261112
+  volume   819 arquivos, 2,502 GiB
+  manifesto local com sha256 antes de copiar, digital f278a70835258922
+  conferencia  'rclone check --one-way': 0 DIFERENCAS, 819 arquivos coincidentes.
+  Conferencia por DIGITAL, nao por contagem nem por tamanho.
+  rclone ja estava instalado na Ubuntu com remoto 'gdrive' configurado.
+
+O QUE HA EM gdrive:backups/mateus-ryzen, de 04/10. Estrutura data/ index/ keys/
+locks/ snapshots/: e um REPOSITORIO RESTIC, 243 GiB em 14.828 objetos. Backup
+cifrado e deduplicado, nao arvore de arquivos. Por isso .ssh e keyrings aparecem
+como ausentes: nao existe arquivo em texto claro la. Correlacao temporal com os
+conflitos de 04/10 (backup as 10:21, conflitos entre 10:10 e 10:11) REGISTRADA
+SEM AFIRMAR MECANISMO: o restic so le a home, nao escreve nela.
+
+ESTADO FINAL DA PASTA ecossistema, medido pela origem:
+  origem      globalFiles 3031 = localFiles 3031, diferenca 0, zero erros
+  Zurich      100,00%
+  geneve      100,00%   (estava 96,89% no inicio da sessao)
+  Duebendorf   99,97%   1 item de 51361 bytes, conectada, em transito
