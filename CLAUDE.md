@@ -2002,3 +2002,134 @@ incidente anexado: e regra a priori, exatamente a classe que critiquei no
 ADAPTA. Mantida porque o custo e zero e o criterio e verificavel na propria
 resposta, mas entra por padrao mais fraco que as outras duas, e isso foi dito ao
 Mateus em vez de omitido.
+
+
+================================================================================
+13/11 - GENEVE E ZURICH VIRARAM NOS DE PROCESSAMENTO EM PYTHON
+================================================================================
+
+RESULTADO. Os dois notebooks sairam de replicas passivas para maquinas de
+trabalho, com ambiente virtual proprio em ~/venv_lote, 41 pacotes cada e as 12
+bibliotecas principais em VERSAO IDENTICA nas duas. Paridade de versao nao e
+detalhe: lote dividido entre as duas produz resultado comparavel, e nao
+"parecido". Conferido tambem contra o contentor da sessao: pyproj devolveu
+336625.13185692334 para a mesma coordenada de Sao Paulo nas tres maquinas, e
+scipy devolveu 0.9750021048517795 nas duas.
+
+  numpy 2.5.4   pandas 3.1.1   scipy 1.18.1   statsmodels 0.15.0
+  geopandas 1.2.0   shapely 2.2.0   pyproj 3.8.0   pyogrio 0.13.0
+  pyarrow 26.0.1   scikit-learn 1.9.1   matplotlib 3.11.2   openpyxl 3.1.5
+
+  O AMBIENTE FICA EM ~/venv_lote, FORA da pasta ecossistema, de proposito: a
+  ecossistema e somente recebimento no Syncthing e escrever nela criaria
+  divergencia local, que foi o problema limpo em 12/11.
+
+CAPACIDADE MEDIDA, as duas com o mesmo instrumento e na tomada confirmada:
+
+                        geneve (i3-N305)    Zurich (i7-1255U)
+  nucleos logicos            8                  12
+  um nucleo               9.672              14.719  (+52%)
+  todos, 60 s            56.753  (+13%)     50.077
+  escala                  5,87x (73%)         3,40x (28%)
+  clock sob carga        ~2.800 MHz         ~1.633 MHz
+  queda de clock              7%                 30%
+  temperatura sob carga      91 C                60 C
+  RAM disponivel            3,7 GB             11,9 GB
+
+  LEITURA: vazao total parecida, 13% para o geneve. O que separa e o PERFIL. O
+  Zurich e 52% mais rapido por nucleo e tem o triplo de memoria; o geneve
+  paraleliza melhor e segura o clock. O Zurich roda a 60 C e mesmo assim derruba
+  o clock 30%, padrao de limite de ENERGIA do firmware e nao de refrigeracao.
+  RESSALVA: o RAPL nao esta disponivel em nenhuma das duas, entao watts nao foi
+  medido. A leitura de limite de energia e INFERENCIA do padrao clock-temperatura.
+  NENHUMA DAS DUAS TEM GPU NVIDIA (Iris Xe e UHD integradas), medido.
+
+ACESSO SEM CLIQUE: A ACL, NAO A CHAVE. Tentei primeiro autorizar a chave publica
+da Ubuntu em ~/.ssh/authorized_keys dos dois notebooks. NAO FUNCIONA, e a razao
+e estrutural: 'tailscale up --ssh' faz o Tailscale ASSUMIR A PORTA 22 para todo
+trafego da rede dele, e o sshd do notebook deixa de atender. Quem responde e o
+servidor do Tailscale, que valida pela ACL do tailnet e nao olha authorized_keys.
+Ate 'ssh' comum com -i e BatchMode=yes cai nele.
+  A EVIDENCIA ESTAVA DISPONIVEL DESDE 12/11 e eu nao liguei: a porta 22 do geneve
+  dava 'connection refused' ANTES do --ssh e passou a responder DEPOIS, o que so
+  faz sentido se quem atende e o Tailscale.
+  SOLUCAO: no painel, admin/acls, regra ssh, campo 'Check mode' de On para Off,
+  que troca "action": "check" por "action": "accept". Uma edicao, nenhuma mexida
+  nas maquinas, permanente e valida para maquinas futuras. O controle de quem
+  entra onde continua, por identidade de dispositivo e de usuario.
+  POR QUE IMPORTA PARA ORQUESTRACAO: com 'check', a verificacao expira e o
+  comando NAO falha com erro, ele TRAVA esperando clique em navegador. Lote
+  noturno amanhece parado sem ninguem saber. Mesma familia do 'cat' pendurado.
+  Link de verificacao do Tailscale vale POUCOS MINUTOS: gerar e entregar com
+  atraso produz 'Error 401 bad tailscale-authstate2 cookie'.
+
+CONTA DE USUARIO DOS DOIS NOTEBOOKS: mateusaraujoesilva. Fedora 45 nos dois.
+Python 3.15.0 no geneve, 3.15.2 no Zurich.
+
+PYTHON 3.15: O QUE EXISTE E O QUE NAO EXISTE. Ao contrario do que eu previ, a
+pilha cientifica JA TEM pacote pronto para o 3.15, inclusive numpy, pandas,
+scipy, geopandas, shapely e pyproj. O unico ausente de verdade foi o FIONA, que
+falhou em 0,4 s com 'sem pacote pronto'. Substituido por PYOGRIO, que o geopandas
+moderno prefere, e mais rapido, e entrou sem problema (64 drivers).
+  DECISAO DE DESENHO QUE PAGOU: forcar --only-binary=:all:. Sem pacote pronto, o
+  pip tenta COMPILAR do zero, o que leva horas e falha. Com a trava, a ausencia
+  falha em SEGUNDOS e fica distinguivel de outras falhas.
+
+DUAS FALHAS DE 420 s QUE NAO ERAM FALTA DE PACOTE. scipy no geneve e pyarrow no
+Zurich estouraram o prazo de 7 minutos por pacote. Retentados com prazo de 900 s
+e 'pip --retries 5 --timeout 60', entraram em 3 e 12 SEGUNDOS. Eram travamentos
+transitorios de conexao, nao ausencia. POR ISSO o relatorio distingue 'tempo
+esgotado' de 'sem pacote pronto': sao diagnosticos diferentes e tratamentos
+diferentes. DEFEITO DE ROTULO a corrigir: o cabecalho do resumo diz 'SEM PACOTE
+PRONTO' para os dois casos; so a coluna de detalhe distingue.
+
+OCR: FALTA NOS DOIS. tesseract e qpdf AUSENTES; gs e pdftoppm presentes.
+Instalar exige sudo do Mateus:
+  sudo dnf install tesseract tesseract-langpack-por ghostscript poppler-utils qpdf
+Sem isso o geneve nao faz conversao de documento com OCR, que e a carga de melhor
+encaixe no perfil dele.
+
+================================================================================
+13/11 - QUATRO ERROS MEUS NESTA SESSAO, TODOS DE VERIFICACAO
+================================================================================
+
+1. TEORIA CONVINCENTE SOBRE NUMERO ERRADO. A primeira medicao do Zurich deu 10.871
+   blocos sustentados, ABAIXO de um nucleo sozinho. Em vez de desconfiar do numero,
+   construi uma explicacao de arquitetura: nucleos grandes do i7 abocanhando o
+   orcamento de energia contra nucleos iguais do i3. O mecanismo existe de verdade
+   e NAO era o que estava acontecendo. Remedido com instrumento corrigido: 50.077,
+   4,6 vezes mais. Eu havia afirmado "o geneve sustenta 5,2 vezes mais que o
+   Zurich"; a diferenca real e 13%, e o Zurich e a melhor maquina das duas.
+   CAUSA PROVAVEL do numero ruim, nao estabelecida: maquina com 0,4 h de ligada,
+   com indexacao do Fedora competindo, mais ausencia de resfriamento entre fases.
+
+2. SENSOR ERRADO E FASES EMENDADAS. Meu primeiro programa lia o MAXIMO entre as
+   zonas termicas, e no Zurich o maximo caiu noutro componente: reportou a
+   temperatura CAINDO sob carga total, que e fisicamente impossivel. E emendava as
+   duas fases de carga sem intervalo, contaminando a medida de queda. Corrigido
+   lendo coretemp e com 40 s de repouso inicial mais 30 de resfriamento.
+
+3. CONFERENCIA DE CATALOGO COM FILTRO QUEBRADO. Para saber que pacote existe para
+   o 3.15, consultei a API do PyPI e declarei que numpy, pandas, scipy e outros
+   NAO tinham pacote. Contradizia o que ja estava instalado na maquina. O defeito:
+   eu procurava 'linux_x86_64' no nome do arquivo, mas o nome real e
+   '...manylinux_2_17_x86_64.manylinux2014_x86_64.whl', e minha substituicao
+   produzia 'linux_2_17_x86_64', que nao casa. Rejeitei pacote valido como
+   inexistente. VERDADE DO TERRENO e 'pip list' na maquina, nao conferencia de
+   catalogo com filtro que eu nao validei.
+
+4. HEREDOC ANINHADO E CONFERENCIA NA ORDEM ERRADA. Escrevi um heredoc de Python
+   dentro de argumento entre aspas de 'tailscale ssh', dentro de outro heredoc. O
+   shell nao reconhece isso e o script nao rodou. Rodei 'bash -n' DEPOIS de lancar,
+   quando devia ter rodado ANTES. Agora o lancamento so ocorre apos 'bash -n' e
+   'py_compile' passarem, e isso virou parte do procedimento.
+
+REGRA QUE ATRAVESSA OS QUATRO: processo que nao produz saida nao esta
+necessariamente trabalhando, filtro que eu escrevi nao esta necessariamente certo,
+e teoria bonita nao substitui remedicao. Conferir o instrumento antes de explicar
+o resultado.
+
+PENDENTE E DECLARADO: a workstation NAO foi medida com o mesmo instrumento. Sem
+isso nao da para dizer se os 106.830 blocos somados dos dois notebooks
+representam 10% ou 80% de ganho sobre o que ela ja faz. E o braco de controle
+faltando, e fecha com uma rodada do diagnostico_cpu_v2.py aqui.
