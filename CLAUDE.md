@@ -2838,3 +2838,97 @@ TPC RMS/ssa_gtfs.zip. 15,4 MB, modificado em 12/11/2026 as 23h13.
   corrigido.
   A PENDENCIA COM A SEMOB CONTINUA A MESMA e nao foi resolvida pela
   consolidacao: obter OT TRANS com vigencia compativel.
+
+
+===============================================================================
+FRONTEIRA DE PARETO TEMPO x TARIFA: O QUE SO O r5r FAZ  (13/11/2026)
+===============================================================================
+
+Primeira analise feita aqui que o r5py nao faria de jeito nenhum. Script em
+bin/r5r_pareto_tarifa.R.
+
+-------------------------------------------------------------------------------
+1. COMO A ESTRUTURA TARIFARIA DO r5r E FEITA
+-------------------------------------------------------------------------------
+
+  setup_fare_structure(core, base_fare = 5.60, by = "MODE") devolve:
+      max_discounted_transfers   1
+      transfer_time_allowance    120 (minutos)
+      fare_cap                   Inf
+      fares_per_type             SUBWAY 5,60 | BUS 5,60, unlimited_transfers FALSE
+      fares_per_transfer         4 combinacoes (BUS>BUS, BUS>SUBWAY, ...), 5,60
+      fares_per_route            513 linhas, com tarifa por linha
+  Os argumentos by="AGENCY" e by="ROUTE" foram recusados nesta versao; so
+  "MODE" funcionou.
+
+  A saida do pareto_frontier e uma linha por par e por patamar de tarifa:
+      from_id, to_id, percentile, travel_time, monetary_cost
+  Exemplo real de um par: 119 min por R$ 5,60; 89 min por R$ 11,20; 87 min por
+  R$ 16,80. Isto e literalmente quanto tempo o usuario compra com a segunda
+  tarifa.
+
+-------------------------------------------------------------------------------
+2. DOIS CENARIOS, 60 PARADAS, 3.540 PARES, 11/11/2025, 07h-08h
+-------------------------------------------------------------------------------
+
+  A = com integracao  (1 transferencia com desconto, janela de 120 min)
+  B = sem integracao  (max_discounted_transfers = 0, cada embarque paga cheio)
+
+                                            A (com)      B (sem)
+    pares alcancados                          3.540        3.535
+    alcancaveis pagando UMA tarifa        3.485 (98,4%) 3.009 (85,1%)
+    exigem mais de uma tarifa                55 (1,6%)   526 (14,9%)
+    custo minimo medio                      R$ 5,69      R$ 6,51
+    economia de tempo ao pagar a 2a tarifa  mediana 7 min  mediana 15 min
+
+  O QUE A INTEGRACAO MUDA:
+    476 pares passam a caber em uma tarifa so.
+    524 pares de 3.535 (14,8%) ficam mais baratos.
+    Custo minimo medio cai R$ 0,83, ou 14,8% da tarifa base.
+    Sem integracao, quem se recusa a pagar a segunda tarifa perde 15 minutos
+    de mediana; com integracao, 7.
+
+  CONTROLES, ambos passaram:
+    pares mais baratos SEM integracao ......... 0  (seria contradicao)
+    pares que so cabem em uma tarifa SEM ...... 0  (seria contradicao)
+  O tempo minimo difere em 1.225 pares entre os cenarios, e isso NAO e erro:
+  com teto de R$ 16,80, o cenario sem integracao as vezes nao alcanca, dentro
+  do teto, o tempo que o com integracao alcanca.
+
+-------------------------------------------------------------------------------
+3. ISTO E DEMONSTRACAO DE METODO, NAO RESULTADO DE PROJETO
+-------------------------------------------------------------------------------
+
+  a) A estrutura tarifaria usada e o MODELO PADRAO do r5r: R$ 5,60 chapado
+     para onibus e metro, uma transferencia com desconto, janela de 120 min.
+     NAO sao as regras reais da RMS. O proprio feed declara, em
+     fare_attributes.txt, duas tarifas (A = R$ 5,60 e C = R$ 0,00) com
+     transfers = 0, que eu NAO usei. As regras verdadeiras de integracao
+     precisam ser levantadas e declaradas.
+  b) A amostra sao 60 paradas sorteadas, nao sistema de zonas. Nao representa
+     populacao nem emprego. Serve para medir o metodo, nao a cidade.
+  c) O OT TRANS continua ausente da data analisada.
+
+-------------------------------------------------------------------------------
+4. O DEFEITO DO agency_id DEIXOU DE SER CHATEACAO E VIROU IMPEDIMENTO
+-------------------------------------------------------------------------------
+
+  O fares_per_route do r5r resolveu as 513 linhas assim:
+      PLATAFORMA        510
+      CCR Metro Bahia     3
+  As 13 linhas do BRT e as 237 da OT TRANS foram todas rotuladas PLATAFORMA,
+  porque os tres operadores compartilham agency_id = 1 e o R5 resolve o nome
+  pelo id.
+
+  CONSEQUENCIA DIRETA: nao ha como escrever regra tarifaria por operador
+  neste feed. Tarifa diferenciada de BRT, integracao entre empresas,
+  integracao onibus com metro por operador: nada disso e modelavel enquanto o
+  agency_id nao for corrigido. Para estudo de politica tarifaria, que e o
+  objeto do TPC RMS e do RfP da IFC, este defeito e bloqueante, e nao
+  cosmetico. Entra na mesma carta a SEMOB que pede o OT TRANS.
+
+  O conserto e barato do lado de ca: reescrever agency.txt com tres ids
+  distintos e reatribuir o agency_id em routes.txt pela sigla da linha, que
+  identifica o operador sem ambiguidade (B* = BRT, 11xx-14xx = OT TRANS,
+  15xx-16xx = PLATAFORMA). Mas e remendo nosso sobre dado do gestor, e tem de
+  ser declarado no produto como tal.
