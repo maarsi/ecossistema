@@ -2590,3 +2590,146 @@ A LICAO DESTA VALIDACAO, QUE VALE MAIS QUE O RESULTADO
   COROLARIO PRATICO: antes de agregar saida de biblioteca nova, IMPRIMIR as
   linhas cruas de um caso e olhar. Os dois erros de agregacao acima morreriam
   em trinta segundos de leitura da tabela, e custaram tres execucoes.
+
+
+===============================================================================
+r5r CONTRA r5py: MESMO MOTOR, RESULTADO IDENTICO, PADRAO DIFERENTE  (13/11/2026)
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. COMO O R ENTROU, SEM SUDO E SEM MEXER NO SISTEMA
+-------------------------------------------------------------------------------
+
+  micromamba em ~/opt/bin/micromamba, raiz de ambientes em ~/opt/mamba.
+  Ambiente "r5r": R 4.5.3, OpenJDK 21, rJava, sf, data.table.
+  O r5r veio do CRAN DENTRO desse ambiente, versao 2.5.0, que traz R5 v7.6.
+  Montagem inteira em 68 segundos.
+
+  ATENCAO: o pacote r-r5r do conda esta parado na 1.1.0 e nem esta no
+  conda-forge (so no canal "r"). Instalar por conda traz versao velha. O
+  caminho e conda para R e dependencias, CRAN para o r5r.
+
+  COMO CHAMAR, do Python ou do shell, sem ativar nada:
+      export MAMBA_ROOT_PREFIX="$HOME/opt/mamba"
+      ~/opt/bin/micromamba run -n r5r Rscript meu_script.R
+  O Python segue sendo a linguagem de trabalho; o r5r e motor chamado por fora,
+  como o cuOpt.
+
+-------------------------------------------------------------------------------
+2. OS DOIS MOTORES DAO O MESMO NUMERO. EXATAMENTE O MESMO.
+-------------------------------------------------------------------------------
+
+  Matriz 200 x 200 paradas, 40.000 pares, 11/11/2025, janela de 07h as 08h,
+  percentil 50, BRT mais PLATAFORMA, mesmos pontos lidos do mesmo CSV.
+
+  COM OS PARAMETROS IGUALADOS:
+      pares identicos ......... 40.000 de 40.000   (100,0%)
+      diferenca maxima ........ 0 min
+  R5 v7.5.1 (r5py) e R5 v7.6 (r5r) devolvem o mesmo tempo, par a par. Para
+  tempo de viagem, a escolha entre os dois pacotes nao muda resultado nenhum.
+
+-------------------------------------------------------------------------------
+3. A ARMADILHA: ANTES DE IGUALAR, 14% DOS PARES DIVERGIAM
+-------------------------------------------------------------------------------
+
+  Na primeira rodada, cada um com SEU padrao:
+      identicos ............... 34.301 de 40.000   (85,8%)
+      dentro de 1 min ......... 92,9%
+      diferenca maxima ........ +72 min
+      diferenca minima ........ +0 min   <<< NUNCA NEGATIVA
+
+  Diferenca de um lado so nao e ruido, e parametro. A causa:
+      r5r   max_rides ...................... 3
+      r5py  max_public_transport_rides ..... 8
+  Permitir mais embarques so pode deixar a viagem igual ou mais rapida, nunca
+  mais lenta: dai o sinal sempre positivo. Igualando em 8, a divergencia some
+  por inteiro.
+
+  LICAO, que vale alem deste caso: comparar duas ferramentas com os PADROES
+  DE CADA UMA mede a diferenca entre os padroes, nao entre as ferramentas. E a
+  mesma regra ja registrada para cuOpt contra OR-Tools, e ela acabou de pegar
+  um caso real. Quem rodasse os dois sem igualar concluiria que os motores
+  divergem ate 72 minutos, e publicaria isso.
+
+  OUTROS PADROES QUE DIFEREM, conferir antes de qualquer comparacao:
+      janela de partida    r5r time_window = 10 min   r5py = 0:10:00  (iguais)
+      duracao maxima       r5r max_trip_duration = 120 min  r5py max_time = 2h
+      caminhada maxima     r5r max_walk_time = Inf    r5py max_time_walking = None
+      velocidade a pe      3,6 km/h nos dois
+      sorteios por minuto  r5r draws_per_minute = 5   (so afeta feed com
+                           frequencies.txt; os da RMS nao tem)
+
+-------------------------------------------------------------------------------
+4. VELOCIDADE: O r5r E CERCA DE 6 VEZES MAIS RAPIDO
+-------------------------------------------------------------------------------
+
+  Mesma maquina, mesma matriz, parametros iguais, resultado identico, execucao
+  SEQUENCIAL (a primeira medicao rodou os dois ao mesmo tempo e foi descartada
+  por isso), tres repeticoes cada:
+
+      r5r  .... 4,0 s | 2,7 s | 2,7 s       (regime: 2,7 s)
+      r5py .... 17,2 s | 15,7 s | 15,7 s    (regime: 15,7 s)
+
+  Razao de 5,8x. Como a saida e identica par a par, a diferenca NAO esta no
+  motor: esta no embrulho, provavelmente na conversao para pandas e geopandas
+  a cada chamada. Importa quando a matriz for grande ou repetida em cenario.
+  Ressalva: tres repeticoes numa maquina, numa matriz. Refazer antes de citar.
+
+-------------------------------------------------------------------------------
+5. O QUE SO O r5r TEM, E PESA NO PORTFOLIO
+-------------------------------------------------------------------------------
+
+  Varredura no codigo do r5py 1.1.7 instalado, nao na documentacao: as palavras
+  fare, pareto, accessibility, decay e expanded nao aparecem em arquivo nenhum.
+  API publica dele: TransportNetwork, TravelTimeMatrix, DetailedItineraries,
+  Isochrones, RegionalTask, TransportMode, ElevationCostFunction. So isso.
+
+  O r5r tem 22 funcoes. As que faltam no r5py e que importam aqui:
+
+    setup_fare_structure()  CONFIRMADO funcionando. Devolve os componentes
+      max_discounted_transfers, transfer_time_allowance, fare_cap,
+      fares_per_type, fares_per_transfer, fares_per_route. Ou seja: regra de
+      integracao, janela de transferencia e teto tarifario. Para TPC RMS e para
+      o RfP da IFC, isso e o OBJETO do estudo, nao acessorio.
+    pareto_frontier()  fronteira tempo contra custo monetario.
+    check_transit_availability(r5r_network, dates, start_date, end_date)
+      responde de uma chamada quais datas cada feed serve. E a funcao que teria
+      achado o problema do ottrans em trinta segundos.
+    get_gtfs_errors()  erros de GTFS encontrados na construcao.
+    arrival_travel_time_matrix()  matriz por horario de CHEGADA. Para
+      acessibilidade ao emprego a pergunta certa e "chegar as 8h", e em rede de
+      baixa frequencia isso nao e simetrico a "partir as 7h".
+    expanded_travel_time_matrix()  minuto a minuto com as linhas usadas.
+    accessibility()  com decaimento degrau, logistico, exponencial e linear.
+
+  Do lado do r5py: ElevationCostFunction, que a referencia do r5r nao lista, e
+  integracao direta com o geopandas.
+
+  REGRA PRATICA: matriz, itinerario e isocrona, tanto faz, e o r5py ja esta
+  validado aqui. Tarifa, integracao, acessibilidade por chegada e conferencia
+  de calendario, so o r5r faz.
+
+-------------------------------------------------------------------------------
+6. CORRECAO DE PERCURSO, PARA O REGISTRO
+-------------------------------------------------------------------------------
+
+  Recomendei "r5py, mesmo motor" antes de ter conferido a lista de funcoes dos
+  dois. O motor e mesmo o mesmo, e isso se confirmou com 40.000 pares
+  identicos; mas a recomendacao estava incompleta, porque a diferenca que
+  importa nunca esteve no motor.
+
+  E a investigacao do GTFS da RMS que fiz hoje a noite ja estava documentada,
+  com mais alcance, na Nota_Tecnica_Integridade_GTFS_2026-10-24.md, na propria
+  pasta dos dados. Nao a encontrei antes porque fiz find com profundidade 6
+  numa arvore mais funda. Minha apuracao independente CONFIRMA a nota no ponto
+  central (vigencia de dois dias da OT TRANS, sem data comum com os demais),
+  o que tem valor como verificacao por caminho diferente, mas o custo de nao
+  ter procurado primeiro foi alto. REGRA: procurar nota tecnica e produto
+  anterior NA PASTA DOS DADOS antes de comecar apuracao.
+
+  PENDENCIA: a nota cita RMS_GTFS_MUNICIPAL_SUNT2024.zip e
+  RMS_GTFS_COMPLEMENTO.zip numa pasta "13 - Inventario e Diagnostico /
+  Analises_Rede_2026-10 / Export_Visum". A pasta existente hoje chama-se
+  "13 - Inventario e Analises" e a varredura de /media e /mnt achou 3 arquivos
+  RMS_GTFS. Conferir onde estao e se ainda correspondem ao descrito. O
+  GoogleDrive nao foi varrido de proposito, por ser montagem de rede.
