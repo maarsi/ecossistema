@@ -2331,7 +2331,10 @@ que depende de renderizador vira linha ilegivel na janela de contexto.
   Script guardado em bin/teste_ocr_notebook.py, para repetir quando preciso.
       tesseract 5.5.4 (idiomas: eng, por)   qpdf 12.4.2
       ghostscript 10.07.1                   poppler (pdftoppm, pdftotext)
-      ocrmypdf 17.14.1 no ~/venv_lote       unpaper: ausente, so afeta --clean
+      ocrmypdf 17.14.1 no ~/venv_lote       unpaper instalado (--clean funciona)
+  O passo 5 do teste confirma o --clean, que endireita e limpa pagina
+  escaneada torta: util para material de campo digitalizado, indiferente para
+  PDF que ja nasce digital.
 
   DOIS DEFEITOS DO PROPRIO TESTE, corrigidos, que valem como regra:
     1. O tesseract com "-l por" RESTAURA acentos que a imagem nao tinha: a
@@ -2347,5 +2350,11 @@ que depende de renderizador vira linha ilegivel na janela de contexto.
     regra geral: antes de concluir que a maquina nao faz, conferir se o teste
     sabe perguntar.
 
-  PENDENTE: registrar neste arquivo a data da rotacao das chaves MANUS, NGC e
-  NVIDIA. Mateus confirmou que a rotacao foi feita; falta a data.
+  ENCERRADO POR DECISAO (13/11/2026): Mateus decidiu que nao e preciso
+  rotacionar as chaves MANUS, NGC e NVIDIA. Fica registrado como decisao
+  tomada, e nao como tarefa executada: ninguem rotacionou chave nesta data.
+  A regra permanente continua valendo e reabre o assunto por conta propria se
+  o caso ocorrer: chave que trafegar pelo chat e chave a rotacionar, sem
+  discussao.
+
+  NENHUMA PENDENCIA ABERTA no ecossistema nesta data.

@@ -67,5 +67,26 @@ except FileNotFoundError:
 except Exception as e:
     print("4. ocrmypdf .............. erro: %s" % e)
 
+# 5. --clean exige o unpaper, que endireita e limpa pagina escaneada torta.
+#    Sem ele o ocrmypdf recusa a opcao; o resto continua funcionando.
+limpo = False
+try:
+    import sys as _s
+    _exe = os.path.join(os.path.dirname(_s.executable), "ocrmypdf")
+    if not os.path.exists(_exe):
+        _exe = "ocrmypdf"
+    r = subprocess.run([_exe, "-l", "por", "--force-ocr", "--clean", "--quiet",
+                        "origem.pdf", "limpa.pdf"],
+                       capture_output=True, text=True, timeout=300)
+    if r.returncode == 0 and os.path.exists("limpa.pdf"):
+        limpo = True
+        print("5. ocrmypdf --clean OK .... %d bytes (unpaper no ar)"
+              % os.path.getsize("limpa.pdf"))
+    else:
+        print("5. ocrmypdf --clean FALHOU %s" % r.stderr.strip()[:140])
+except Exception as e:
+    print("5. ocrmypdf --clean ....... erro: %s" % e)
+
 print("VEREDITO: %s" % ("OCR FUNCIONA" if (ok1 and ok2) else "OCR NAO FUNCIONA"))
+print("LIMPEZA DE PAGINA: %s" % ("DISPONIVEL" if limpo else "INDISPONIVEL"))
 shutil.rmtree(d, ignore_errors=True)
