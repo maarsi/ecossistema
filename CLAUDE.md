@@ -2324,11 +2324,28 @@ que depende de renderizador vira linha ilegivel na janela de contexto.
   WGS84 para EPSG:31983 deu 336625,13185692334 identico nas tres maquinas).
   Acesso sem senha pela chave dedicada, sem precisar de clique no navegador.
 
-  PENDENTE, precisa do sudo do Mateus nos dois notebooks:
-      sudo dnf install tesseract tesseract-langpack-por ghostscript \
-                       poppler-utils qpdf
-  Sem isso os notebooks nao fazem OCR nem manipulam PDF. Hoje eles tem gs e
-  pdftoppm, e faltam tesseract e qpdf.
+  PRONTO (13/11/2026, 21h37): a cadeia de OCR funciona nos dois notebooks,
+  verificada de ponta a ponta e nao por presenca de programa. O teste gera um
+  PDF, rasteriza em PNG a 300 dpi (o texto deixa de existir como texto), roda o
+  tesseract em portugues sobre a imagem e confere se as palavras voltaram.
+  Script guardado em bin/teste_ocr_notebook.py, para repetir quando preciso.
+      tesseract 5.5.4 (idiomas: eng, por)   qpdf 12.4.2
+      ghostscript 10.07.1                   poppler (pdftoppm, pdftotext)
+      ocrmypdf 17.14.1 no ~/venv_lote       unpaper: ausente, so afeta --clean
+
+  DOIS DEFEITOS DO PROPRIO TESTE, corrigidos, que valem como regra:
+    1. O tesseract com "-l por" RESTAURA acentos que a imagem nao tinha: a
+       imagem dizia "RELATORIO" e ele devolveu "RELATÓRIO", corretamente. A
+       conferencia por igualdade literal reprovou um OCR que acertou. Comparar
+       texto de OCR sempre com os acentos removidos nos dois lados.
+    2. Programa instalado por pip dentro de um venv fica em ~/venv_lote/bin, que
+       NAO entra no PATH quando se chama o interpretador por caminho absoluto
+       (~/venv_lote/bin/python script.py). Chamar "ocrmypdf" puro falha com
+       FileNotFoundError mesmo com o pacote instalado. Montar o caminho a partir
+       de os.path.dirname(sys.executable).
+    Nos dois casos a maquina estava certa e o instrumento estava errado. Vale a
+    regra geral: antes de concluir que a maquina nao faz, conferir se o teste
+    sabe perguntar.
 
   PENDENTE: registrar neste arquivo a data da rotacao das chaves MANUS, NGC e
   NVIDIA. Mateus confirmou que a rotacao foi feita; falta a data.
