@@ -2733,3 +2733,108 @@ r5r CONTRA r5py: MESMO MOTOR, RESULTADO IDENTICO, PADRAO DIFERENTE  (13/11/2026)
   "13 - Inventario e Analises" e a varredura de /media e /mnt achou 3 arquivos
   RMS_GTFS. Conferir onde estao e se ainda correspondem ao descrito. O
   GoogleDrive nao foi varrido de proposito, por ser montagem de rede.
+
+
+===============================================================================
+ssa_gtfs.zip: O FEED CONSOLIDADO DA RMS, TESTADO  (13/11/2026)
+===============================================================================
+
+Arquivo em "D:\20 - FUNDACE\2025-2026 Projeto Basico TPC RMS\ssa_gtfs.zip",
+que na Ubuntu e /media/mateus/DADOS_01/20 - FUNDACE/2025-2026 Projeto Basico
+TPC RMS/ssa_gtfs.zip. 15,4 MB, modificado em 12/11/2026 as 23h13.
+
+-------------------------------------------------------------------------------
+1. O QUE ELE CORRIGE EM RELACAO AOS FEEDS ANTERIORES
+-------------------------------------------------------------------------------
+
+  VALIDO NA RAIZ. 11 arquivos .txt direto na raiz do zip, sem subpasta. O
+  GTFS_STCO_nov25.zip era invalido por aninhamento; este nao e.
+  TRAZ O METRO. 3 linhas de route_type 1, agencia CCR Metro Bahia, 1.023
+  viagens por dia util. Os feeds anteriores eram so onibus, e cinco dos oito
+  polos da RMS SAO estacoes de metro.
+  TRAZ TARIFA. fare_attributes.txt com duas tarifas (A = R$ 5,60; C = R$ 0,00)
+  e fare_rules.txt ligando tarifa a linha. Isso alimenta o setup_fare_structure
+  do r5r. O r5py nao tem como usar.
+  TRAZ SHAPES. 357.689 pontos de traçado.
+  Total: 513 linhas, 4.422 registros de parada, 44.407 viagens, 1.267.492
+  horarios.
+
+-------------------------------------------------------------------------------
+2. O QUE ELE **NAO** CORRIGE: O OT TRANS CONTINUA MUDO
+-------------------------------------------------------------------------------
+
+  Classificando as linhas pela SIGLA contra os conjuntos dos feeds originais
+  (porque o agency_id esta quebrado, ver adiante):
+
+    data          BRT    OT TRANS   PLATAFORMA   METRO    TOTAL
+    2025-10-14      0      14.405            0   1.023   15.428
+    2025-10-28  1.353           0        8.582   1.023   10.958
+    2025-11-11  1.353           0        8.582   1.023   10.958
+    2026-01-20  1.353           0        8.582   1.023   10.958
+    2026-02-17      0           0        8.582   1.023    9.605
+
+  Exatamente o mesmo defeito dos feeds separados: o OT TRANS so opera em 14 e
+  15/10/2025, e nessas datas nem BRT nem PLATAFORMA operam. A consolidacao
+  juntou os arquivos, acrescentou o metro e deixou o problema de calendario
+  intacto. Continua sem existir data com a oferta completa.
+
+-------------------------------------------------------------------------------
+3. DOIS DEFEITOS NOVOS DE INTEGRIDADE
+-------------------------------------------------------------------------------
+
+  3.1. agency.txt TEM 4 LINHAS E SO 2 agency_id. BRT Salvador, OT TRANS e
+  PLATAFORMA compartilham agency_id = 1; so a CCR Metro Bahia tem id proprio
+  (1138). A especificacao exige agency_id unico. CONSEQUENCIA: 510 das 513
+  linhas apontam para o mesmo id, e NAO E POSSIVEL atribuir linha a operador
+  por este feed. Qualquer numero por empresa extraido dele e indefinido. Foi
+  isso que inflou a minha primeira contagem, em que as tres empresas apareciam
+  com 9.935 viagens cada, o que e impossivel para 13, 237 e 260 linhas.
+
+  3.2. stops.txt TEM 4.422 LINHAS PARA 3.221 stop_id. 1.201 identificadores
+  repetidos, 2.402 linhas envolvidas, TODAS duplicatas exatas (mesmo nome,
+  mesma coordenada). Redundancia, nao contradicao, mas viola a especificacao.
+
+  O get_gtfs_errors() do r5r relata 1.205 registros, todos DuplicateKeyError
+  em stop_id, prioridade MEDIUM. Bate com a apuracao manual. Esta e a terceira
+  vez hoje que uma funcao pronta do r5r responde em uma chamada o que custou
+  dezenas de linhas de Python.
+
+-------------------------------------------------------------------------------
+4. O QUE O METRO ACRESCENTA, MEDIDO COM TESTE ENCAIXADO
+-------------------------------------------------------------------------------
+
+  METODO. Comparar o ssa_gtfs.zip com os feeds antigos NAO serve de teste de
+  oferta, porque sao pacotes diferentes. Para o controle valer, gerei
+  ssa_sem_metro.zip a partir do PROPRIO ssa_gtfs.zip, removendo as 3 linhas de
+  metro e as 7.326 viagens delas. Assim um arquivo e subconjunto exato do
+  outro, e vale a regra: ACRESCENTAR OFERTA NAO PODE AUMENTAR TEMPO DE VIAGEM.
+
+  CONTROLE: 0 pares piorados em 40.000. O motor passa.
+
+  EFEITO DO METRO, 11/11/2025, 07h-08h, percentil 50, 200 x 200 paradas:
+      pares iguais ................ 18.345   (45,9%)
+      pares que melhoraram ........ 21.655   (54,1%)
+      entre os que melhoraram ..... mediana 13 min, maximo 77 min
+      tempo medio da matriz ....... 73,8 -> 65,5 min   (-11,3%)
+
+  POR QUE O TESTE ENCAIXADO ERA NECESSARIO. Na comparacao suja (ssa_gtfs
+  contra os feeds antigos), 22 pares apareceram PIORES, o que o controle
+  proibe. Nao era defeito: os dois pacotes nao contem a mesma oferta de
+  onibus. Comparando ssa_sem_metro com BRT+PLATAFORMA antigos, 800 pares de
+  40.000 diferem, de -25 a +12 min. SAO SAFRAS DIFERENTES DA OFERTA DE
+  ONIBUS, e nao o mesmo dado reempacotado. Declarar qual se usa.
+
+-------------------------------------------------------------------------------
+5. VEREDITO DE USO
+-------------------------------------------------------------------------------
+
+  USAR o ssa_gtfs.zip no lugar dos tres feeds separados: e valido na raiz, tem
+  metro, tem tarifa e tem tracado. Para 11/11/2025 ele entrega BRT, PLATAFORMA
+  e METRO.
+  DECLARAR SEMPRE, em qualquer produto: que o OT TRANS nao esta representado
+  na data de analise, e que a oferta de onibus difere da dos feeds de
+  outubro.
+  NAO EXTRAIR numero por operador deste feed enquanto o agency_id nao for
+  corrigido.
+  A PENDENCIA COM A SEMOB CONTINUA A MESMA e nao foi resolvida pela
+  consolidacao: obter OT TRANS com vigencia compativel.
