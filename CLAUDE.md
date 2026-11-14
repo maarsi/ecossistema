@@ -2528,3 +2528,65 @@ bin/calendario_gtfs.py reproduzem tudo o que esta aqui.
   Este achado e de DADO, encontrado na conferencia da infraestrutura. O que ele
   significa para o Projeto Basico do TPC RMS pertence a conversa dedicada
   (CITATIS / FUNDACE / TPC RMS AUDITORIA), por acordo com Mateus.
+
+
+===============================================================================
+VALIDACAO DO R5 CONTRA O QUADRO DE HORARIOS  (13/11/2026)
+===============================================================================
+
+PERGUNTA: o R5 esta mesmo lendo o quadro de horarios do GTFS, ou devolve um
+numero plausivel por outro caminho? Sem responder isto, nenhum resultado dele
+vale. Script: bin/valida_r5py_contra_quadro.py.
+
+METODO: escolher viagens reais com partida entre 07h e 08h de 11/11/2025, uma
+por linha, nos dois feeds vivos nessa data (BRT e PLATAFORMA). Ler no
+stop_times o tempo escriturado entre a primeira e a ultima parada. Pedir ao
+r5py os itinerarios entre essas mesmas duas paradas e procurar, entre as
+opcoes devolvidas, aquela que usa A MESMA LINHA, A MESMA PARADA DE EMBARQUE e
+A MESMA PARADA DE DESEMBARQUE. So com as tres coincidindo as duas grandezas
+sao a mesma coisa.
+
+RESULTADO (20 casos, 8 com coincidencia completa):
+      exatos, diferenca de 0,00 min .......  7 de 8
+      dentro de mais ou menos 1 min .......  8 de 8
+      amplitude entre as 7 a 15 opcoes de
+      cada caso ............................ 0,0 min em todos
+  O unico caso fora do exato deu 13 contra 14 min, e a explicacao provavel e
+  que o R5 pegou outra viagem da MESMA linha dentro da janela, com tempo de
+  percurso escriturado um minuto menor. Nao e divergencia de motor.
+
+  VEREDITO: o R5 reproduz o quadro de horarios exatamente. O motor esta lendo
+  o dado certo. Os 12 casos sem coincidencia nao sao falha: neles o R5 preferiu
+  outra linha ou outro ponto de embarque, que e o trabalho dele.
+
+  O QUE ISTO **NAO** VALIDA: que o quadro corresponda a rua. Isto e validacao
+  contra o DADO, nao contra a realidade observada. Para o segundo degrau e
+  preciso tempo de viagem medido em campo, e ai se mede o GTFS, nao o R5.
+
+-------------------------------------------------------------------------------
+A LICAO DESTA VALIDACAO, QUE VALE MAIS QUE O RESULTADO
+-------------------------------------------------------------------------------
+
+  Foram CINCO versoes ate o numero fechar. Os quatro erros foram todos meus, e
+  todos na forma de COMPARAR, nunca no motor:
+
+  v1  Seis casos que eram o MESMO par origem-destino em horarios vizinhos.
+      Amostra de um disfarcada de seis.
+  v2  Comparou tempo PORTA A PORTA do R5 contra tempo EMBARCADO do quadro.
+      Grandezas diferentes.
+  v3  Somou travel_time de linhas pertencentes a OPCOES diferentes. No r5py,
+      "option" nao e ranking de qualidade: sao dezenas de alternativas, uma por
+      minuto de partida na janela. Soma entre opcoes soma viagens diferentes.
+  v4  Entre as opcoes da mesma linha, escolheu a de MENOR tempo embarcado. Na
+      mesma linha isso seleciona justamente o caso em que o passageiro caminha
+      ate um ponto adiante e pega so um pedaco da viagem.
+  v5  Exigiu linha, parada de embarque e parada de desembarque iguais. Fechou.
+
+  REGRA: quando uma validacao discorda da referencia, desconfiar primeiro da
+  COMPARACAO, depois do objeto comparado. Nas cinco tentativas o R5 esteve
+  certo o tempo todo; quem estava errado era o criterio de selecao. Isto se
+  repetiu hoje tambem no teste de OCR, duas vezes. E padrao, nao acaso.
+
+  COROLARIO PRATICO: antes de agregar saida de biblioteca nova, IMPRIMIR as
+  linhas cruas de um caso e olhar. Os dois erros de agregacao acima morreriam
+  em trinta segundos de leitura da tabela, e custaram tres execucoes.
