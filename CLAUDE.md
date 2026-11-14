@@ -2932,3 +2932,94 @@ bin/r5r_pareto_tarifa.R.
   identifica o operador sem ambiguidade (B* = BRT, 11xx-14xx = OT TRANS,
   15xx-16xx = PLATAFORMA). Mas e remendo nosso sobre dado do gestor, e tem de
   ser declarado no produto como tal.
+
+
+===============================================================================
+TRES POLITICAS TARIFARIAS NA RMS, E POR QUE O RESULTADO ENGANA  (13/11/2026)
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. O REMENDO NO FEED, QUE TORNOU A ANALISE POSSIVEL
+-------------------------------------------------------------------------------
+
+  Gerado ssa_gtfs_corrigido (em ~/r5_salvador/dir_ssa_corr/) a partir do
+  ssa_gtfs.zip, com tres mudancas:
+    agency.txt     um agency_id por operador (901 BRT, 902 OT TRANS,
+                   903 PLATAFORMA, 1138 metro) no lugar de tres dividindo o 1
+    routes.txt     agency_id reatribuido pela SIGLA da linha, que identifica o
+                   operador sem ambiguidade. 513 de 513 atribuidas, zero orfas:
+                   BRT 13, OT TRANS 237, PLATAFORMA 260, metro 3
+    stops.txt      1.201 duplicatas exatas de stop_id removidas
+
+  EFEITO MEDIDO: get_gtfs_errors passou de 1.205 para 2 registros (os dois
+  restantes sao GeneralError em feed_info, sem consequencia). E o
+  fares_per_route do r5r, que antes rotulava 510 linhas como PLATAFORMA,
+  passou a separar os quatro operadores corretamente.
+
+  ISTO E REMENDO NOSSO SOBRE DADO DO GESTOR e tem de ser declarado assim em
+  qualquer produto. Nao substitui o pedido de correcao a SEMOB.
+
+  CORRECAO DE UMA HIPOTESE MINHA: eu havia suposto que setup_fare_structure
+  com by="AGENCY" falhava por causa do agency_id duplicado. Falso. Falhava
+  porque "AGENCY" nao e valor valido; os validos sao MODE, AGENCY_ID,
+  AGENCY_NAME e GENERIC. Era erro meu de argumento, nao defeito do dado. O
+  remendo continua necessario por outro motivo: sem ele, AGENCY_NAME agrupa
+  tudo sob PLATAFORMA.
+
+-------------------------------------------------------------------------------
+2. SEMANTICA DO fares_per_transfer, ESTABELECIDA POR EXPERIMENTO
+-------------------------------------------------------------------------------
+
+  O campo fare de fares_per_transfer e a tarifa TOTAL da viagem de duas
+  pernas, nao o acrescimo. Verificado: com fare = 5,60 e
+  max_discounted_transfers = 1, um par custou R$ 5,60; o mesmo par com
+  max_discounted_transfers = 0 custou R$ 11,20.
+
+-------------------------------------------------------------------------------
+3. OS TRES CENARIOS  (60 paradas, 3.540 pares, 11/11/2025, 07h-08h)
+-------------------------------------------------------------------------------
+
+       politica                     1 tarifa   custo medio   perda de tempo
+                                                             ao pagar so 1
+    C1 sem integracao                  85,1%      R$ 6,51       15 min
+    C2 integracao dentro do operador   98,4%      R$ 5,70        8 min
+    C3 integracao plena, com metro     98,4%      R$ 5,69        7 min
+
+    CONTROLE DE MONOTONICIDADE, passou nos dois degraus:
+      pares em que C2 custa mais que C1 .... 0
+      pares em que C3 custa mais que C2 .... 0
+
+    DECOMPOSICAO DO GANHO:
+      C1 -> C2   +472 pares passam a caber em uma tarifa  (+13,4 pontos)
+      C2 -> C3   +4 pares                                 (+0,1 ponto)
+      98% do ganho vem da integracao DENTRO do operador.
+      2% vem de estender entre operadores e para o metro.
+
+-------------------------------------------------------------------------------
+4. POR QUE ESTE RESULTADO ENGANA, E NAO PODE SAIR DAQUI COMO ESTA
+-------------------------------------------------------------------------------
+
+  Ler "integracao entre operadores vale 2%" e concluir que ela nao compensa
+  seria erro grave, e o dado e que produz o erro.
+
+  Em 11/11/2025 a rede analisada e: PLATAFORMA 8.582 viagens, BRT 1.353,
+  METRO 1.023, OT TRANS ZERO. A PLATAFORMA sozinha e 78% das viagens. Com um
+  operador dominando a rede, quase toda baldeacao e PLATAFORMA com PLATAFORMA,
+  e a integracao dentro do operador captura quase tudo POR CONSTRUCAO.
+
+  Com o OT TRANS presente (237 linhas, cerca de 14.400 viagens por dia, ou
+  seja, MAIOR que a PLATAFORMA), a baldeacao entre operadores deixaria de ser
+  rara e o degrau C2 para C3 mudaria de tamanho. Quanto, nao da para dizer:
+  nao existe data em que os dois operem juntos, entao o contrafactual NAO E
+  CALCULAVEL com os arquivos atuais.
+
+  ESTA E A DEMONSTRACAO MAIS CLARA DE POR QUE O FURO DO OT TRANS IMPORTA: ele
+  nao deixa os tempos so um pouco errados. Ele INVERTE uma conclusao de
+  politica tarifaria. Um estudo que recomendasse nao investir em integracao
+  entre empresas com base nestes 2% estaria recomendando a partir de uma rede
+  sem o maior operador dela.
+
+  DEMAIS RESSALVAS: tarifa base de R$ 5,60 chapada, vinda do fare_attributes
+  do feed; 60 paradas sorteadas, nao sistema de zonas, sem ponderacao por
+  populacao ou emprego; percentil 50 numa janela de uma hora de um dia util.
+  Numero de metodo, nao de produto.
