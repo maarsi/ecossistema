@@ -2446,3 +2446,85 @@ O QUE ESTES NUMEROS NAO SAO
   pertence a conversa dedicada (projeto CITATIS / FUNDACE / TPC RMS AUDITORIA),
   por acordo com Mateus. Os dados da RMS foram usados aqui so como caso de
   teste de desempenho.
+
+
+===============================================================================
+GTFS DA RMS: OS TRES FEEDS NAO COEXISTEM EM NENHUMA DATA  (13/11/2026)
+===============================================================================
+
+Investigacao da pendencia aberta acima (o ottrans.zip fora da matriz de 24/10).
+O resultado e pior do que a omissao suspeitada, e muda o que se pode afirmar
+com estes arquivos. Medido, nao inferido: bin/compara_gtfs_rms.py e
+bin/calendario_gtfs.py reproduzem tudo o que esta aqui.
+
+-------------------------------------------------------------------------------
+1. SAO TRES OPERADORES DISTINTOS, SEM NENHUMA LINHA EM COMUM
+-------------------------------------------------------------------------------
+
+  feed             agencia         linhas  paradas  viagens   numeracao
+  brt.zip          BRT Salvador        13       60    2.725   B1, B2, B3, B1S
+  ottrans.zip      OT TRANS           237    2.509   15.388   1118 a 1413
+  plataforma.zip   PLATAFORMA         260    1.831   18.968   1533 a 1662
+
+  Cruzamento de nome e de sigla de linha entre ottrans e plataforma: ZERO em
+  comum, nas 237 siglas e nos 228 nomes. As faixas de numeracao nem se tocam.
+  1.095 paradas existem so no ottrans. As envoltorias geograficas coincidem,
+  entao nao e questao de area atendida: sao dois consorcios diferentes do
+  mesmo sistema. O plataforma NAO contem o ottrans.
+
+-------------------------------------------------------------------------------
+2. O ACHADO GRAVE: AS VALIDADES SAO DISJUNTAS
+-------------------------------------------------------------------------------
+
+  ottrans.zip      serve 14 e 15/10/2025, e so. Calendario por excecao
+                   (calendar_dates.txt), 20 linhas, duas datas.
+  plataforma.zip   serve de 19/10/2025 a 19/02/2026.
+  brt.zip          serve de 22/10/2025 a 22/01/2026.
+
+  DATAS EM QUE OS TRES SERVEM AO MESMO TEMPO: ZERO.
+  DATAS EM QUE OTTRANS E PLATAFORMA SERVEM AO MESMO TEMPO: ZERO.
+
+  Viagens por dia util:
+      14 e 15/10/2025    ottrans 14.405    plataforma 0        brt 0
+      20 e 21/10/2025    ottrans 0         plataforma 8.582    brt 0
+      22/10 em diante    ottrans 0         plataforma 8.582    brt 1.353
+
+  Em 11/11/2025, data usada na matriz de 24/10, o ottrans tem ZERO viagem.
+
+-------------------------------------------------------------------------------
+3. POR QUE ISTO E PIOR DO QUE PARECE
+-------------------------------------------------------------------------------
+
+  A falha nao denuncia a si mesma. Acrescentar o ottrans.zip a construcao da
+  rede, que e a correcao obvia da omissao, NAO muda resultado nenhum: o R5 le
+  o feed, nao encontra servico valido para a data pedida e ignora o operador
+  inteiro em silencio, sem erro e sem aviso. O analista veria a lista de tres
+  feeds no codigo, concluiria que a oferta esta completa, e estaria errado.
+  Esta e a razao de a conferencia de calendario vir ANTES de qualquer matriz.
+
+  Ordem de grandeza do que falta: com 14.405 viagens contra 8.582 e 1.353, o
+  OT TRANS e o MAIOR dos tres feeds em viagens por dia, cerca de 59% do total.
+  Ressalva: a contagem do ottrans e de 14/10 e a dos outros de uma terca de
+  novembro, porque nao ha data comum; a comparacao serve como ordem de
+  grandeza, nao como razao exata.
+
+  CONSEQUENCIA: nenhuma analise de acessibilidade da RMS feita com estes
+  arquivos representa a oferta completa, em data nenhuma. Nao e questao de
+  escolher melhor a data. Falta dado: e preciso um feed do OT TRANS cobrindo o
+  mesmo periodo do plataforma.
+
+-------------------------------------------------------------------------------
+4. REGRA QUE FICA
+-------------------------------------------------------------------------------
+
+  ANTES de construir rede ou calcular matriz, para CADA feed, verificar:
+    1. quais datas ele realmente serve (calendar.txt E calendar_dates.txt,
+       porque calendario por excecao nao aparece nos dias da semana);
+    2. quantas viagens ele oferece na data escolhida;
+    3. se ha alguma data em que TODOS os feeds servem ao mesmo tempo.
+  Feed com zero viagem na data e feed mudo: ele esta no codigo e nao esta no
+  resultado. Script pronto: bin/calendario_gtfs.py.
+
+  Este achado e de DADO, encontrado na conferencia da infraestrutura. O que ele
+  significa para o Projeto Basico do TPC RMS pertence a conversa dedicada
+  (CITATIS / FUNDACE / TPC RMS AUDITORIA), por acordo com Mateus.
