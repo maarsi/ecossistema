@@ -2358,3 +2358,91 @@ que depende de renderizador vira linha ilegivel na janela de contexto.
   discussao.
 
   NENHUMA PENDENCIA ABERTA no ecossistema nesta data.
+
+
+===============================================================================
+r5py / R5: JA ESTAVA INSTALADO, E AGORA ESTA MEDIDO  (13/11/2026)
+===============================================================================
+
+ANTES DE LER O RESTO: o r5py NAO precisou ser instalado. Ele ja estava no
+~/env_transporte desde 24/10/2026, com o JAR do R5 baixado, a rede de Salvador
+construida e uma matriz 8x8 de terminais calculada (~/r5_salvador/). Procurar
+antes de montar evitou refazer trabalho pronto. Essa checagem e barata e deve
+preceder qualquer instalacao.
+
+  r5py 1.1.7              ~/env_transporte (NAO esta no venv_lote dos notebooks)
+  R5 v7.5.1               ~/.cache/r5py/r5-v7.5.1-r5py-all.jar, 64 MB
+  Java                    openjdk 25 funciona, apesar de o site do r5r pedir
+                          JDK 21. Testado nesta data, nao presumido.
+  dados                   ~/r5_salvador/salvador.osm.pbf (9,4 MB, recorte da
+                          cidade) e tres GTFS: brt.zip, ottrans.zip,
+                          plataforma.zip
+
+-------------------------------------------------------------------------------
+DESEMPENHO MEDIDO NA WORKSTATION (12 nucleos, cache desviado, construcao real)
+-------------------------------------------------------------------------------
+
+  construcao da rede do zero ....  10,1 s        pico de 3,07 GB
+  matriz   200 x  200 ...........   7,7 s         40.000 pares    5.167 pares/s
+  matriz   600 x  600 ...........  26,9 s        360.000 pares   13.380 pares/s
+  matriz  1831 x 1831 ...........  94,8 s      3.352.561 pares   35.372 pares/s
+  pico de memoria do processo ...   3,42 GB
+
+  COMO MEDIR DE NOVO: bin/mede_r5py.py. Ele desvia XDG_CACHE_HOME para um
+  diretorio temporario, copiando so o JAR, de modo que a construcao seja mesmo
+  a frio sem apagar o cache real. A primeira tentativa errou justamente isso:
+  copiou o .pbf com outro nome achando que geraria cache novo, e deu 0,7 s,
+  numero impossivel. O cache do r5py e indexado por hash do CONTEUDO, nao pelo
+  caminho. Construcao "a frio" que sai em menos de um segundo e cache acertado.
+
+-------------------------------------------------------------------------------
+O QUE ESTES NUMEROS DECIDEM
+-------------------------------------------------------------------------------
+
+  a) CABE NOS NOTEBOOKS, com uma ressalva de tamanho. O pico foi 3,42 GB. O
+     zurich (15 GB) roda folgado. O geneve tem 7,4 GB TOTAIS e so 3,7 GB
+     DISPONIVEIS com o sistema em uso: 3,42 contra 3,7 e margem fina demais
+     para deixar sem vigilancia. Isto CORRIGE o que eu havia afirmado antes de
+     medir, que o geneve nao construiria uma rede metropolitana: a rede e
+     pequena porque o .pbf e um recorte da cidade, e nao o estado inteiro.
+     Rede maior muda a conta, e a conta tem que ser refeita.
+
+  b) NAO PARTIR A MATRIZ EM PEDACOS PEQUENOS. O rendimento SOBE com o tamanho,
+     de 5.167 para 35.372 pares por segundo, porque o custo fixo se dilui.
+     Partir um trabalho grande em muitas matrizes pequenas para distribuir
+     entre maquinas joga fora quase sete vezes de eficiencia. Se for
+     distribuir, partir por CENARIO ou por HORARIO, e nao por pedaco de matriz.
+
+  c) O R5 JA E PARALELO POR DENTRO e usa todos os nucleos da maquina. O ganho
+     de mandar para outra maquina nao e somar nucleos, e nao disputar a
+     workstation.
+
+-------------------------------------------------------------------------------
+O QUE ESTES NUMEROS NAO SAO
+-------------------------------------------------------------------------------
+
+  Os percentuais de pares alcancados e as medianas em minutos que aparecem no
+  log NAO sao resultado de acessibilidade e nao podem ser citados como tal. Em
+  duas execucoes o mesmo par de numeros saiu 93,8% / 67 min e 99,9% / 40 min,
+  porque uma sorteou as paradas e a outra pegou as primeiras do arquivo, que
+  estao agrupadas por operador e por linha. Sao medidas de VAZAO do programa,
+  nao de desempenho do sistema de transporte.
+
+  PENDENCIA METODOLOGICA ABERTA: a matriz de 24/10 usou apenas brt.zip e
+  plataforma.zip. O ottrans.zip (6 MB) ficou de fora. Se a OT Trans opera
+  servico que nao esteja ja contido no feed plataforma, a oferta esta
+  incompleta e os tempos saem superestimados, sem que nada no resultado
+  denuncie isso. Conferir antes de usar qualquer numero do r5py em produto.
+
+  LIMITE DO MOTOR: o R5 nao tem alocacao com restricao de capacidade, nao tem
+  realimentacao de congestionamento e nao tem lotacao. Tempo de automovel sai
+  de velocidade de etiqueta do OSM, ou seja, fluxo livre. NAO usar tempo de
+  carro do R5 como skim de modelo de quatro etapas: a reparticao modal sairia
+  artificialmente favoravel ao automovel. O R5 complementa o PTV Visum na
+  acessibilidade e na isocrona; nao o substitui na alocacao.
+
+  SEPARACAO DE AMBIENTE: estes numeros sao de INFRAESTRUTURA, medidos nesta
+  conversa de configuracao do ecossistema. Analise do projeto TPC RMS em si
+  pertence a conversa dedicada (projeto CITATIS / FUNDACE / TPC RMS AUDITORIA),
+  por acordo com Mateus. Os dados da RMS foram usados aqui so como caso de
+  teste de desempenho.
