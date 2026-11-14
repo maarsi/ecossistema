@@ -1,0 +1,48 @@
+
+DIAGNOSTICO: POR QUE A MAQUINA CAI SOB CARGA
+CITATIS / ecossistema          13/11/2026 21:25:19
+maquina: mateus-ryzen   7.0.0-43-generic
+
+========================================================================
+1. CONDICOES DA MEDICAO  (sem isto, o numero nao significa nada)
+========================================================================
+  na tomada ......... nao foi possivel determinar
+  driver de clock ... amd-pstate-epp
+  governador ........ powersave
+  sensor de CPU ..... k10temp
+  RAPL (watts) ...... NAO disponivel
+  nucleos logicos ... 12
+
+========================================================================
+2. REPOUSO  (40 segundos parado, para partir do frio)
+========================================================================
+      fase            temp      pot        clock
+      repouso 0s        38 C       ? W    3198 MHz
+      repouso 20s       38 C       ? W    2442 MHz
+      repouso 40s       37 C       ? W    2443 MHz
+
+========================================================================
+3. UM NUCLEO, 10 SEGUNDOS
+========================================================================
+  13971 blocos por segundo
+      durante           70 C       ? W    2980 MHz
+
+  resfriando 30 segundos antes da proxima fase ...
+
+========================================================================
+4. TODOS OS NUCLEOS, 60 SEGUNDOS, COM A CURVA DE DECAIMENTO
+========================================================================
+      fase            temp      pot        clock
+      carga  5s         80 C       ? W    4359 MHz
+      carga 20s         90 C       ? W    4311 MHz
+      carga 40s         94 C       ? W    4257 MHz
+      carga 55s         95 C       ? W    4192 MHz
+
+  88233 blocos por segundo somados em 12 nucleos
+  ganho sobre um nucleo: 6.32x
+
+========================================================================
+5. LEITURA DO RESULTADO
+========================================================================
+  clock:    4359 MHz aos 5 s  ->  4192 MHz aos 55 s (+4%)
+  temperatura: 37 C em repouso  ->  95 C sob carga

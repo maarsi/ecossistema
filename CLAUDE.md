@@ -2133,3 +2133,202 @@ PENDENTE E DECLARADO: a workstation NAO foi medida com o mesmo instrumento. Sem
 isso nao da para dizer se os 106.830 blocos somados dos dois notebooks
 representam 10% ou 80% de ganho sobre o que ela ja faz. E o braco de controle
 faltando, e fecha com uma rodada do diagnostico_cpu_v2.py aqui.
+
+
+===============================================================================
+MAPA DO ECOSSISTEMA (13/11/2026): QUEM FAZ O QUE, E QUANTO CADA UM AGUENTA
+===============================================================================
+
+Esta secao substitui qualquer descricao anterior de "quais maquinas existem".
+Ela foi escrita depois que as tres maquinas Linux foram medidas com o MESMO
+programa, no mesmo dia, e nao com ficha tecnica de fabricante.
+
+-------------------------------------------------------------------------------
+1. O DESENHO
+-------------------------------------------------------------------------------
+
+                     +--------------------------------------+
+                     |   MATEUS  (Windows, Claude Desktop)  |
+                     |   decide, critica, aprova            |
+                     +------------------+-------------------+
+                                        |
+                     +------------------+-------------------+
+                     |        CLAUDE  (nuvem, no chat)      |
+                     |  formulacao, metodo, redacao, codigo |
+                     |  NAO processa dado sigiloso          |
+                     +------------------+-------------------+
+                                        |
+                                        |  ponte MCP
+                                        |  TETO DE 80 SEGUNDOS POR CHAMADA
+                                        v
+  +---------------------------------------------------------------------------+
+  |  MATEUS-RYZEN   workstation Ubuntu, 12 nucleos, RTX 5060 Ti               |
+  |  ----------------------------------------------------------------------   |
+  |  CENTRO DE COMANDO. E a unica maquina que tem:                            |
+  |    GPU, as credenciais (~/TransportMCP/.env), os 5 servidores MCP de       |
+  |    producao, o Ollama e os modelos locais, o cuOpt e o OR-Tools, o acervo, |
+  |    o indice semantico (LanceDB), o conversor Docling e o Claude Code.      |
+  |  TAREFA LONGA roda aqui pelo Claude Code, que nao depende desta conversa.  |
+  |                                                88.233 blocos/s sustentados |
+  +------------------------+---------------------------+----------------------+
+                           |                           |
+                           |   tailscale ssh, chave dedicada
+                           |   ~/.ssh/id_ed25519_lote (600, nao versionada)
+                           |                           |
+        +------------------+--------+   +--------------+------------------+
+        |  GENEVE                   |   |  ZURICH   (hostname: fedora)    |
+        |  Intel i3-N305            |   |  Intel i7-1255U                 |
+        |  8 nucleos, todos E       |   |  12 nucleos (2 P + 8 E)         |
+        |  7,4 GB RAM  <<< GARGALO  |   |  16 GB RAM                      |
+        |  ~/venv_lote, 41 pacotes  |   |  ~/venv_lote, 41 pacotes        |
+        |          56.753 blocos/s  |   |          50.077 blocos/s        |
+        +---------------------------+   +---------------------------------+
+               PEOES DE LOTE. Sem GPU, sem credencial, sem servidor MCP.
+               Recebem tarefa e devolvem resultado. Nunca comandam nada.
+
+        +---------------------------+
+        |  DUEBENDORF  (Windows)    |   Fora do lote de Python.
+        |  Syncthing receiveonly    |   Participa so como replica de arquivo.
+        +---------------------------+
+
+O diagrama e texto puro de proposito. Quem le este arquivo e, na maior parte das
+vezes, um modelo lendo texto, e nao um navegador renderizando figura. Diagrama
+que depende de renderizador vira linha ilegivel na janela de contexto.
+
+-------------------------------------------------------------------------------
+2. A CAPACIDADE MEDIDA  (13/11/2026, diagnostico_cpu_v2.py, mesmo programa)
+-------------------------------------------------------------------------------
+
+  maquina        nucleos   todos os nucleos   clock 5s -> 55s   temp repouso->carga
+  -----------    -------   ----------------   ---------------   -------------------
+  mateus-ryzen     12         88.233 b/s      4359 -> 4192 MHz      37 C -> 95 C
+  geneve            8         56.753 b/s      2997 -> 2800 MHz      42 C -> 91 C
+  zurich           12         50.077 b/s      2333 -> 1633 MHz      39 C -> 60 C
+
+  Os dois notebooks somados: 106.830 b/s, ou 121% da workstation sozinha.
+  Ecossistema completo: 195.063 b/s, ou 2,21 vezes a workstation sozinha.
+
+  O QUE CADA COLUNA QUER DIZER:
+    "blocos por segundo" e aritmetica inteira em Python puro, somada entre todos
+    os nucleos ao longo de 60 segundos. Serve para comparar maquinas rodando o
+    MESMO laco, e nao para prever o tempo de um trabalho real.
+    "clock 5s -> 55s" mostra se a maquina SUSTENTA o desempenho ou cai. A
+    workstation cai 4% em um minuto; o geneve cai 7%; o zurich cai 30%.
+    "temp" mostra de onde vem a queda. O zurich cai 30% de clock parando em
+    60 C, bem longe do limite termico: a queda dele e de ENERGIA, nao de calor,
+    e base refrigerada nao resolve. O geneve e a workstation vao a 91 C e 95 C,
+    que e o comportamento normal de quem usa todo o orcamento termico.
+
+-------------------------------------------------------------------------------
+3. O QUE ESTE NUMERO NAO DIZ  (ler antes de usar o 121% em qualquer decisao)
+-------------------------------------------------------------------------------
+
+  a) AMOSTRA DE TAMANHO UM. Cada maquina foi medida UMA vez. Nao ha repeticao,
+     logo nao ha variabilidade medida. A diferenca de 13% entre geneve e zurich
+     e pequena demais para ser tratada como ordenacao firme; o 121% do par
+     contra a workstation e grande o bastante para indicar a direcao, mas nao
+     para virar numero de relatorio sem repetir a medicao.
+
+  b) O NUMERO DE UM NUCLEO SO ESTA CONTAMINADO. Nas tres maquinas a fase de um
+     nucleo rodou com clock MENOR que a fase de todos os nucleos (workstation
+     2980 contra 4359 MHz; geneve 1862 contra 2997; zurich 1000 contra 2333).
+     Dez segundos nao bastam para o governador subir a frequencia. Portanto o
+     "ganho sobre um nucleo" impresso pelo programa (6,32x / 5,87x / 3,40x)
+     NAO mede eficiencia de paralelizacao e nao deve ser citado. O numero de
+     todos os nucleos, esse sim, e comparavel entre as maquinas, porque foi
+     obtido do mesmo jeito em todas.
+
+  c) ISTO MEDE CPU, E SO CPU. Trabalho real toca memoria, disco e rede. No
+     geneve a RAM de 7,4 GB (3,7 GB livres) e o limite que aparece primeiro, bem
+     antes do processador. Tabela grande em pandas ou geopandas estoura ali.
+
+  d) PYTHON PURO NAO E NUMPY. O laco medido e bytecode do CPython. Trabalho
+     vetorizado usa AVX e muda a ordenacao: o geneve tem AVX2 mas nao AVX-512.
+     Para carga numerica pesada a comparacao precisa ser refeita com numpy.
+
+  e) HA CUSTO DE TRANSPORTE. Cada tarefa vai por SSH sobre Tailscale, com
+     copia de script e de resultado. So compensa quando o tempo de execucao
+     supera com folga o tempo de ida e volta. Lote de muitos arquivos
+     independentes compensa; chamada curta e unica nao compensa.
+
+  f) A MEDICAO DA WORKSTATION FOI FEITA COM ELA OCIOSA (carga 0,41, nenhum
+     modelo carregado no Ollama, GPU em 0%). Esse e justamente o caso MENOS
+     favoravel aos notebooks. Na condicao normal de trabalho, com a workstation
+     ocupada servindo MCP ou rodando modelo, o ganho de mandar lote para fora
+     e maior do que 121%, porque o que se ganha nao e so capacidade, e tambem
+     NAO DISPUTAR a maquina que tem a GPU e as credenciais.
+
+-------------------------------------------------------------------------------
+4. REGRA DE ROTEAMENTO
+-------------------------------------------------------------------------------
+
+  PENSAR               -> Claude, no chat. Formulacao, metodo, critica de
+                          premissa, interpretacao, redacao, codigo curto.
+  PROCESSAR CURTO      -> workstation, por MCP. Consulta pontual, leitura de
+                          arquivo, verificacao. Teto de 80 segundos por chamada.
+  PROCESSAR LONGO      -> workstation, pelo Claude Code instalado nela. Nao
+                          depende desta conversa nem da sessao remota.
+  GPU, MODELO, CREDENCIAL, DADO SIGILOSO -> workstation, sempre. Sem excecao.
+  LOTE DE MUITOS ITENS INDEPENDENTES     -> notebooks, despachados pela
+                          workstation. Conversao de documento, OCR, geracao de
+                          figura, varredura de arquivos, simulacao repetida com
+                          sementes diferentes, qualquer coisa que se parta em
+                          pedacos que nao conversam entre si.
+
+  O QUE NUNCA VAI PARA OS NOTEBOOKS: credencial, dado de cliente, pesquisa
+  bruta, material sob NDA. Eles nao tem .env e nao devem passar a ter. Se o
+  lote precisa de dado sigiloso, ele roda na workstation.
+
+-------------------------------------------------------------------------------
+5. COMO DESPACHAR UM LOTE  (da workstation, nao do chat)
+-------------------------------------------------------------------------------
+
+  Tres passos. Os nomes de maquina para o ssh sao "geneve" e "fedora"
+  (fedora e o hostname do Zurich).
+
+  # 1. envia o script, sem heredoc aninhado
+  cat meu_lote.py | timeout 60 tailscale ssh -- mateusaraujoesilva@geneve \
+      'mkdir -p ~/lote && cat > ~/lote/meu_lote.py'
+
+  # 2. confere a sintaxe ANTES de lancar, nunca depois
+  timeout 60 tailscale ssh -- mateusaraujoesilva@geneve \
+      '~/venv_lote/bin/python -m py_compile ~/lote/meu_lote.py && echo OK'
+
+  # 3. lanca solto, com a entrada fechada
+  timeout 60 tailscale ssh -- mateusaraujoesilva@geneve \
+      'cd ~/lote && nohup setsid ~/venv_lote/bin/python meu_lote.py \
+       > meu_lote.log 2>&1 </dev/null &'
+
+  # 4. acompanha pelo TAMANHO DO LOG crescendo
+  timeout 30 tailscale ssh -- mateusaraujoesilva@geneve \
+      'stat -c%s ~/lote/meu_lote.log'
+
+  POR QUE ASSIM, E NAO DE OUTRO JEITO (erros ja cometidos, nao repetir):
+    - "cat > arquivo && ... &" faz o & valer para a cadeia inteira: o cat fica
+      pendurado esperando entrada, grava arquivo de 0 byte, e o pgrep encontra
+      o cat pendurado e reporta "rodando" para um trabalho que nunca comecou.
+      Por isso a entrada e fechada com </dev/null e o lancamento e separado.
+    - Progresso se mede por LOG CRESCENDO, nunca por processo existindo. Um
+      processo pode existir travado.
+    - bash -n e py_compile rodam ANTES do lancamento. Checar depois nao serve
+      para nada: o trabalho errado ja saiu.
+    - find sem -xdev atravessa montagem de rede (rclone, Google Drive) e nao
+      termina nunca. Sempre -xdev.
+
+-------------------------------------------------------------------------------
+6. ESTADO EM 13/11/2026
+-------------------------------------------------------------------------------
+
+  PRONTO: os dois notebooks com ~/venv_lote e 41 pacotes nas mesmas versoes,
+  testados por funcao e nao por import (pyproj transformando -46,6 / -23,5 de
+  WGS84 para EPSG:31983 deu 336625,13185692334 identico nas tres maquinas).
+  Acesso sem senha pela chave dedicada, sem precisar de clique no navegador.
+
+  PENDENTE, precisa do sudo do Mateus nos dois notebooks:
+      sudo dnf install tesseract tesseract-langpack-por ghostscript \
+                       poppler-utils qpdf
+  Sem isso os notebooks nao fazem OCR nem manipulam PDF. Hoje eles tem gs e
+  pdftoppm, e faltam tesseract e qpdf.
+
+  PENDENTE: registrar neste arquivo a data da rotacao das chaves MANUS, NGC e
+  NVIDIA. Mateus confirmou que a rotacao foi feita; falta a data.
