@@ -2357,7 +2357,21 @@ que depende de renderizador vira linha ilegivel na janela de contexto.
   o caso ocorrer: chave que trafegar pelo chat e chave a rotacionar, sem
   discussao.
 
-  NENHUMA PENDENCIA ABERTA no ecossistema nesta data.
+  ESTADO DO ECOSSISTEMA AO FIM DE 13/11/2026:
+    workstation   centro de comando, 12 nucleos, RTX 5060 Ti, 61 GB de RAM
+    geneve        peao de lote, 8 nucleos, 7,4 GB, venv_lote com 41 pacotes
+    zurich        peao de lote, 12 nucleos, 15 GB, venv_lote com 41 pacotes
+    duebendorf    Windows, so replica de arquivo
+    linguagens    Python em ~/env_transporte (producao) e ~/venv_lote (notebooks);
+                  R 4.5.3 com r5r 2.5.0 em ~/opt/mamba/envs/r5r, por micromamba, sem sudo
+    OCR           cadeia completa nas tres Linux, verificada por funcao
+    r5py 1.1.7 e r5r 2.5.0 instalados, confrontados e equivalentes no tempo de viagem
+
+  PENDENCIAS ABERTAS, todas de DADO e nenhuma de infraestrutura:
+    1. OT TRANS com vigencia compativel com a dos demais feeds (pedido a SEMOB).
+    2. agency_id unico por operador no GTFS da RMS (pedido a SEMOB; ha remendo nosso).
+    3. Conferir onde estao RMS_GTFS_MUNICIPAL_SUNT2024.zip e RMS_GTFS_COMPLEMENTO.zip,
+       citados na nota tecnica de 24/10 e nao localizados em /media nem em /mnt.
 
 
 ===============================================================================
@@ -3023,3 +3037,49 @@ TRES POLITICAS TARIFARIAS NA RMS, E POR QUE O RESULTADO ENGANA  (13/11/2026)
   do feed; 60 paradas sorteadas, nao sistema de zonas, sem ponderacao por
   populacao ou emprego; percentil 50 numa janela de uma hora de um dia util.
   Numero de metodo, nao de produto.
+
+
+
+===============================================================================
+REGRAS QUE NASCERAM EM 13/11/2026, EM FORMA CURTA
+===============================================================================
+
+As secoes acima trazem os casos. Estas sao as regras destiladas, para consulta
+rapida. Todas vieram de erro cometido nesta data, nenhuma de leitura.
+
+1. PROCURAR ANTES DE CONSTRUIR. Antes de instalar, apurar ou escrever rotina,
+   procurar o que ja existe: pacote ja no ambiente, produto de sessao anterior,
+   e NOTA TECNICA NA PROPRIA PASTA DOS DADOS. Falhou tres vezes nesta noite.
+   Busca rasa nao conta como busca: find com profundidade fixa numa arvore mais
+   funda devolve vazio e parece ausencia.
+
+2. QUANDO A VALIDACAO DISCORDA, DESCONFIAR PRIMEIRO DA COMPARACAO. Foram cinco
+   versoes ate o teste do R5 fechar, e os quatro erros foram de criterio, nunca
+   do objeto. O mesmo padrao reprovou duas vezes uma cadeia de OCR que estava
+   correta.
+
+3. ANTES DE AGREGAR SAIDA DE BIBLIOTECA NOVA, IMPRIMIR AS LINHAS CRUAS DE UM
+   CASO. Trinta segundos de leitura da tabela valem tres execucoes.
+
+4. PADRAO NAO DECLARADO E CONDICAO NAO EQUALIZADA. Comparar duas ferramentas
+   com os padroes de cada uma mede os padroes. Diferenca de UM LADO SO e
+   assinatura de parametro, nao de ruido.
+
+5. CONTROLE SO VALE COM BRACOS ENCAIXADOS. "Acrescentar oferta nao pode piorar"
+   exige que um braco seja subconjunto EXATO do outro, gerado a partir dele.
+
+6. GTFS: CONFERIR CALENDARIO ANTES DE QUALQUER MATRIZ. Para cada feed, quais
+   datas serve (calendar.txt E calendar_dates.txt), quantas viagens na data
+   escolhida, e se ha data em que TODOS servem juntos. Feed mudo esta no codigo
+   e nao esta no resultado, sem erro e sem aviso. Conferir tambem unicidade de
+   agency_id, route_id, stop_id e service_id: id repetido faz o motor colapsar
+   operadores em silencio.
+
+7. DADO FALTANTE NAO DESLOCA RESULTADO, PODE INVERTER CONCLUSAO. Com o maior
+   operador ausente, a decomposicao de ganho da integracao tarifaria deu 98%
+   para a integracao interna e 2% para a externa, o que recomendaria o oposto
+   do que uma rede completa provavelmente recomendaria.
+
+8. FERRAMENTA PRONTA ANTES DE ROTINA PROPRIA. Tres vezes nesta noite uma funcao
+   do r5r (check_transit_availability, get_gtfs_errors) respondeu em uma chamada
+   o que custou dezenas de linhas de Python.
