@@ -1,0 +1,27 @@
+{
+  "_nota": "Taxonomia de subareas para a base de conhecimento do acervo 40 - REFERENCIAS. Proposta inicial, a revisar com Mateus. Cada documento recebe subarea_principal e, quando couber, subarea_secundaria.",
+  "subareas": {
+    "demanda_escolha": "Demanda e escolha discreta: modelos de escolha, preferencia declarada e revelada, variavel latente, valor do tempo, elasticidade, reparticao modal",
+    "redes_alocacao": "Modelagem de redes e alocacao: quatro etapas, equilibrio, atribuicao, macrossimulacao, matriz OD, calibracao de rede",
+    "acessibilidade_uso_solo": "Acessibilidade e uso do solo: medidas de acessibilidade, integracao transporte e uso do solo, escolha de localizacao e de destino",
+    "trafego_capacidade": "Engenharia de trafego e capacidade: teoria do fluxo, HCM, intersecoes, microssimulacao, nivel de servico, semaforizacao",
+    "transporte_publico": "Transporte publico e operacao: dimensionamento, headway, frota, ciclo, bilhetagem, tarifa, concessao e contrato",
+    "logistica_carga": "Logistica e transporte de carga: frete, multimodal, cadeia de suprimentos, custos logisticos, roteirizacao",
+    "economia_avaliacao": "Economia dos transportes e avaliacao: avaliacao economica, EVTEA, viabilidade, tarifacao, regulacao, financiamento",
+    "infraestrutura_projeto": "Infraestrutura e projeto: geometria, pavimento, drenagem, normas de projeto, obras de arte",
+    "metodos_quantitativos": "Metodos quantitativos: econometria, estatistica, probabilidade, otimizacao, series temporais, aprendizado de maquina",
+    "planejamento_politica": "Planejamento e politica de transportes: planos diretores, PELT, PlanMob, governanca, marco legal, politica setorial",
+    "pesquisa_dados": "Pesquisa e levantamento de dados: desenho amostral, contagens, pesquisa OD, pesquisa embarcada, AVL, dados de telefonia e GPS",
+    "fora_de_escopo": "Nao e Engenharia de Transportes nem metodo de apoio a ela. Material pessoal, financeiro ou de outro dominio"
+  },
+  "naturezas": {
+    "artigo": "Artigo cientifico de periodico ou de congresso",
+    "livro": "Livro, livro-texto ou capitulo de livro",
+    "norma_manual": "Norma tecnica, manual de orgao, instrucao de servico, caderno de encargos",
+    "relatorio_institucional": "Relatorio, plano ou estudo de orgao publico, agencia, banco ou consultoria",
+    "tese_dissertacao": "Tese, dissertacao ou monografia academica",
+    "mapa_dado": "Mapa, base geografica, planilha de dados",
+    "apresentacao": "Apresentacao de slides, aula, palestra",
+    "outro": "Nao encaixa nas anteriores"
+  }
+}

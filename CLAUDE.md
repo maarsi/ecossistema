@@ -3083,3 +3083,120 @@ rapida. Todas vieram de erro cometido nesta data, nenhuma de leitura.
 8. FERRAMENTA PRONTA ANTES DE ROTINA PROPRIA. Tres vezes nesta noite uma funcao
    do r5r (check_transit_availability, get_gtfs_errors) respondeu em uma chamada
    o que custou dezenas de linhas de Python.
+
+
+===============================================================================
+BASE DE CONHECIMENTO DO ACERVO 40 - REFERENCIAS  (17/11/2026)
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. O ACERVO, MEDIDO DUAS VEZES
+-------------------------------------------------------------------------------
+
+  2.109 arquivos, 1.945 PDFs, 11,4 GB, cerca de 203 mil paginas.
+  1.394 arquivos (66%) soltos na raiz; o resto em cinco pastas por modo.
+  Composicao: artigo cientifico em maioria (escolha discreta, variavel latente,
+  acessibilidade, uso do solo), livro-texto de metodo, e material institucional.
+
+  ATENCAO: a PRIMEIRA varredura reportou 2.017 arquivos e 1.855 PDFs, e estava
+  errada. O JSON que ela gravou era internamente consistente, entao ela nao
+  percebeu a propria falha; nenhum arquivo tinha mtime nem ctime recente, logo o
+  acervo nao mudou. Causa nao identificada, suspeita de enumeracao incompleta do
+  volume. O que pegou o erro foi comparar DUAS contagens independentes. Contagem
+  de uma passada so nao e contagem.
+
+-------------------------------------------------------------------------------
+2. SAIDA ESTRUTURADA: O MAIOR GANHO DO DIA, E DE GRACA
+-------------------------------------------------------------------------------
+
+  O catalogo falhava em 57% dos documentos com resposta VAZIA. Causa: o qwen3:14b
+  gasta o orcamento de num_predict pensando, e limpar_raciocinio removia o que
+  sobrava. Pedir JSON no prompt nao resolve. RESTRINGIR A DECODIFICACAO resolve.
+
+  MEDIDO, 6 documentos reais, prompt de ~6000 chars:
+      sem esquema .... mediana 17,6 s, 0 de 6 com JSON valido, 6 de 6 VAZIOS
+      com esquema .... mediana  3,0 s, 6 de 6 validos
+  Piloto de 60 documentos, mesma semente, antes e depois:
+      sem esquema .... 22 ok, 34 erro_json, 15,9 s/doc
+      com esquema .... 56 ok,  0 erro,       3,9 s/doc
+      34 recuperados, 0 perdidos. Concordancia nos 22 que funcionavam nos dois:
+      subarea 19/22, natureza 19/22, ano 21/22. Nao houve perda de qualidade.
+
+  bin/llm.py: chamar_local ganhou os argumentos OPCIONAIS esquema (JSON Schema) e
+  pensar (bool). O padrao preserva o comportamento antigo, e a chamada posicional
+  de cinco argumentos continua valendo.
+  REGRA: extracao de campo estruturado usa esquema, sempre. Prompt pedindo JSON e
+  pedido; esquema e garantia.
+
+-------------------------------------------------------------------------------
+3. O ROTULO QUE O MODELO NAO PODE DECIDIR
+-------------------------------------------------------------------------------
+
+  "fora_de_escopo" errou feio: classificou o ESTATUTO DAS CIDADES (Lei 10.257)
+  como fora, com confianca ALTA, e tambem "The hippocampus as a cognitive map",
+  que para transportes em geral esta fora mesmo, mas e literatura de base para
+  quem estudou escolha de destino. Um mapa rodoviario saiu fora por ter pouco
+  texto, nao por ser irrelevante.
+  CAUSA: esse rotulo depende de saber o que e relevante PARA O MATEUS, e isso nao
+  esta no documento. O campo confianca tambem nao filtra, pelo caso do Estatuto.
+  REGRA: fora_de_escopo e SINALIZACAO PARA REVISAO HUMANA, nunca exclusao
+  automatica. Nenhum documento sai da base sem Mateus ter visto a lista.
+
+-------------------------------------------------------------------------------
+4. NUVEM: SONDADA, E DESNECESSARIA
+-------------------------------------------------------------------------------
+
+  Sondagem da API da NVIDIA com a chave do .env, em 17/11:
+      integrate.api.nvidia.com /v1/models ..... 32 modelos, so embeddings na
+                                                familia de recuperacao
+      ai.api.nvidia.com retrieval/rerank ...... HTTP 410, "end of life"
+      ai.api.nvidia.com vlm/parse, cv/parse ... HTTP 404
+  O nemotron-3.5-parse e os reranqueadores NAO estao ao alcance desta chave.
+  Hospedar o NeMo Retriever localmente pede 24 GB de VRAM contra os 16 GB da
+  5060 Ti.
+
+  E NAO ERA PRECISO: o bin/converter.py ja faz Docling 2.126 com TableFormer
+  ACCURATE e cell matching na GPU, mais OCRmyPDF para digitalizado, com
+  marcadores de pagina. A capacidade ja estava instalada; faltava o indice usar.
+  REGRA NOVA: antes de propor QUALQUER aquisicao, conferir a capacidade ja
+  instalada. "Procurar antes de construir" cobria disco; passa a cobrir compra.
+
+-------------------------------------------------------------------------------
+5. EXTRACAO: QUANTO CUSTA E QUANTO RENDE
+-------------------------------------------------------------------------------
+
+  MEDIDO em documentos normativos, sob concorrencia com o catalogo (logo, TETO):
+      Docling recupera de +27% a +62% de caracteres contra o PyMuPDF
+      detecta de 3 a 28 tabelas por documento
+      vazao 0,81 s/pagina  ->  46 HORAS para as 203 mil paginas do acervo
+
+  Dai o ROTEAMENTO POR CRITERIO, decidido por Mateus em 17/11: Docling so onde a
+  tabela importa (norma_manual e relatorio_institucional, mais o que o proprio
+  converter marcar como suspeita_digitalizado, que ele ja reconverte com OCR
+  sozinho). O resto segue por PyMuPDF, em milissegundos.
+
+  bin/indice.py ganhou:
+      --catalogo <jsonl>     metadado por trecho E roteamento do extrator
+      --docling-para         naturezas que passam pelo Docling
+      --via-docling          forca Docling em tudo (custa as 46 h)
+      buscar --filtro "..."  SQL sobre natureza, subarea e ano
+      citacao montada na saida: titulo, ano, veiculo, natureza e pagina
+  Colecao sem catalogo mantem o esquema antigo de quatro colunas, e a busca nas
+  cinco colecoes ja existentes continua funcionando. Conferido.
+
+-------------------------------------------------------------------------------
+6. TAXONOMIA E ESTADO
+-------------------------------------------------------------------------------
+
+  config/subareas_transportes.json: 12 subareas e 8 naturezas. PROPOSTA MINHA,
+  ainda nao criticada por Mateus. A revisao dela e a da lista de sinalizados sao
+  as duas coisas que so ele pode fazer.
+
+  Decisoes tomadas por Mateus em 17/11:
+    colecoes por SUBAREA (contra a minha recomendacao de natureza; mitigado
+      pondo natureza como campo de filtro em todo trecho)
+    extracao em nuvem por EXCECAO, com criterio medido, nunca como rotina
+    o acervo pode ser processado fora, mas Mateus confere a lista de exclusao
+      documento por documento antes do primeiro envio
+    ferramenta MCP dedicada para consulta (o buscar_similaridade_local NAO busca,
+      so reordena trechos que ja se tem)

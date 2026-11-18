@@ -115,10 +115,26 @@ def limpar_raciocinio(txt):
 IMAGENS = []  # caminhos de imagem para papeis de visao (preenchido por --imagem)
 
 
-def chamar_local(modelo, prompt, ctx, max_tokens, temperatura):
+def chamar_local(modelo, prompt, ctx, max_tokens, temperatura,
+                 esquema=None, pensar=None):
+    """esquema: dicionario de JSON Schema. Quando dado, o Ollama DECODIFICA RESTRITO a ele e a
+    saida e JSON valido por construcao, nao por obediencia ao prompt.
+    pensar: False desliga o raciocinio de modelo que pensa (qwen3 e afins).
+
+    MEDIDO em 17/11/2026, qwen3:14b, 6 documentos reais do acervo, prompt de ~6000 chars:
+        sem esquema .... mediana 17,6 s, 0 de 6 com JSON valido, 6 de 6 VAZIOS
+        com esquema .... mediana  3,0 s, 6 de 6 validos
+    A resposta vinha vazia porque o modelo gastava os 700 tokens de num_predict pensando e o
+    raciocinio era removido depois. Pedir JSON no prompt NAO resolve isso; restringir a
+    decodificacao resolve. Ambos os argumentos sao opcionais e o padrao preserva o
+    comportamento anterior, para nao mexer em quem ja chama esta funcao."""
     j = {
         "model": modelo, "prompt": prompt, "stream": False, "keep_alive": "30m",
         "options": {"num_ctx": ctx, "num_predict": max_tokens, "temperature": temperatura}}
+    if esquema is not None:
+        j["format"] = esquema
+    if pensar is not None:
+        j["think"] = bool(pensar)
     if IMAGENS:
         import base64
         j["images"] = [base64.b64encode(Path(i).read_bytes()).decode() for i in IMAGENS]

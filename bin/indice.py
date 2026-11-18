@@ -48,6 +48,35 @@ def docx_texto(p):
     return "\n".join(partes)
 
 
+def extrair_docling(p):
+    """Lista de (pagina, texto) vinda do converter.py, que usa Docling com TableFormer.
+
+    POR QUE EXISTE: a extracao por PyMuPDF devolve o texto corrido da pagina e PERDE a
+    estrutura de tabela. Em manual de orgao, norma e EVTEA o dado esta na tabela, nao no
+    paragrafo, entao o indice ficava cego justamente onde mais importa. O converter.py ja
+    fazia reconhecimento de estrutura de tabela na GPU desde sempre; faltava o indice usa-lo.
+
+    De brinde, o converter devolve suspeita_digitalizado e sabe rodar OCR: documento sem
+    camada de texto e reprocessado com OCR automaticamente, em vez de virar pendencia.
+
+    O markdown traz marcadores <!-- pagina N: inicio/fim -->, entao a pagina da citacao e
+    preservada e o resto do indice.py nao muda.
+    """
+    sys.path.insert(0, str(RAIZ / "bin"))
+    import converter as conv
+    md, info = conv.converter(str(p), ocr=False)
+    if info.get("suspeita_digitalizado"):
+        md, info = conv.converter(str(p), ocr=True)
+    texto = Path(md).read_text(encoding="utf-8", errors="replace")
+    blocos = re.findall(r"<!-- pagina (\d+): inicio -->(.*?)<!-- pagina \1: fim -->",
+                        texto, re.S)
+    if blocos:
+        return [(int(n), t) for n, t in blocos]
+    # formato sem paginas (DOCX, XLSX, HTML) ou PDF sem paginas detectadas
+    corpo = re.sub(r"<!--.*?-->", "", texto, flags=re.S)
+    return [(-1, corpo)]
+
+
 def extrair(p):
     """Lista de (pagina, texto). pagina = -1 quando o formato nao tem paginas."""
     s = p.suffix.lower()
@@ -99,21 +128,52 @@ def abrir(nome):
     return lancedb.connect(str(BASE / nome))
 
 
+META = ("titulo", "ano", "natureza", "subarea_principal", "subarea_secundaria", "veiculo")
+
+
 def tabela(registros):
-    """Tabela Arrow com o vetor como lista de tamanho fixo (formato que o LanceDB reconhece para busca)."""
+    """Tabela Arrow com o vetor como lista de tamanho fixo (formato que o LanceDB reconhece).
+
+    Quando ha catalogo, acrescenta colunas de metadado por trecho, para a busca aceitar
+    filtro (natureza, subarea, ano). Sem catalogo o esquema e o antigo, de quatro colunas,
+    para nao quebrar colecao ja existente."""
     import pyarrow as pa
     dim = len(registros[0]["vetor"])
-    return pa.table({"arquivo": [r["arquivo"] for r in registros],
-                     "pagina": pa.array([r["pagina"] for r in registros], pa.int32()),
-                     "trecho": [r["trecho"] for r in registros],
-                     "vetor": pa.array([r["vetor"] for r in registros], type=pa.list_(pa.float32(), dim))})
+    cols = {"arquivo": [r["arquivo"] for r in registros],
+            "pagina": pa.array([r["pagina"] for r in registros], pa.int32()),
+            "trecho": [r["trecho"] for r in registros],
+            "vetor": pa.array([r["vetor"] for r in registros], type=pa.list_(pa.float32(), dim))}
+    if any(k in registros[0] for k in META):
+        cols["ano"] = pa.array([r.get("ano") for r in registros], pa.int32())
+        for k in ("titulo", "natureza", "subarea_principal", "subarea_secundaria", "veiculo"):
+            cols[k] = [(r.get(k) or "") for r in registros]
+    return pa.table(cols)
+
+
+def carregar_catalogo(caminho):
+    """{arquivo relativo: metadado}. O catalogo decide DOIS usos: o metadado que vai para o
+    indice e o roteamento do extrator (Docling so onde a tabela importa)."""
+    if not caminho:
+        return {}
+    cat = {}
+    for lin in Path(os.path.expanduser(caminho)).read_text(encoding="utf-8").splitlines():
+        if not lin.strip():
+            continue
+        try:
+            r = json.loads(lin)
+        except Exception:
+            continue
+        if r.get("status") == "ok":
+            cat[r["arquivo"]] = {k: r.get(k) for k in META}
+    return cat
 
 
 def q(s):
     return s.replace("'", "''")
 
 
-def indexar(pasta, nome, incluir_codigo, excluir_extra=()):
+def indexar(pasta, nome, incluir_codigo, excluir_extra=(), via_docling=False,
+            catalogo=None, docling_para=("norma_manual", "relatorio_institucional")):
     raiz = Path(caminho_ubuntu(pasta))
     if not raiz.exists():
         sys.exit(f"ERRO: pasta nao encontrada: {raiz}")
@@ -121,6 +181,9 @@ def indexar(pasta, nome, incluir_codigo, excluir_extra=()):
     arqs = sorted(p for p in raiz.rglob("*") if p.is_file() and p.suffix.lower() in exts
                   and not any(x in p.relative_to(raiz).parts for x in EXCLUIR)
                   and not any(e.replace('\\', '/').strip('/') in p.relative_to(raiz).as_posix() for e in excluir_extra))
+    cat = carregar_catalogo(catalogo)
+    if cat:
+        print(f"catalogo: {len(cat)} documentos; Docling para {', '.join(docling_para)}", flush=True)
     BASE.mkdir(parents=True, exist_ok=True)
     db = abrir(nome)
     man = {}
@@ -134,14 +197,21 @@ def indexar(pasta, nome, incluir_codigo, excluir_extra=()):
         h = hash_arq(p)
         if rel in man and man[rel]["hash"] == h:
             puladas += 1; continue
+        meta = cat.get(rel, {})
+        # ROTEAMENTO MEDIDO: Docling custa 0,81 s/pagina contra milissegundos do PyMuPDF, e
+        # recupera de 27% a 62% mais caracteres em documento normativo, onde o dado esta na
+        # tabela. Passar o acervo inteiro por ele custaria 46 h; passar so onde a tabela
+        # importa custa uma fracao disso. Medido em 17/11/2026.
+        usar_docling = via_docling or (meta.get("natureza") in docling_para)
         try:
-            paginas = extrair(p)
+            paginas = extrair_docling(p) if usar_docling else extrair(p)
         except Exception as e:
             pend.append({"arquivo": rel, "hash": h, "n_trechos": 0, "status": f"erro {type(e).__name__}"}); continue
         total = sum(len(t.strip()) for _, t in paginas)
         if p.suffix.lower() == ".pdf" and total < 100 * max(1, len(paginas)):
             pend.append({"arquivo": rel, "hash": h, "n_trechos": 0, "status": "pendente_ocr"}); continue
-        registros = [{"arquivo": rel, "pagina": pg, "trecho": tr} for pg, txt in paginas for tr in fatiar(txt)]
+        registros = [{"arquivo": rel, "pagina": pg, "trecho": tr, **meta}
+                     for pg, txt in paginas for tr in fatiar(txt)]
         if not registros:
             pend.append({"arquivo": rel, "hash": h, "n_trechos": 0, "status": "sem_texto"}); continue
         vetores = embed([f"Arquivo: {p.name}" + (f" | pagina {r['pagina']}" if r["pagina"] > 0 else "") + f"\n{r['trecho']}"
@@ -171,7 +241,9 @@ def indexar(pasta, nome, incluir_codigo, excluir_extra=()):
         print(f"  pendente: {r['arquivo'][:90]} [{r['status']}]")
 
 
-def buscar(nome, pergunta, k=6, imprimir=True):
+def buscar(nome, pergunta, k=6, imprimir=True, filtro=None):
+    """filtro: expressao SQL sobre as colunas de metadado, por exemplo
+    "natureza = 'norma_manual' AND ano >= 2015". So funciona em colecao indexada com catalogo."""
     db = abrir(nome)
     if "trechos" not in db.table_names():
         sys.exit(f"ERRO: indice '{nome}' vazio ou inexistente.")
@@ -181,11 +253,19 @@ def buscar(nome, pergunta, k=6, imprimir=True):
         busca = busca.distance_type("cosine")
     except AttributeError:
         busca = busca.metric("cosine")
+    if filtro:
+        busca = busca.where(filtro, prefilter=True)
     res = busca.limit(k).to_list()
     if imprimir:
         for i, r in enumerate(res, 1):
             pg = f", p. {r['pagina']}" if r["pagina"] > 0 else ""
-            print(f"[{i}] {1 - r['_distance']:.3f} | {r['arquivo']}{pg}\n    {r['trecho'][:350].replace(chr(10), ' ')}\n")
+            cit = r.get("titulo") or r["arquivo"]
+            ano = f" ({r['ano']})" if r.get("ano") else ""
+            veic = f". {r['veiculo']}" if r.get("veiculo") else ""
+            nat = f" [{r['natureza']}]" if r.get("natureza") else ""
+            print(f"[{i}] {1 - r['_distance']:.3f}{nat} | {cit}{ano}{veic}{pg}")
+            print(f"    arquivo: {r['arquivo']}")
+            print(f"    {r['trecho'][:350].replace(chr(10), ' ')}\n")
     return res
 
 
@@ -226,11 +306,19 @@ if __name__ == "__main__":
     a1 = sub.add_parser("indexar"); a1.add_argument("pasta"); a1.add_argument("--nome", required=True)
     a1.add_argument("--incluir-codigo", action="store_true")
     a1.add_argument("--excluir", action="append", default=[], help="trecho de caminho a ignorar (repetivel)")
+    a1.add_argument("--via-docling", action="store_true",
+                    help="forca Docling para TODOS os documentos (custa 0,81 s/pagina)")
+    a1.add_argument("--catalogo", help="catalogo .jsonl: acrescenta metadado e roteia o extrator")
+    a1.add_argument("--docling-para", default="norma_manual,relatorio_institucional",
+                    help="naturezas que passam pelo Docling quando ha catalogo")
     a2 = sub.add_parser("buscar"); a2.add_argument("nome"); a2.add_argument("pergunta"); a2.add_argument("-k", type=int, default=6)
+    a2.add_argument("--filtro", help="SQL sobre metadado, ex: \"natureza = 'norma_manual' AND ano >= 2015\"")
     a3 = sub.add_parser("validar"); a3.add_argument("nome"); a3.add_argument("-n", type=int, default=20)
     sub.add_parser("listar")
     a = ap.parse_args()
-    if a.cmd == "indexar": indexar(a.pasta, a.nome, a.incluir_codigo, a.excluir)
-    elif a.cmd == "buscar": buscar(a.nome, a.pergunta, a.k)
+    if a.cmd == "indexar":
+        indexar(a.pasta, a.nome, a.incluir_codigo, a.excluir, a.via_docling, a.catalogo,
+                tuple(x.strip() for x in a.docling_para.split(",") if x.strip()))
+    elif a.cmd == "buscar": buscar(a.nome, a.pergunta, a.k, filtro=a.filtro)
     elif a.cmd == "validar": validar(a.nome, a.n)
     else: listar()
