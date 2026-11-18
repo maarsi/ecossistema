@@ -351,7 +351,13 @@ def main():
                 pass
         print("ja catalogados: %d" % len(feitos), flush=True)
 
-    pdfs = sorted(p for p in raiz.rglob("*.pdf") if p.is_file())
+    # EXTENSAO SEM DISTINGUIR MAIUSCULA. rglob("*.pdf") e sensivel a caixa e, em 18/11/2026,
+    # deixou de fora 4 documentos com extensao ".PDF", todos pertinentes (operacao de praca de
+    # pedagio, pedagio de custo marginal, simulacao de filas). O sintoma foi a contagem do
+    # script dar 1941 onde `find -iname` dava 1945: discrepancia pequena que esconderia uma
+    # perda silenciosa. Conferir contagem contra ferramenta independente faz parte do trabalho.
+    pdfs = sorted(p for p in raiz.rglob("*")
+                  if p.is_file() and p.suffix.lower() == ".pdf")
     print("PDFs no acervo: %d" % len(pdfs), flush=True)
     if a.piloto:
         random.seed(a.semente)
