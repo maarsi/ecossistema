@@ -68,6 +68,44 @@ projecao continental ou SIRGAS 2000 geografico, conforme a analise.
 Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel: editar
 `config/papeis.json` registrando o resultado do teste que justificou a mudanca.
 
+## Prompt de modelo local: duas regras medidas (18/11/2026)
+
+### 1. AS DESCRICOES VAO NO PROMPT, NUNCA SO AS CHAVES DO ENUM
+Classificacao com `format` (JSON Schema) restringe a SAIDA a valores validos, mas nao ensina
+o que cada valor significa. Mandar `", ".join(SUB)` faz o modelo escolher no escuro pelo nome
+da chave. Medido: de 219 documentos de titulo inequivoco sobre escolha discreta, so 11 (5%)
+foram para `demanda_escolha`; com as descricoes no prompt, 10 de 10 numa amostra menor.
+Cometido DUAS vezes no mesmo dia, na 1a e depois na 2a passagem do catalogo. Por isso e regra
+e nao licao: **todo prompt que oferece um enum manda chave E descricao, sem excecao.**
+
+### 2. VALE A ULTIMA INSTRUCAO
+Medido com qwen3:14b sobre o Codigo de Transito Brasileiro, 3 execucoes por variante:
+
+| posicao da regra "lei se classifica pelo objeto que regula" | acertos |
+|---|---|
+| antes do texto do documento | 0 de 3 |
+| depois do texto, seguida de outras regras | 0 de 3 |
+| depois do texto, como item final de uma lista de cinco | 0 de 3 |
+| sozinha, como ultima linha do prompt | 3 de 3 |
+
+`think: true` nao alterou nada (0 de 3). Nao e capacidade, e posicao. Consequencia de projeto:
+**nao empilhar regras de desempate num prompt so.** Se duas decisoes diferentes competem, separar
+em duas chamadas. Ver a 2a passagem de `bin/catalogar_acervo.py`.
+
+### 3. UMA PERGUNTA POR ENUM
+Erro de projeto do catalogo: `fora_de_escopo` era o 13o valor do enum de subarea, ou seja,
+"isto pertence ao acervo?" disputando espaco com "que subarea e esta?". Sao perguntas distintas
+e precisam de chamadas distintas. O sintoma foi o CTB sair como `fora_de_escopo` com confianca
+ALTA, em duas edicoes. Regra: enum que mistura uma classificacao tematica com uma decisao de
+inclusao esta mal formado; separar.
+
+### 4. NA DUVIDA, ERRAR PARA DENTRO
+`fora_de_escopo` e sinalizacao para revisao humana, nunca exclusao automatica, e quem decide e
+Mateus, documento a documento, antes de qualquer envio para a nuvem. O custo de um documento a
+mais na base e um descarte na revisao; o custo de um a menos e o CTB sumir sem ninguem notar.
+Documento recuperado na 2a passagem entra com `confianca: "baixa"`, `recuperado_na_2a: true` e
+o motivo em texto, para auditoria.
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.

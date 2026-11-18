@@ -104,7 +104,20 @@ REGRAS:
 - Livro-texto de estatistica, econometria, probabilidade, otimizacao ou matematica, sem
   aplicacao a transportes, e subarea "metodos_quantitativos".
 - Documento que nao e de Engenharia de Transportes nem metodo de apoio a ela recebe
-  subarea_principal "fora_de_escopo". Exemplo: material pessoal, financeiro ou juridico alheio.
+  subarea_principal "fora_de_escopo". Exemplo: manual de linguagem de programacao, gramatica,
+  historia geral, psicologia clinica, material pessoal ou financeiro.
+- LEI, NORMA, RESOLUCAO OU REGULAMENTO SE CLASSIFICA PELO OBJETO QUE REGULA, e NUNCA como
+  "fora_de_escopo" por ser juridico. Estao DENTRO do escopo: Codigo de Transito Brasileiro,
+  lei de mobilidade urbana, Estatuto da Cidade, estudo de impacto de vizinhanca, resolucao do
+  CONTRAN, da ANTT ou da ANTP, norma da ABNT, e lei de protecao de dados quando aplicada a
+  pesquisa de campo. Medido em 18/11/2026: o Codigo de Transito Brasileiro foi mandado para
+  "fora_de_escopo" com confianca ALTA por esse engano, em duas edicoes diferentes.
+- MAPA, ANEXO, FOLHETO, APRESENTACAO ou material institucional de orgao ou empresa de
+  transportes (DER, DNIT, ANTT, concessionaria, iRAP, BID) se classifica pelo OBJETO:
+  rede rodoviaria, seguranca viaria, concessao, percepcao do usuario. A forma do documento
+  vai no campo natureza; ela nunca decide a subarea e nunca justifica "fora_de_escopo".
+- Na duvida entre "fora_de_escopo" e uma subarea de transportes, escolha a SUBAREA e marque
+  confianca "baixa". "fora_de_escopo" e sinalizacao para revisao humana, nao e exclusao.
 - confianca "baixa" quando o inicio do documento nao bastar para decidir.
 
 CLASSIFIQUE PELO OBJETO DO ESTUDO, NAO PELO TEMA GERAL. Esta e a regra que mais erra.
@@ -126,7 +139,110 @@ NOME DO ARQUIVO (pista, nao autoridade): {nome}
 
 INICIO DO DOCUMENTO:
 {texto}
+
+FIM DO DOCUMENTO.
+
+CONFIRA ANTES DE RESPONDER. Estas verificacoes vem depois do texto de proposito, e nesta
+ordem de proposito. MEDIDO em 18/11/2026, qwen3:14b, Codigo de Transito Brasileiro, 3 execucoes
+por variante: regra antes do documento, 3 de 3 erros; a mesma regra depois do documento mas
+seguida de outra regra, 3 de 3 erros; a mesma regra como ULTIMA linha do prompt, 3 de 3 acertos.
+Vale a ULTIMA instrucao. Quem editar este prompt deve manter a regra de escopo no fim.
+
+A. O estudo modela a ESCOLHA do individuo (escolha modal, de destino ou de rota por
+   comportamento; preferencia declarada ou revelada; logit; probit; variavel latente; valor do
+   tempo; disposicao a pagar)? Entao e demanda_escolha, ainda que o texto fale de trafego, de
+   onibus ou de rodovia. trafego_capacidade e so para fluxo, capacidade de via, intersecao,
+   semaforo e nivel de servico, nao para comportamento do usuario.
+
+B. Metodo estatistico APLICADO a transportes vai para a subarea do transporte.
+   metodos_quantitativos e so para livro ou texto de metodo sem aplicacao a transportes.
+
+C. Mapa, anexo, folheto ou apresentacao de orgao de transportes se classifica pelo OBJETO.
+   A forma vai no campo natureza; ela nunca decide a subarea.
+
+D. fora_de_escopo e sinalizacao para revisao, nunca exclusao, e so cabe quando o documento
+   for de outro dominio por inteiro, como manual de linguagem de programacao, gramatica,
+   historia geral ou psicologia clinica. Todo fora_de_escopo passa por uma segunda pergunta
+   antes de valer, entao nao force a barra para evitar usa-lo.
+
+E. ULTIMA VERIFICACAO, A QUE MAIS ERRA: este documento e lei, norma, resolucao, decreto ou
+   regulamento? Entao classifique pelo OBJETO QUE ELE REGULA, e NUNCA como fora_de_escopo por
+   ser juridico. Codigo de Transito Brasileiro, lei de mobilidade urbana, Estatuto da Cidade,
+   resolucao do CONTRAN ou da ANTT, norma da ABNT, estudo de impacto de vizinhanca e lei de
+   protecao de dados aplicada a pesquisa de campo sao todos DENTRO do escopo.
 """
+
+
+# ----------------------------------------------------------------------------------
+# SEGUNDA PASSAGEM: ESCOPO
+# O erro de projeto da primeira versao foi juntar DUAS perguntas num enum so. "Que subarea
+# e esta?" e "isto pertence ao acervo?" sao perguntas diferentes, e a segunda ficava como
+# 13o valor da primeira, competindo com rotulos tematicos.
+# Medido em 18/11/2026, qwen3:14b, Codigo de Transito Brasileiro, 3 execucoes por variante:
+#   regra de escopo ANTES do documento ................. 0 de 3 corretas
+#   regra de escopo depois, seguida de outra regra ...... 0 de 3 corretas
+#   regra de escopo como ULTIMA linha do prompt ......... 3 de 3 corretas
+# Vale a ULTIMA instrucao. Em vez de depender disso, a decisao de escopo foi separada num
+# prompt curto de pergunta unica, onde nao ha outra instrucao para competir.
+# Custo: so os documentos que a 1a passagem marcou fora_de_escopo, cerca de 4,5% do acervo.
+PROMPT_ESCOPO = """Documento: {titulo}
+Arquivo: {nome}
+
+INICIO DO DOCUMENTO:
+{texto}
+
+FIM DO DOCUMENTO.
+
+PERGUNTA UNICA: este documento interessa ao trabalho de um engenheiro de planejamento de
+transportes? INTERESSA se trata de transporte, transito, mobilidade, logistica, carga,
+infraestrutura viaria, ferroviaria, aeroportuaria ou portuaria, uso do solo, ou se e lei,
+norma, resolucao ou regulamento sobre esses temas, ou ainda metodo quantitativo com
+aplicacao a transportes. NAO INTERESSA so quando for de outro dominio por inteiro.
+
+Se interessar, diga em que subarea ele entra, escolhendo pela DESCRICAO e nao pelo nome
+da chave. Lei ou norma sobre transito e transporte entra em planejamento_politica quando
+trata de marco legal e politica, ou em trafego_capacidade quando trata de circulacao,
+sinalizacao e operacao da via. metodos_quantitativos e so para texto de metodo sem
+aplicacao, e nunca para legislacao.
+
+SUBAREAS:
+{subareas}"""
+
+ESQUEMA_ESCOPO = {
+    "type": "object",
+    "properties": {
+        "dentro": {"type": "boolean"},
+        "subarea": {"type": "string", "enum": sorted(SUB)},
+        "motivo": {"type": "string"},
+    },
+    "required": ["dentro", "subarea", "motivo"],
+}
+
+
+def confirmar_escopo(txt, nome, titulo, modelo):
+    """Reexamina um documento que a 1a passagem mandou para fora_de_escopo.
+
+    Devolve (subarea, motivo) ou (None, motivo) se confirmar que esta fora."""
+    # AS DESCRICOES VAO NO PROMPT, nao so as chaves. Mesmo erro que custou a 1a passagem:
+    # em 18/11 o Codigo de Transito foi recuperado pela 2a passagem mas caiu em
+    # metodos_quantitativos, porque o enum oferecia so os nomes das chaves.
+    pedido = PROMPT_ESCOPO.format(
+        titulo=titulo or "?", nome=nome, texto=txt,
+        subareas="\n".join("  %-24s %s" % (k, v) for k, v in SUB.items()
+                           if k != "fora_de_escopo"))
+    ctx = 8192 if len(pedido) < 18000 else 16384
+    bruto, _, _ = llm.chamar_local(modelo, pedido, ctx, 300, 0.1,
+                                   esquema=ESQUEMA_ESCOPO, pensar=False)
+    try:
+        d = json.loads((bruto or "").strip())
+    except Exception as e:
+        return None, "erro_2a_passagem: %s" % str(e)[:60]
+    if not d.get("dentro"):
+        return None, (d.get("motivo") or "")[:120]
+    sa = d.get("subarea")
+    if sa in SUB and sa != "fora_de_escopo":
+        return sa, (d.get("motivo") or "")[:120]
+    return None, (d.get("motivo") or "")[:120]
 
 
 def catalogar_um(p, rel, modelo, num_ctx):
@@ -173,6 +289,13 @@ def catalogar_um(p, rel, modelo, num_ctx):
         d["ano"] = a if a and 1900 <= a <= 2030 else None
     except Exception:
         d["ano"] = None
+    if d.get("subarea_principal") == "fora_de_escopo":
+        sa, motivo = confirmar_escopo(txt, p.name, d.get("titulo"), modelo)
+        d["escopo_2a_passagem"] = motivo
+        if sa:
+            d["subarea_principal"] = sa
+            d["confianca"] = "baixa"
+            d["recuperado_na_2a"] = True
     base.update(d)
     base["status"] = "ok"
     return base
