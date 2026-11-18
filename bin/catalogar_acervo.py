@@ -48,8 +48,22 @@ ESQUEMA = {
 
 
 def caminho_ubuntu(c):
+    """Traduz caminho do Windows, PREFERINDO a copia local a montagem de rede.
+
+    /media/mateus/DADOS_01 e CIFS sobre Tailscale, servido pela maquina Windows: toda
+    leitura ali e trafego de rede. Medido em 18/11/2026: RTT de 860 ms sob carga e 11 s por
+    documento, com a GPU em 0% e o processo em estado D (wchan wait_for_response). Com o
+    acervo copiado para o NVMe local o mesmo trabalho le de disco.
+    Por isso: se existir a copia em /mnt/nvme_lexar/acervo/, e ela que vale. A montagem de
+    rede continua sendo o original, e fica como reserva."""
     c = c.replace("\\", "/")
-    return "/media/mateus/DADOS_01/" + c[3:] if c.lower().startswith("d:/") else c
+    if c.lower().startswith("d:/"):
+        resto = c[3:]
+        local = "/mnt/nvme_lexar/acervo/" + resto
+        if os.path.isdir(local):
+            return local
+        return "/media/mateus/DADOS_01/" + resto
+    return c
 
 
 def hash24(p):
