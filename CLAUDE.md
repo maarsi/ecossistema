@@ -68,6 +68,49 @@ projecao continental ou SIRGAS 2000 geografico, conforme a analise.
 Instalou ou removeu algo: rodar `bin/inventario.py` e fazer commit. Mudou papel: editar
 `config/papeis.json` registrando o resultado do teste que justificou a mudanca.
 
+## Base de conhecimento: catalogo do acervo 40 - REFERENCIAS (18/11/2026)
+
+Acervo: 1.945 PDFs, 12 GB, originais no D: da maquina Windows, COPIA DE TRABALHO em
+`/mnt/nvme_lexar/acervo/40 - REFERENCIAS`. Catalogo em `~/base_conhecimento/catalogo.jsonl`
+(uma linha por documento), planilha de revisao em `revisao_taxonomia_<data>.csv`.
+
+Execucao: 1.804 catalogados, 138 aguardando OCR, 3 com erro de leitura, 110 min a 3,4 s/doc.
+
+| subarea | % do catalogado | % na versao defeituosa de 17/11 |
+|---|---|---|
+| demanda_escolha | 36,1% | 2,9% |
+| trafego_capacidade | 13,2% | 30,4% |
+| planejamento_politica | 10,2% | |
+| infraestrutura_projeto | 10,0% | |
+| metodos_quantitativos | 8,0% | |
+| economia_avaliacao | 6,2% | |
+| acessibilidade_uso_solo | 5,4% | |
+| transporte_publico | 4,3% | |
+| fora_de_escopo | 2,4% | |
+| logistica_carga | 1,8% | |
+| pesquisa_dados | 1,6% | |
+| redes_alocacao | 0,7% | |
+
+Natureza: artigo 61,3%, livro 14,1%, relatorio_institucional 9,5%, norma_manual 8,5%.
+Idioma: 1.422 en, 374 pt. Mediana de ano: 2010. Sem ano: 349.
+
+TESTE DE CONTROLE, a repetir sempre que o prompt mudar: selecionar os documentos cujo titulo
+ou caminho casa com logit, probit, escolha modal, preferencia declarada, valor do tempo e
+afins, e medir quantos caem em `demanda_escolha`. 5% na versao defeituosa, 96% depois.
+
+ATENCAO AO INTERPRETAR: `redes_alocacao` com 0,7% e `pesquisa_dados` com 1,6% sao baixos para
+quem mantem rede de macrossimulacao no Visum e faz coleta de campo propria. Ou o acervo nao
+tem essa literatura, ou o classificador a manda para outra subarea (modelo de quatro etapas
+tem escolha e alocacao juntos). Pendente de verificacao com Mateus.
+
+A LISTA DE EXCLUSAO E DECISAO DE MATEUS, DOCUMENTO A DOCUMENTO, e nao sai do lugar sem isso.
+Os 44 confirmados fora contem um agrupamento coerente que o classificador nao tem como julgar:
+economia comportamental e direito e economia, cognicao espacial (`The hippocampus as a
+cognitive map`, `Modeling spatial knowledge`), demografia e projecao populacional, economia
+informal urbana, e Simon e Popper. Para quem fez tese sobre escolha de destino em abordagem
+microeconomica, isso e fundamento teorico deliberado, nao ruido. O classificador julga por
+tema; so o dono do acervo sabe o uso.
+
 ## Prompt de modelo local: duas regras medidas (18/11/2026)
 
 ### 1. AS DESCRICOES VAO NO PROMPT, NUNCA SO AS CHAVES DO ENUM
