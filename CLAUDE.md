@@ -27,8 +27,36 @@ e devolver apenas estatisticas. Nuvem so com material publico ou sintetico.
 - Trabalho acima de ~2 min: execucao em background e consulta do job.
 
 ## Armazenamento
-- Escrita pesada, SQLite e GeoPackage: `/mnt/nvme_lexar/datasets_sig/` (ext4).
-- `/media/mateus/DADOS_01/` (D:, NTFS via FUSE): apenas entrega e sincronizacao final.
+- Escrita pesada, SQLite e GeoPackage: `/mnt/nvme_lexar/datasets_sig/` (ext4, NVMe local).
+- Acervo de referencias para processamento: `/mnt/nvme_lexar/acervo/` (copia local de trabalho).
+- `/media/mateus/DADOS_01/`: **NAO e disco local e NAO e NTFS via FUSE** (como esta pagina afirmou
+  ate 18/11/2026, erro que custou um diagnostico). E `//100.119.22.38/DADOS_01` montado por **CIFS
+  sobre Tailscale**, servido pela maquina **Windows (duebendorf-1)**. Toda leitura ali e trafego de rede.
+  Usar so para entrega e sincronizacao final, nunca como entrada de processamento em lote.
+
+### Regra: processamento em lote le de disco local, ponto
+Medido em 18/11/2026, catalogacao de 1.941 PDFs lendo direto do CIFS:
+
+| grandeza | valor medido |
+|---|---|
+| opcoes da montagem | `vers=3.1.1 cache=strict actimeo=1 closetimeo=1 soft` |
+| RTT ao servidor (sob carga) | 860 ms, em enlace que e fisicamente LAN (192.168.0.x) |
+| vazao no tunel | 11,6 MB/s (~93 Mbit/s), com a NIC da Ubuntu em 1000 Mb/s |
+| ritmo da catalogacao | 11 s/documento, GPU em 0%, CPU em 0,3% |
+| estado do processo | `D` com `wchan = wait_for_response` |
+
+`actimeo=1` e `closetimeo=1` derrubam o cache de atributos para 1 segundo: cada `open` e cada `stat`
+viram viagem ao servidor. Com pymupdf lendo pagina a pagina, sao milhares de idas e voltas por documento.
+Antes de rodar lote sobre um diretorio, conferir `mount | grep <ponto>`. Se for cifs, nfs ou fuse,
+copiar para `/mnt/nvme_lexar/` primeiro: paga-se a leitura uma vez, sequencial, e todo reprocessamento
+posterior (OCR, Docling, reindexacao) sai de graca.
+
+### Regra de diagnostico: estado `D` nao prova disco
+Processo em `D` com GPU ociosa esta bloqueado em E/S, mas E/S de QUE dispositivo e outra pergunta.
+Em 18/11 eu li `D` + caminho comecando em `/media/` e conclui "disco lento"; era rede. O que decide:
+`cat /proc/<pid>/wchan` (`wait_for_response` = CIFS) e `mount | grep <ponto>`. Dois comandos, antes
+de qualquer hipotese sobre o codigo. Nessa mesma investigacao eu ainda otimizei `hash24` por suspeita
+errada: a mudanca era boa em si, mas nao era a causa, e otimizar antes de localizar e chute.
 
 ## CRS
 Definido POR PROJETO e registrado no referencial dele, nunca por estado.

@@ -53,10 +53,22 @@ def caminho_ubuntu(c):
 
 
 def hash24(p):
+    """Digital de MUDANCA, nao de integridade: tamanho + primeiro e ultimo MB.
+
+    POR QUE NAO O ARQUIVO INTEIRO: o acervo tem 11,4 GB num volume lento, e hashear tudo
+    faz o processo ficar preso em E/S com a GPU ociosa. Medido em 18/11: com hash completo
+    o catalogo rodava a 11 s/documento com a GPU em 0% e o processo em estado D; o custo
+    estava no disco, nao no modelo. Para detectar que um documento mudou, tamanho mais as
+    bordas bastam, e leem 2 MB em vez de ate 1 GB.
+    NAO usar esta funcao para atestar integridade de arquivo: para isso, sha256 completo."""
+    tam = os.path.getsize(p)
     h = hashlib.sha256()
     with open(p, "rb") as f:
-        for b in iter(lambda: f.read(1 << 20), b""):
-            h.update(b)
+        h.update(f.read(1 << 20))
+        if tam > (2 << 20):
+            f.seek(-(1 << 20), os.SEEK_END)
+            h.update(f.read(1 << 20))
+    h.update(str(tam).encode())
     return h.hexdigest()[:24]
 
 
@@ -81,9 +93,9 @@ Campos:
   ano                  ano de publicacao como numero inteiro; null se nao estiver no texto
   veiculo              periodico, congresso, editora ou orgao emissor; null se nao houver
   idioma               "pt", "en", "es" ou outro codigo de duas letras
-  natureza             uma das chaves: {naturezas}
-  subarea_principal    uma das chaves: {subareas}
-  subarea_secundaria   outra chave, ou null se nao couber
+  natureza             uma das chaves listadas em NATUREZAS
+  subarea_principal    uma das chaves listadas em SUBAREAS
+  subarea_secundaria   outra chave de SUBAREAS, ou null se nao couber
   confianca            "alta", "media" ou "baixa", sobre a sua propria classificacao
 
 REGRAS:
@@ -94,6 +106,21 @@ REGRAS:
 - Documento que nao e de Engenharia de Transportes nem metodo de apoio a ela recebe
   subarea_principal "fora_de_escopo". Exemplo: material pessoal, financeiro ou juridico alheio.
 - confianca "baixa" quando o inicio do documento nao bastar para decidir.
+
+CLASSIFIQUE PELO OBJETO DO ESTUDO, NAO PELO TEMA GERAL. Esta e a regra que mais erra.
+Estudo que modela a ESCOLHA do individuo (escolha modal, de destino ou de rota por
+comportamento; preferencia declarada ou revelada; logit; probit; variavel latente;
+valor do tempo; disposicao a pagar) e demanda_escolha, ainda que o texto fale de
+trafego, de onibus ou de rodovia. trafego_capacidade e para fluxo, capacidade de via,
+intersecao, semaforo e nivel de servico, nao para comportamento do usuario. Metodo
+estatistico APLICADO a transportes vai para a subarea do transporte, e nao para
+metodos_quantitativos, que e so para livro ou texto de metodo sem aplicacao.
+
+SUBAREAS:
+{subareas}
+
+NATUREZAS:
+{naturezas}
 
 NOME DO ARQUIVO (pista, nao autoridade): {nome}
 
@@ -112,8 +139,14 @@ def catalogar_um(p, rel, modelo, num_ctx):
                      "subarea_principal": None, "subarea_secundaria": None,
                      "confianca": None})
         return base
-    pedido = PROMPT.format(naturezas=", ".join(NAT), subareas=", ".join(SUB),
-                           nome=p.name, texto=txt)
+    # AS DESCRICOES VAO NO PROMPT, nao so as chaves. Antes eu mandava apenas os nomes
+    # das chaves e o modelo classificava no escuro: de 219 documentos de titulo
+    # inequivoco sobre escolha discreta, so 11 (5%) iam para demanda_escolha. Com as
+    # descricoes e a regra de desempate, 29 de 30 (97%) numa amostra. Medido em 18/11.
+    pedido = PROMPT.format(
+        naturezas="\n".join("  %-24s %s" % (k, v) for k, v in NAT.items()),
+        subareas="\n".join("  %-24s %s" % (k, v) for k, v in SUB.items()),
+        nome=p.name, texto=txt)
     # num_ctx DIMENSIONADO PELO INSUMO. Sem isso o Ollama usa o padrao de 2048 e descarta
     # em silencio a maior parte do prompt, guardando so o final: o catalogo sairia do rodape
     # da terceira pagina em vez da capa. Doutrina do llm.py: nunca truncar em silencio.
