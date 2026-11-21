@@ -478,6 +478,53 @@ LICAO: a resposta estava no log desde 18/11 e eu nao a extrai, repeti a hipotese
 Log de ferramenta madura ja traz o contador que decide (`unmodified`). Antes de teorizar sobre
 causa, LER O RELATORIO QUE A PROPRIA FERRAMENTA EMITE.
 
+## ROTINA DE SAUDE DO ECOSSISTEMA (21/11/2026)
+
+Construida porque um dia de trabalho foi gasto em manutencao reativa e o levantamento mostrou o
+padrao: NADA VIGIA. Quatro ferramentas MCP mortas que ninguem chamava, backup relendo 600 GB por
+tres noites, credencial em texto puro no .bashrc, notebook 20 dias fora do Syncthing. Nenhuma
+achada por vigilancia; todas por tropeco.
+
+    bin/saude.py            entrada unica, modo leve (diario) e completo (semanal)
+    bin/saude_completo.py   checagens caras, importadas pelo modo completo
+    saida em ~/base_conhecimento/saude/   (ultimo.md, saude_<data>.md/.json, higiene_<data>.md)
+    linha de base em saude/linha_base.json, para reportar o DELTA e nao o inventario
+
+AGENDAMENTO por timer de usuario do systemd, com Linger=yes (roda sem sessao aberta):
+    saude-leve.timer       diario 05:47   (depois do restic das 03h06, antes do dia comecar)
+    saude-completo.timer   domingo 06:23
+Minuto nao redondo de proposito: horario cheio concentra carga de agendador.
+
+TRES PRINCIPIOS, cada um de uma licao paga:
+  1. EXERCITAR, NAO LISTAR. "Connected" nao e prova de credencial. Toda capacidade e CHAMADA.
+  2. REPORTAR O DELTA. Relatorio que lista tudo nao e lido. Tres baldes: QUEBRADO, MUDOU, AVISO.
+  3. CLASSIFICAR O RETORNO pela tabela: 403 credencial, 410 modelo, 429 limite, 503 sobrecarga,
+     tempo esgotado COM controle respondendo e provedor, sem nenhum respondendo e enlace.
+E uma regra de conduta: o programa NAO altera nada. Observa e entrega o comando pronto.
+
+O QUE A PRIMEIRA RODADA COMPLETA ACHOU, em 50 s e 75 checagens:
+  - os tres modelos descontinuados que matam quatro ferramentas MCP (ja sabido, agora automatico)
+  - BURACO NOVO: `~/env_transporte` NAO tinha o pino `mcp<2`. O pino fora instalado em
+    ~/TransportMCP/.venv e nos dois venvs do Windows, e esse ficou de fora. Prova por diferenca,
+    as duas pontas com --dry-run: com a trava, nada a instalar; sem a trava, mcp-2.3.0. Fechado.
+  - o backup com 0% de reconhecimento incremental (corrigido hoje, o relatorio ainda le o
+    historico da execucao quebrada ate a proxima rodar)
+
+TRES DEFEITOS DO PROPRIO PROGRAMA, achados por roda-lo e nao por le-lo:
+  1. classificava papel local x nuvem ADIVINHANDO pelo formato do nome, e marcou gemini-4-argon,
+     kimi-k3 e deepseek-flash como modelos locais ausentes, sugerindo `ollama pull` deles.
+     SUGESTAO ERRADA E PIOR QUE AUSENCIA DE SUGESTAO. O papeis.json declara o campo `onde`.
+     REGRA: nao inferir o que esta declarado na configuracao.
+  2. `stat -c '%%A %%U:%%G'` saiu literal, porque o `%%` nao era consumido por formatacao, e o
+     relatorio acusou falsamente a pasta /media/mateus como aberta.
+  3. o modulo completo faria `import saude` enquanto saude.py roda como `__main__`, criando uma
+     SEGUNDA copia do modulo com outra lista de registros: tudo que o completo anotasse se
+     perderia EM SILENCIO. Fechado injetando `sys.modules["__main__"]`. Armadilha classica, e o
+     sintoma seria um relatorio incompleto sem nenhum erro.
+  4. a checagem de espelho acusava `argon_mcp.py` como ausente na producao, sendo que ele roda da
+     copia sincronizada POR DECISAO. Virou excecao declarada: guarda que acusa o que esta certo
+     vira guarda ignorada.
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
