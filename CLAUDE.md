@@ -525,6 +525,68 @@ TRES DEFEITOS DO PROPRIO PROGRAMA, achados por roda-lo e nao por le-lo:
      copia sincronizada POR DECISAO. Virou excecao declarada: guarda que acusa o que esta certo
      vira guarda ignorada.
 
+## CATALOGO NVIDIA BUILD, LEVANTAMENTO DE 21/11/2026
+
+Fonte dupla: a pagina publica build.nvidia.com/models (105 modelos) e a listagem da API com a
+chave de Mateus (33 modelos). As duas respondem perguntas DIFERENTES e so o cruzamento informa.
+
+### A DISTINCAO QUE DECIDE: F contra D
+A pagina marca `F` (endpoint hospedado, chamavel pela API) e `D` (baixavel, para hospedar em
+GPU propria). A chave de Mateus enxerga 33 de 105. Logo a maior parte do catalogo nao e
+"indisponivel": e para RODAR AQUI, no NIM, e nao para chamar.
+
+### MORTOS, confirmado nas duas fontes
+    meta/llama-3.3-70b-instruct   fora do catalogo  -> mata consultar_ngc_llama33_70b
+    moonshotai/kimi-k3            fora do catalogo  -> mata raciocinar_ngc_kimi_k3 e analisar_mapa_sig_ngc
+    google/deplot                 fora do catalogo  -> mata extrair_tabela_grafico_deplot
+O sucessor do kimi-k3 no catalogo e `moonshotai/kimi-k3.1-pro`, DISPONIVEL para a chave.
+
+### MORRE EM 4 DIAS, com aviso na propria pagina
+    z-ai/glm-5-3   "Deprecation in 4d"
+A variante `z-ai/glm-5.3-flash`, que esta na minha lista de candidatos, NAO e a descontinuada.
+Mas o irmao morrer com quatro dias de aviso e sinal sobre a estabilidade da familia, e entra
+como ressalva se ela for medida e vencer.
+
+### O QUE TEM VALOR REAL PARA ESTE TRABALHO, e esta DISPONIVEL para a chave
+    nvidia/nemotron-3.5-super-vl-120b-a12b   visao-linguagem. Unico caminho a vista para
+        ressuscitar analisar_mapa_sig_ngc e substituir o deplot. BLOQUEADO pela lacuna
+        multimodal de bin/llm.py: chamar_nuvem nao monta mensagem com imagem.
+    nvidia/nemotron-3.5-embed-8b e embed-1b   embeddings MULTIMODAIS.
+    nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1   embedding visao-linguagem.
+        Por que importa mais do que parece: a bateria do Anuario DER-PR mediu que a substancia
+        esta em IMAGEM, nao na camada de texto. Indice que so le texto perde isso por construcao.
+        Um embedder multimodal indexaria a figura. E a melhoria de maior valor para a base de
+        conhecimento, e nenhuma medicao nossa cobre esse caso ainda.
+    fastino/gliner2-pii   deteccao de dado pessoal. Liga direto com bin/ciencia_liberar.py, cuja
+        primeira versao reprovou por lista de nomes de coluna escrita a mao e marcou 122 de 2549
+        arquivos legitimos do acervo ECOPLAN. Um modelo dedicado pode medir melhor que heuristica.
+    candidatos de texto para os papeis mortos: moonshotai/kimi-k3.1-pro,
+        mistralai/mistral-large-4-1t-a52b, stepfun-ai/step-5-preview,
+        minimaxai/minimax-m3.1-flash, z-ai/glm-5.3-flash, nvidia/nemotron-3.5-bolt-e4b,
+        nvidia/nemotron-3.5-lightning-30b-a3b
+
+### O QUE E BAIXAVEL E TALVEZ CAIBA NA RTX 5060 Ti (16 GB)
+    nvidia/nemotron-3.5-parse, nemotron-parse-2.0, nemotron-ocr-v1 e v2, nemoretriever-ocr,
+    nemotron-table-structure-v1, nemotron-page-elements-v3, nemotron-graphic-elements-v1,
+    baidu/paddleocr
+Nenhum deles aparece na listagem da chave: sao para hospedar. Isso vale MAIS que a versao
+hospedada para este ecossistema, por dois motivos: resolve os 138 documentos pendentes de OCR e
+a extracao de tabela de grafico SEM o dado sair da maquina, o que atende a fronteira de dados;
+e nao depende da disponibilidade do provedor, que em 21/11 ficou fora por mais de uma hora.
+RESSALVA MEDIDA em 17/11: o NeMo Retriever completo pede 24 GB de VRAM contra os 16 GB da placa.
+Os modelos de deteccao de elemento sao muito menores que o Retriever completo, entao a conta
+precisa ser refeita POR MODELO antes de qualquer conclusao. Nao afirmar que cabe nem que nao cabe.
+
+### O QUE NAO SERVE, para nao voltar a olhar
+Biologia e quimica (evo2, openfold, boltz-2, rfd4-proteina, genmol, msa-search), direcao
+autonoma (sparsedrive, bevformer, streampetr), geracao de imagem e video (flux, qwen-image,
+cosmos, stable-diffusion, TRELLIS, wan2.2), voz e dublagem (magpie, chatterbox, LipSync,
+Studio Voice), calibracao quantica (ising-calibration). Fora do dominio.
+
+### NADA ENTRA SEM MEDICAO
+A regra nao muda por novidade de catalogo. Candidato e baixado ou apontado, passa na bateria, e
+e removido se nao vencer. Diferenca de uma tarefa entre dois modelos e empate tecnico.
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
