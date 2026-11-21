@@ -215,6 +215,36 @@ gnome-shell, 1 o `.bashrc` que o instalador tocou). Zero em `ecossistema`, `Tran
 `base_conhecimento`, `r5_salvador`, `ciencia` e `.ssh`. Historico dele: um unico prompt digitado,
 `/login`. Indice de sessoes: `sessions=0` as 15h30 e ainda `sessions=0` as 16h32.
 
+### ERRO DE PROJETO MEU: TRAVESSIA NA HOME ABRE A HOME (21/11/2026)
+Para o usuario separado `kimi` alcancar `~/base_conhecimento`, concedi
+`setfacl -m u:kimi:--x /home/mateus`, achando que `--x` so permitiria PASSAR, sem ler.
+Permitir passar basta: quase toda pasta dentro da home e `drwxrwxr-x` ou `drwxr-xr-x`, ou
+seja, legivel por qualquer usuario. A travessia abriu **97 itens de primeiro nivel** que antes
+eram inalcancaveis, entre eles `auditoria_tpc_rms`, `sistema_rio_pd`, `pd2_execucao`,
+`pd3_execucao`, `pd_campo_analise`, `dados_territoriais_gfloripa`, `acervo_divorcio_index`,
+`divorcio_local`, `ocr_partilha`, `JuridicoMCP`, `backups` e `claude_memory`. Material de
+cliente, parte dele juridico.
+
+O QUE PEGOU: a conferencia no fim do proprio roteiro, que testa alvo por alvo em vez de
+declarar sucesso. Ela acusou UM arquivo, `/home/mateus/.bashrc`, e so a investigacao do porque
+revelou os outros 96. CONFERENCIA QUE LISTA ALVOS FIXOS ACHA O SINTOMA, NAO O TAMANHO: ao ver
+um `ALCANCA` inesperado, enumerar TUDO o que o principal alcanca, nao so conferir aquele item.
+
+O ERRO DE RACIOCINIO, nomeado: eu pensei na permissao do CAMINHO e nao no CONJUNTO que ela
+alcanca. `--x` num diretorio nao e "passagem estreita", e passagem para tudo que esta dentro e
+ja seja legivel. Mesma familia do erro de hoje de manha, quando supus que a raiz de projeto
+conteria o agente: nos dois casos eu tratei como cerca algo que era so um caminho.
+
+CORRECAO ADOTADA: nada de travessia na home. A pasta de trabalho e exposta por um caminho
+PROPRIO, `/srv/kimi/base_conhecimento`, por montagem `bind`. A permissao e avaliada no caminho
+usado, entao o agente alcanca a pasta sem que os pais dela sejam consultados. `bin/kimi_corrige_escopo.sh`.
+Revogada tambem a ACL que eu dera em `~/ecossistema`: o agente precisa das REGRAS, que estao em
+`base_conhecimento/CLAUDE.md`, e nao do repositorio inteiro com o historico e o contexto de
+clientes. CONCESSAO NAO USADA E PASSIVO.
+
+REGRA: ao conceder acesso a um agente, enumerar o que a concessao ALCANCA, com o usuario dele,
+antes de declarar a concessao boa. Um `for` sobre o primeiro nivel custa cinco segundos.
+
 ### ARQUIVO DE GUARDA
 `~/ecossistema/config/guarda_agente.md` e o canonico, copiado como `CLAUDE.md` para
 `~/base_conhecimento`, `~/r5_salvador` e `~/ciencia`. E AUTOSSUFICIENTE de proposito: a partir
