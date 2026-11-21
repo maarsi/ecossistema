@@ -245,6 +245,47 @@ clientes. CONCESSAO NAO USADA E PASSIVO.
 REGRA: ao conceder acesso a um agente, enumerar o que a concessao ALCANCA, com o usuario dele,
 antes de declarar a concessao boa. Um `for` sobre o primeiro nivel custa cinco segundos.
 
+### ESTADO FINAL DA CONTENCAO, MEDIDO (21/11/2026, 18h25)
+Usuario `kimi` uid 1001, sem sudo, senha travada. Permission denied, com a identidade dele:
+
+    ls /home/mateus ....................... Permission denied
+    cat ~/TransportMCP/.env ............... Permission denied
+    cat ~/.ssh/id_ed25519_lote ............ Permission denied
+    ls /media/mateus/DADOS_01 ............. Permission denied
+    ls ~/GoogleDrive ...................... Permission denied
+    itens do 1o nivel da home alcancaveis . 0   (eram 97 com a travessia)
+    ls /srv/kimi/base_conhecimento ........ CLAUDE.md   (le e escreve, como deve)
+
+E com a identidade de Mateus nada quebrou: `.env`, `catalogo.jsonl` e o `D:` seguem acessiveis.
+A protecao deixou de ser instrucao e passou a ser **permissao de sistema de arquivos**, que nao
+depende de o modelo obedecer. Essa e a diferenca que o dia inteiro perseguiu.
+
+AS TRES CAMADAS, por caminhos independentes:
+1. usuario proprio sem privilegio, e a home do Mateus e 750, logo nada dentro dela e alcancavel;
+2. acesso a pasta de trabalho por montagem `bind` em `/srv/kimi`, sem travessia na home;
+3. `/media/mateus` em 0750 root:mateus, com regra em `/etc/tmpfiles.d/media-mateus.conf` para
+   sobreviver ao reinicio, mais `file_mode=0700,dir_mode=0700` no fstab, que entra sozinho na
+   proxima montagem do D:. Fechar a PASTA DE ACESSO valeu na hora e nao exigiu desmontar: o
+   restic estava rodando ha 14h38 e teria sido interrompido.
+
+ROTEIROS, todos idempotentes e seguros de repetir:
+    bin/kimi_usuario_separado.sh   cria o usuario; REVOGA travessia se existir; nao concede
+    bin/kimi_corrige_escopo.sh     cria /srv/kimi e a montagem bind, com entrada no fstab
+    bin/kimi_fecha_disco.sh        fecha /media/mateus e grava a regra permanente
+    bin/kimi_guarda.sh             atalho: `kimi` abre o agente contido; recusa --auto
+
+LICAO DE PROCESSO QUE FALTAVA: eu corrigi a maquina e deixei o roteiro defeituoso no disco por
+quase uma hora. Mateus colou o historico do terminal, o primeiro roteiro reapareceu com a
+concessao errada dentro, e so ai eu vi. CORRIGIR O ESTADO E DEIXAR A FERRAMENTA DEFEITUOSA E
+MEIO CONSERTO: a ferramenta reintroduz o defeito na proxima execucao, e quem a rodar nao vai
+saber. Roteiro que ja causou dano ganha comentario no lugar do erro, dizendo o que aconteceu e
+por que nao se faz assim.
+
+PENDENTE, de Mateus: revogar no portal da NVIDIA a chave cb6bbf4c0abd, vazada por erro meu.
+PENDENTE, de Mateus: decidir sobre `--ignore-inode` no restic. Em 21/11 o backup rodou 14h38 e
+leu 536 GB para gravar quase nada, mesmo defeito medido em 18/11, quando a execucao da vespera
+levou 21 segundos. O script segue sem a opcao.
+
 ### ARQUIVO DE GUARDA
 `~/ecossistema/config/guarda_agente.md` e o canonico, copiado como `CLAUDE.md` para
 `~/base_conhecimento`, `~/r5_salvador` e `~/ciencia`. E AUTOSSUFICIENTE de proposito: a partir

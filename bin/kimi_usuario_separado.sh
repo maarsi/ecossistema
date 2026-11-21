@@ -22,6 +22,7 @@ PASTAS_RW=( "/home/$DONO/base_conhecimento" )
 # Pastas que o agente PODE ler e NÃO pode escrever. O ecossistema entra aqui de
 # propósito: é pasta do Syncthing e repositório git, e arquivo criado por outro
 # usuário dentro dela geraria confusão de dono.
+# PASTAS_RO: mantido so para REVOGAR concessao antiga, nao para conceder.
 PASTAS_RO=( "/home/$DONO/ecossistema" )
 
 ok()   { echo "  [ok]   $*"; }
@@ -41,21 +42,38 @@ passwd -l "$AGENTE" >/dev/null 2>&1 && ok "senha travada: não entra por login d
 if id -nG "$AGENTE" | grep -qw sudo; then erro "está no grupo sudo, REMOVA"; else ok "fora do grupo sudo"; fi
 
 echo
-echo "=== 2. permissões: travessia na sua pasta pessoal, sem poder listar"
-# --x deixa ATRAVESSAR para chegar às subpastas liberadas, e NÃO deixa listar o
-# conteúdo da pasta pessoal. Quem não sabe o caminho exato não acha nada.
-setfacl -m "u:$AGENTE:--x" "/home/$DONO" && ok "travessia concedida em /home/$DONO"
+echo "=== 2. permissões na pasta de trabalho, SEM abrir a sua pasta pessoal"
+# ATENCAO, ERRO CORRIGIDO EM 21/11/2026, NAO REINTRODUZIR.
+# A primeira versao deste roteiro fazia:  setfacl -m u:kimi:--x /home/mateus
+# para que o agente ATRAVESSASSE a sua casa e chegasse na pasta de trabalho.
+# Parece inocente e nao e: quase toda pasta dentro da casa e legivel por
+# qualquer usuario, entao a travessia abriu 97 itens de uma vez, inclusive
+# auditoria_tpc_rms, sistema_rio_pd, pd_campo_analise, acervo_divorcio_index,
+# ocr_partilha e JuridicoMCP. Material de cliente, parte dele juridico.
+# A conferencia do fim pegou pelo .bashrc, e enumerar revelou os outros 96.
+# NUNCA conceder travessia em /home/$DONO. O acesso vai por /srv/kimi, montagem
+# bind, em kimi_corrige_escopo.sh. Se houver travessia aqui, ela e revogada.
+if getfacl -c "/home/$DONO" 2>/dev/null | grep -q "user:$AGENTE:"; then
+    setfacl -x "u:$AGENTE" "/home/$DONO" && ok "travessia na sua casa REVOGADA (nao deve existir)"
+else
+    ok "sem travessia na sua casa, como deve ser"
+fi
 
 for p in "${PASTAS_RW[@]}"; do
     [ -d "$p" ] || { aviso "não existe, pulei: $p"; continue; }
     setfacl -R -m "u:$AGENTE:rwX" -m "d:u:$AGENTE:rwX" -m "d:u:$DONO:rwX" "$p" \
-        && ok "leitura e escrita: $p"
+        && ok "leitura e escrita na pasta em si: $p"
 done
+# Nada de somente-leitura no ecossistema: o agente precisa das REGRAS, que estao
+# em base_conhecimento/CLAUDE.md, e nao do repositorio inteiro com o historico e
+# o contexto dos clientes. Concessao que nao e usada e passivo.
 for p in "${PASTAS_RO[@]}"; do
-    [ -d "$p" ] || { aviso "não existe, pulei: $p"; continue; }
-    setfacl -R -m "u:$AGENTE:rX"  -m "d:u:$AGENTE:rX"  "$p" \
-        && ok "somente leitura: $p"
+    getfacl -c "$p" 2>/dev/null | grep -q "user:$AGENTE:" && {
+        setfacl -R -x "u:$AGENTE" "$p" 2>/dev/null
+        setfacl -R -x "d:u:$AGENTE" "$p" 2>/dev/null
+        ok "concessao antiga removida de: $p"; }
 done
+ok "o acesso do agente e por /srv/kimi (ver kimi_corrige_escopo.sh)"
 
 echo
 echo "=== 3. fechar o disco D: para outros usuários"
@@ -102,10 +120,18 @@ testa "/home/$DONO/.ssh/id_ed25519_lote"
 testa "/home/$DONO/.ssh/id_ed25519_github"
 testa "/home/$DONO/.smbcredentials"
 testa "/home/$DONO/.bashrc"
+testa "/home/$DONO/auditoria_tpc_rms"
+testa "/media/$DONO/DADOS_01"
 testa "/home/$DONO/GoogleDrive"
 echo "  --- e o que ele PRECISA alcançar:"
-for p in "${PASTAS_RW[@]}" "${PASTAS_RO[@]}"; do
-    if sudo -u "$AGENTE" test -r "$p" 2>/dev/null; then ok "lê: $p"; else erro "NÃO lê: $p"; fi
+for p in "${PASTAS_RW[@]}"; do
+    b=$(basename "$p")
+    if sudo -u "$AGENTE" test -r "/srv/$AGENTE/$b" 2>/dev/null; then ok "lê por /srv/$AGENTE/$b"
+    else aviso "ainda não lê /srv/$AGENTE/$b: rode kimi_corrige_escopo.sh"; fi
+done
+echo "  --- e NAO deve alcancar pelo caminho da casa:"
+for p in "${PASTAS_RW[@]}" "${PASTAS_RO[@]}" "/home/$DONO/auditoria_tpc_rms"; do
+    if sudo -u "$AGENTE" test -r "$p" 2>/dev/null; then erro "ALCANCA pela casa: $p"; else ok "bloqueado: $p"; fi
 done
 echo
 echo "FIM. Para usar:   sudo -u $AGENTE -H bash -c 'cd <pasta> && ~/.kimi-code/bin/kimi'"
