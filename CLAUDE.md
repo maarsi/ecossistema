@@ -384,6 +384,48 @@ REGRA: ao rotacionar credencial, chamar TODAS as ferramentas que a usam, uma a u
 o codigo de retorno. 403 e credencial; 410 e modelo; tempo esgotado e rede. Sao tres causas
 diferentes e o mesmo sintoma aparente de "nao funciona".
 
+## DIAGNOSTICO DE PROVEDOR DE NUVEM: O BRACO DE CONTROLE (21/11/2026)
+
+Tentei medir os candidatos da NVIDIA na bateria e ela ficou 17 minutos sem produzir uma linha.
+Antes de culpar os modelos, a medicao que decidiu, com DOIS controles no mesmo instante:
+
+    NVIDIA   /v1/models        GET    HTTP 200 em 0,4 s
+    NVIDIA   /v1/chat/...      POST   TRAVOU, 35,3 s, read timeout
+    DEEPSEEK /v1/chat/...      POST   HTTP 200 em 0,9 s
+    MOONSHOT /v1/chat/...      POST   HTTP 200 em 2,0 s
+    ping 1.1.1.1 .............. 18 ms, 0% de perda
+    enlace .................... tx 4 MB/s, rx 11 MB/s (restic de 16h16 rodando)
+
+Conclusao: o endpoint de INFERENCIA da NVIDIA estava fora, com a LISTAGEM de pe. Nao era enlace,
+nao era a maquina, nao era o restic, e nao eram os modelos.
+
+TABELA DE DIAGNOSTICO, agora completa, para nao repetir quatro investigacoes diferentes:
+
+| sintoma | causa | o que fazer |
+|---|---|---|
+| HTTP 403 na inferencia | credencial, ou chave com ORGANIZACAO errada | conferir digital e organizacao |
+| HTTP 410 ou 404 | modelo descontinuado | trocar o modelo do papel |
+| HTTP 429 com 'limit: 0' | modelo nao liberado para a chave | nao repetir, so queima cota |
+| HTTP 503 | sobrecarga momentanea | tres tentativas com espera crescente |
+| tempo esgotado, e OUTRO provedor responde | o provedor esta fora | esperar e repetir depois |
+| tempo esgotado, e NENHUM provedor responde | enlace ou maquina | ai sim investigar a rede |
+| listagem 200 e inferencia travando | inferencia do provedor fora | nao mexer em chave nem em codigo |
+
+REGRA: tempo esgotado NUNCA se diagnostica sozinho. Exige braco de controle em OUTRO provedor,
+no mesmo instante. Sem o controle, 'nao responde' e indistinguivel de problema nosso, e ja me
+levou a rotular como 'rede' dois tempos esgotados das 17h04 e 17h07 que, pelo que o controle
+mostra agora, eram muito provavelmente este mesmo problema da NVIDIA. CORRECAO DE REGISTRO:
+aqueles dois nao eram rede.
+
+OUTRA ARMADILHA DO DIA, de instrumento: lancei a bateria com a saida canalizada por `tail -30`,
+que SEGURA tudo ate o comando terminar. Dezessete minutos sem uma linha pareciam travamento e
+eram so o cano. Mesma familia do `grep` sem `--line-buffered` ja registrada. E depois descobri
+que `bench.py` so imprime ao fim de cada modelo, mesmo com PYTHONUNBUFFERED, entao acompanhar
+por linha nao funciona: acompanhar pelo ARQUIVO DE RESULTADO em bench/resultados/.
+
+PENDENTE: medir na bateria os candidatos que substituem os quatro modelos mortos. A medicao
+esta bloqueada pelo provedor, nao por nos. Repetir quando o POST da NVIDIA voltar.
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
