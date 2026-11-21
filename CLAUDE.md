@@ -426,6 +426,58 @@ por linha nao funciona: acompanhar pelo ARQUIVO DE RESULTADO em bench/resultados
 PENDENTE: medir na bateria os candidatos que substituem os quatro modelos mortos. A medicao
 esta bloqueada pelo provedor, nao por nos. Repetir quando o POST da NVIDIA voltar.
 
+## BACKUP restic: CAUSA PROVADA E CORRIGIDA (21/11/2026)
+
+A lentidao do backup estava no registro desde 18/11 como HIPOTESE. Agora e medicao.
+
+PROVA, no proprio log do restic, sem precisar de experimento novo:
+
+    execucao de 21/11, 16h28m57s:
+        using parent snapshot d436f2b6          <- o pai FOI encontrado
+        Files:  106537 new,  0 changed,      0 unmodified
+        Added to the repository: 80.865 MiB     <- leu 600 GB para gravar 80 MiB
+    execucao sadia de 19/11:
+        Files:     811 new,  2 changed, 105624 unmodified
+
+O snapshot pai existia e era encontrado; o que falhava era a comparacao de metadado de CADA
+arquivo. Entao tudo entrava como novo, era relido e hasheado, e no fim a deduplicacao descartava
+quase tudo. Isso descarta a explicacao "nao achou o pai", que seria a suspeita natural.
+
+Historico das execucoes, que mostra o padrao alternando:
+    16/11  7 min        19/11   8 a 30 min      (sadias: 'unmodified' alto)
+    18/11  14h36m       20/11   1h29m
+    21/11  16h28m57s                            (quebradas: 'unmodified' = 0)
+
+CORRECAO APLICADA em `~/.local/bin/restic-backup.sh`: acrescentado `--ignore-inode`, que no
+restic 0.18.1 ignora numero de inode E ctime, comparando por TAMANHO e MTIME. Em montagem CIFS
+nem o inode nem o ctime sao estaveis entre montagens.
+Copia de seguranca: `restic-backup.sh.antes_ignore_inode_20261121_195519`.
+
+VERIFICADO POR EXECUCAO, com `--dry-run`, antes de confiar:
+
+| grandeza | antes | com --ignore-inode |
+|---|---|---|
+| duracao | 16h 28m 57s | **7m 24s** |
+| arquivos reconhecidos como inalterados | 0 | **106.537** |
+| conteudo lido do D: (rchar) | 536 GB | **0 MB** |
+| a gravar no repositorio | 80,8 MiB | 1,1 KiB |
+
+Fator 134 no tempo. O `rchar = 0` e a prova mais limpa: o restic nao abriu um unico arquivo.
+Os ~500 KB/s observados no tunel durante o teste eram protocolo CIFS de metadado, nao conteudo.
+
+CUSTO ACEITO, declarado: arquivo alterado sem mudar tamanho NEM mtime passaria sem ser notado.
+Em escrita normal de Windows o mtime muda, entao o risco e baixo, e e o remedio documentado para
+montagem de rede. Quem quiser rigor maior paga 16 horas por noite.
+
+HIGIENE ENCONTRADA NA LEITURA DO SCRIPT, corrigida de passagem:
+    `~/.config/restic/password` ja estava em 600 (conferido, nao suposto)
+    o script estava em 775, gravavel pelo grupo: passou para 755
+    o usuario kimi NAO alcanca a senha do repositorio (conferido com a identidade dele)
+
+LICAO: a resposta estava no log desde 18/11 e eu nao a extrai, repeti a hipotese por tres dias.
+Log de ferramenta madura ja traz o contador que decide (`unmodified`). Antes de teorizar sobre
+causa, LER O RELATORIO QUE A PROPRIA FERRAMENTA EMITE.
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
