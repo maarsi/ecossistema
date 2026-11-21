@@ -338,6 +338,52 @@ mais na base e um descarte na revisao; o custo de um a menos e o CTB sumir sem n
 Documento recuperado na 2a passagem entra com `confianca: "baixa"`, `recuperado_na_2a: true` e
 o motivo em texto, para auditoria.
 
+## Rotacao da chave NVIDIA e QUATRO FERRAMENTAS MORTAS (21/11/2026)
+
+ROTACAO FEITA POR MATEUS, conferida por medicao e nao por confianca:
+    NVIDIA_API_KEY  digital d512b71fc01f  listagem 200, INFERENCIA 200, valida
+    NGC_API_KEY     digital f4b089cc71ac  listagem 200, inferencia 403
+A antiga `cb6bbf4c0abd`, vazada por erro meu, foi revogada no portal.
+
+PENDENCIA CRIADA PELA ROTACAO: o `NGC_API_KEY` do `~/TransportMCP/.env` ficou com o VALOR
+ANTIGO, que era a chave de producao de antes (f4b089cc71ac) e hoje falha inferencia. O
+`NGC_ENDPOINT` do servidor e `https://integrate.api.nvidia.com/v1/chat/completions`, o MESMO do
+NVIDIA_API_KEY: nao e servico diferente, e a mesma chave NVIDIA Build com outro nome de
+variavel. Logo basta apontar as duas para o mesmo valor novo:
+    bash ~/ecossistema/bin/chave_trocar.sh NGC_API_KEY
+E trocar tambem no bloco `env` do `claude_desktop_config.json` do Windows, com o aplicativo
+FECHADO, porque o `ollama_remote_server.py` roda la e le do proprio ambiente.
+
+ACHADO INDEPENDENTE, QUE A ROTACAO SO REVELOU: quatro ferramentas MCP estao mortas por modelo
+descontinuado, e nao por credencial. Teste real de `consultar_ngc_llama33_70b` devolveu
+**HTTP 410 Gone**, que pela regra de 18/10 significa modelo fora do ar, nao chave. Catalogo
+consultado com a chave nova: 33 modelos visiveis.
+
+| ferramenta | modelo pedido | estado |
+|---|---|---|
+| consultar_ngc_llama33_70b | `meta/llama-3.3-70b-instruct` | NAO existe mais |
+| raciocinar_ngc_kimi_k3 | `moonshotai/kimi-k3` | NAO existe mais |
+| analisar_mapa_sig_ngc | `moonshotai/kimi-k3` | NAO existe mais |
+| extrair_tabela_grafico_deplot | `google/deplot` | NAO existe mais |
+
+`google/gemma-4-31b-it`, do papel `redacao-nuvem`, CONTINUA existindo: esse papel esta de pe.
+
+CANDIDATOS no catalogo atual, A MEDIR e nao a adotar, porque modelo so entra por bateria:
+    redacao tecnica longa .. mistralai/mistral-large-4-1t-a52b, moonshotai/kimi-k3.1-pro,
+                             nvidia/nemotron-3-ultra-550b-a55b (ja reprovado em 23/10, 6/8)
+    raciocinio ............. moonshotai/kimi-k3.1-pro, z-ai/glm-5.3-flash,
+                             stepfun-ai/step-5-preview, minimaxai/minimax-m3.1-flash
+    visao e mapa SIG ....... nvidia/nemotron-3.5-super-vl-120b-a12b, nvidia/cosmos-reason2-8b,
+                             nvidia/nemotron-3-nano-omni-30b-a3b-reasoning
+    tabela a partir de grafico (substituto do deplot) .. nvidia/nemotron-3.5-super-vl-120b-a12b
+
+LICAO: rotacao de credencial e boa oportunidade para descobrir ferramenta morta, porque obriga a
+EXERCITAR cada caminho que usa a chave. Quatro ferramentas estavam quebradas e ninguem sabia,
+porque ninguem as chamava. Ferramenta que nao e chamada nao avisa que morreu.
+REGRA: ao rotacionar credencial, chamar TODAS as ferramentas que a usam, uma a uma, e registrar
+o codigo de retorno. 403 e credencial; 410 e modelo; tempo esgotado e rede. Sao tres causas
+diferentes e o mesmo sintoma aparente de "nao funciona".
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
