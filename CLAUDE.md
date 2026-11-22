@@ -4115,3 +4115,11 @@ bench/vram_ocr.py, paginas reais do DER-PR (1489 x 2105 px), um processo por mod
     esta instalado. Pagina inteira como imagem unica gera tokens visuais demais. NAO serve assim; so por recorte.
 Nota de instrumento: no nemotron-ocr o NVML do fim (1.156 MB) ficou ABAIXO do pico do torch (1.822 MB), porque o
 NVML le o instante final e o torch o pico. Para dimensionar, vale o PICO.
+
+## DECISOES DE MATEUS, 22/11/2026 10h05 (sobre a proposta do Grok)
+1. MANUTENCAO CONGELADA ate as entregas de 23/11 (ECOPLAN novo corredor, matriz OD da RMS, rede da RMS): nada de
+   ferramenta nova, bateria nova ou ajuste que nao destrave entrega. Indexacao e bateria VRPTW seguem sozinhas.
+2. APROVACAO: mantida a autonomia de 11/11 (Claude executa o que puder sem pedir confirmacao a cada passo). A regra
+   do Grok ("pode seguir generico nao aprova") foi REJEITADA.
+3. DEPOIS das entregas: (a) pagina curta na frente deste registro (regras, numeros citaveis, pendencias); (b) Grok
+   testado na bateria de auditoria, colando os 9 itens, antes de qualquer oficio. Ate la, Grok = juizo nao medido.
