@@ -4093,3 +4093,6 @@ derrubou. 22/11 09h27 religado por syncthing_iniciar.bat: conectado, ecossistema
 Syncthing.lnk em shell:startup (syncthing_inicio_automatico.bat/.ps1, com log). A 1a versao do .bat falhou sem
 dizer por que; a 2a grava cada passo em log. REGRA: script para Mateus rodar no Windows SEMPRE grava log legivel
 pela Ubuntu, senao a falha vira adivinhacao.
+22/11 09h31, 2a rodada da saude do Windows: TUDO OK, inclusive Syncthing rodando e a prova da trava corrigida
+(pip RECUSA mcp>=2 nos dois ambientes). Item 8 FECHADO. Pendencia 4 (ferramenta consultar_acervo_referencias no
+Windows) adiada por decisao de Mateus para depois da indexacao, numa unica parada do Claude Desktop.
