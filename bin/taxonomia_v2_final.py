@@ -51,6 +51,10 @@ def regra_pasta(arq):
     if a.startswith(("3 - Ferrovias/", "4 - Rodovias/")) and "/Mapas" in a:
         return "metodos_quantitativos_sig", ("modos_ferro_aero_hidro" if a.startswith("3") else
                                              "infraestrutura_rodoviaria_pavimentos"), "mapa de referencia em pasta de modo"
+    if a.startswith("4 - Rodovias/DER-SP/Projeto Padr"):
+        return "infraestrutura_rodoviaria_pavimentos", None, ("[premissa] Projeto Padrao do DER-SP e desenho-tipo de "
+               "projeto rodoviario; NAO consta da especificacao. Criada em 22/11 porque 19 de 23 desses arquivos, "
+               "sem texto e com nome so em codigo (PP-DE-F07-xxx), cairam na classe generica demanda_4sm_geral")
     if a.startswith("3 - Ferrovias/"):
         return "modos_ferro_aero_hidro", None, "pasta 3 - Ferrovias (especificacao)"
     if a.startswith("1 - Aeroportos/"):

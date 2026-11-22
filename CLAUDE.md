@@ -3986,3 +3986,23 @@ Medido com bench/vram_grandes.py, bf16, nvidia-smi pelo PID, com o qwen3:14b do 
 Os tres cabem na 5060 Ti junto com o qwen3:14b. Pico identico entre embed e rerank: mesma espinha de 1B,
 plausivel, nao investigado. Amostra de uma execucao por modelo. PaddleOCR-VL nao testado.
 Item 7: cache do pip apagado (13 GB, reconstruivel). Cache do restic e __pycache__ mantidos de proposito.
+
+## 22/11/2026 07h: TAXONOMIA V2 FECHADA
+Entregue em D:\95 - TEMP\taxonomia_v2\ (revisao_taxonomia_v2.xlsx, .csv, leia_me). 1.945 linhas, todas com classe.
+XLSX recalculado pelo LibreOffice: 369 formulas, zero erros, conferencia OK, contagem do resumo = contagem por Python.
+Origem: modelo_texto_v2 1.755 | modelo_texto_ocr_v2 103 | regra_pasta 49 | inferencia_caminho_titulo 38.
+Secundaria (3a passada refeita, motivo primeiro): preenchida em 903 de 1.945. Instavel: ler como sugestao.
+Maiores classes: demanda_escolha_discreta 371 (19,1%), metodos_quantitativos_sig 150, trafego_capacidade 150,
+demanda_abm 136, uso_solo_acessibilidade 123. fora_de_escopo 62 (so sinalizacao). Os 651 demanda_escolha da v1:
+338 escolha discreta, 128 ABM/comportamento, 49 redes/alocacao, 24 OD, 23 carga, 15 PGT, 15 4SM, resto <=12.
+RESPONDE A PENDENCIA de redes_alocacao com 0,7% na v1: a literatura existe; a v1 a mandava para demanda_escolha.
+Na v2 redes_alocacao_equilibrio tem 85 documentos (4,4%), 49 deles vindos de demanda_escolha.
+
+DOIS DEFEITOS PEGOS NO FECHAMENTO:
+1. Classificacao so pelo nome cai na classe generica quando o nome e codigo: 19 de 23 desenhos
+   "4 - Rodovias/DER-SP/Projeto Padrao/PP-DE-F07-xxx" sairam demanda_4sm_geral. Regra de pasta nova,
+   [premissa] fora da especificacao, manda a subpasta para infraestrutura_rodoviaria_pavimentos.
+2. Autor extraido pelo modelo comecando com "=" virou formula e deu #VALUE! (revisao!D1770). O gerador do
+   XLSX agora forca tipo texto nas abas de dado. Regra: TODO texto vindo de modelo que vai para planilha
+   passa por essa forca; o recalc so pegou porque era obrigatorio rodar.
+Indexacao (bin/indexar_acervo_v2.sh) lancada 07:07, log ~/.claude_jobs/indexar_acervo_v2.log.

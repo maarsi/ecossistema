@@ -17,8 +17,8 @@ metodos_quantitativos_sig fora_de_escopo"
 for fase in 1 2; do
   for s in $ORDEM; do
     echo "=== [$(date +%H:%M)] fase $fase: $s"
-    if [ $fase = 1 ]; then $PY $IX indexar "$ACERVO" --nome ref40_$s --catalogo $CAT --subarea $s --pular-duplicatas --sem-docling 2>&1 | grep -E "^filtro|^INDICE|pendente:|ERRO|Traceback"
-    else $PY $IX indexar "$ACERVO" --nome ref40_$s --catalogo $CAT --subarea $s --pular-duplicatas --refazer-docling 2>&1 | grep -E "^filtro|^INDICE|pendente:|ERRO|Traceback"; fi
+    if [ $fase = 1 ]; then $PY $IX indexar "$ACERVO" --nome ref40_$s --catalogo $CAT --subarea $s --pular-duplicatas --sem-docling 2>&1 | grep --line-buffered -E "^filtro|^INDICE|pendente:|ERRO|Traceback"
+    else $PY $IX indexar "$ACERVO" --nome ref40_$s --catalogo $CAT --subarea $s --pular-duplicatas --refazer-docling 2>&1 | grep --line-buffered -E "^filtro|^INDICE|pendente:|ERRO|Traceback"; fi
   done
 done
 echo "FIM $(date +%H:%M)"

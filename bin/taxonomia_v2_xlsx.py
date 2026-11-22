@@ -131,4 +131,12 @@ if _lm.exists():
         c.alignment = Alignment(wrap_text=True, vertical="top")
         c.font = Font(name=F, bold=True, size=11) if (lin.isupper() and len(lin) > 3) else Font(name=F, size=10)
     wb.active = 0
+# Texto de dado que comeca com "=" (ex.: autor extraido pelo modelo) seria lido como formula e daria #VALUE!.
+# Forca tipo texto nas abas de DADO; as abas de formula (resumo, desmembramento_v1) ficam intactas.
+for _nome in ("leia_me", "revisao", "os_53_recuperados", "duplicatas", "sem_texto", "taxonomia"):
+    if _nome in wb.sheetnames:
+        for _lin in wb[_nome].iter_rows():
+            for _c in _lin:
+                if isinstance(_c.value, str) and _c.value.startswith("="):
+                    _c.data_type = "s"
 wb.save(sai); print("gravado", sai, "abas:", wb.sheetnames)
