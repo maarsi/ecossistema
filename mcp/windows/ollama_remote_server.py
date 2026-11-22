@@ -70,7 +70,7 @@ async def obter_catalogo_e_diretrizes_modelos() -> str:
        - interpretação de resultado, diagnóstico de inconsistência, análise de sensibilidade
        - redação técnica de relatório, nota metodológica, proposta ou parecer
        - código curto (ordem de 50 linhas ou menos)
-       Nesses casos o papel 'conferencia' (qwen3:30b-a3b) e 'raciocinar_ngc_kimi_k3' entram como SEGUNDA OPINIÃO,
+       Nesses casos o papel 'conferencia' (qwen3:30b-a3b) e 'consultar_papel' (papeis de nuvem) entram como SEGUNDA OPINIÃO,
        para conferir uma derivação já feita, nunca como fonte primária dela.
 
     3. DESEMPATE: se a tarefa é pensar, resolver aqui; se é processar, delegar.
@@ -83,8 +83,7 @@ async def obter_catalogo_e_diretrizes_modelos() -> str:
          vir rotulado como ilustrativo
 
     5. FRONTEIRA DE DADOS (atenção, ponto crítico):
-       As ferramentas NGC e Kimi ('raciocinar_ngc_kimi_k3', 'analisar_mapa_kimi_k3',
-       'analisar_mapa_sig_ngc', 'extrair_tabela_grafico_deplot', 'consultar_ngc_llama33_70b')
+       As ferramentas de nuvem ('analisar_mapa_kimi_k3' e os papeis '-nuvem' via 'consultar_papel')
        ENVIAM O CONTEÚDO PARA FORA da Workstation, para APIs externas. Elas não atendem ao
        critério (b) de confidencialidade. Para dado sensível, usar apenas modelos locais
        do Ollama, OR-Tools e 'analisar_mapa_local_visao'.
@@ -544,7 +543,8 @@ async def otimizar_rotas_cuopt(matriz_distancia: list[list[float]], demandas: li
 # ----------------------------------------------------------------------
 # 3. APIS DE ALTO DESEMPENHO (NVIDIA NGC)
 # ----------------------------------------------------------------------
-@mcp.tool()
+# APOSENTADA em 22/11/2026 por decisao de Mateus: modelo retirado do catalogo NVIDIA (HTTP 410).
+# A funcao fica para historico, sem @mcp.tool(), e nao aparece mais para os clientes.
 def raciocinar_ngc_kimi_k3(prompt: str, reasoning_effort: str = "high") -> str:
     """Aciona o modelo Moonshot Kimi-k3 via NVIDIA NGC para raciocínio analítico avançado,
     dedução matemática de sistemas de transporte e planejamento operacional formal.
@@ -576,7 +576,8 @@ def raciocinar_ngc_kimi_k3(prompt: str, reasoning_effort: str = "high") -> str:
     except Exception as e:
         return f"Falha na API Moonshot Kimi-k3 (NGC): {str(e)}"
 
-@mcp.tool()
+# APOSENTADA em 22/11/2026 por decisao de Mateus: modelo retirado do catalogo NVIDIA (HTTP 410).
+# A funcao fica para historico, sem @mcp.tool(), e nao aparece mais para os clientes.
 def extrair_tabela_grafico_deplot(caminho_imagem: str, prompt_instrucao: str = "") -> str:
     """Converte gráficos de carregamento, curvas de tráfego, histogramas e diagramas em tabelas estruturadas
     usando o modelo Google DePlot via NVIDIA NGC API.
@@ -655,7 +656,8 @@ except Exception as e:
     cmd = f"/usr/bin/python3 -c \"import base64; exec(compile(base64.b64decode('{b64}').decode('utf-8'), '<string>', 'exec'))\""
     return _executar_ssh_paramiko(cmd, timeout=200)
 
-@mcp.tool()
+# APOSENTADA em 22/11/2026 por decisao de Mateus: modelo retirado do catalogo NVIDIA (HTTP 410).
+# A funcao fica para historico, sem @mcp.tool(), e nao aparece mais para os clientes.
 def consultar_ngc_llama33_70b(prompt: str, system_prompt: str = "") -> str:
     """Executa o Llama 3.3 70B Instruct via NVIDIA NGC para redação técnica, relatórios formais
     e síntese de memoriais descritivos extensos.
@@ -815,7 +817,8 @@ else:
     cmd = f"/usr/bin/python3 -c \"import base64; exec(compile(base64.b64decode('{b64}').decode('utf-8'), '<string>', 'exec'))\""
     return _executar_ssh_paramiko(cmd, timeout=200)
 
-@mcp.tool()
+# APOSENTADA em 22/11/2026 por decisao de Mateus: modelo retirado do catalogo NVIDIA (HTTP 410).
+# A funcao fica para historico, sem @mcp.tool(), e nao aparece mais para os clientes.
 def analisar_mapa_sig_ngc(caminho_imagem: str, prompt_analise: str = "") -> str:
     """Análise multimodal direta de mapas via Llama 3.2 Vision 11B na API NVIDIA NGC."""
     caminho_limpo = caminho_imagem.replace("\\", "/")

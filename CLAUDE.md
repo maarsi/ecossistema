@@ -4096,3 +4096,11 @@ pela Ubuntu, senao a falha vira adivinhacao.
 22/11 09h31, 2a rodada da saude do Windows: TUDO OK, inclusive Syncthing rodando e a prova da trava corrigida
 (pip RECUSA mcp>=2 nos dois ambientes). Item 8 FECHADO. Pendencia 4 (ferramenta consultar_acervo_referencias no
 Windows) adiada por decisao de Mateus para depois da indexacao, numa unica parada do Claude Desktop.
+
+## 22/11/2026 09h35: 4 FERRAMENTAS NVIDIA APOSENTADAS (decisao de Mateus) E PARADA UNICA DO WINDOWS PENDENTE
+consultar_ngc_llama33_70b, raciocinar_ngc_kimi_k3, analisar_mapa_sig_ngc e extrair_tabela_grafico_deplot perderam
+o @mcp.tool() no ESPELHO mcp/windows/ollama_remote_server.py (funcoes mantidas como historico). Substitutos:
+consultar_papel (raciocinio-nuvem, redacao-nuvem, visao-nuvem com imagem) e kimi-assistant.
+PARADA UNICA, depois da indexacao, com o Claude Desktop FECHADO: copiar mcp/windows/ollama_remote_server.py
+(aposentadoria + consultar_acervo_referencias) para C:\TransportMCP\, reabrir e conferir pelo ESQUEMA que as 4
+sumiram e a nova apareceu. Conferir sha256 normalizado (tr -d '\r') no destino antes de reabrir.
