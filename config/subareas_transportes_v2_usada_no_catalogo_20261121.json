@@ -1,0 +1,38 @@
+{
+ "_nota": "Taxonomia v2, especificada por Mateus em 21/11/2026. Substitui as 12 subareas da v1, que agregavam demais: 651 documentos (36%) caiam num unico rotulo 'demanda_escolha'. As 22 classes separam as cinco etapas de demanda, destacam seguranca viaria, sustentabilidade, mobilidade ativa e acessibilidade arquitetonica, e trazem os modos ferroviario, aeroportuario e hidroviario para uma classe propria.",
+ "subareas": {
+  "demanda_4sm_geral": "Livros e manuais gerais de modelagem de demanda e das quatro etapas.",
+  "demanda_geracao_pgt": "Geracao e atracao zonal de viagens (regressao, CART, CHAID, categorias) e Polos Geradores de Trafego ou de Viagens (PGT, ITE Trip Generation, estudos de impacto em polos).",
+  "demanda_distribuicao_od": "Distribuicao de viagens, modelo gravitacional, entropia, oportunidades intervenientes, destinos competitivos, Fratar, Furness, Bregman e sintese de matriz OD.",
+  "demanda_escolha_discreta": "Escolha modal, posse de veiculos e econometria de escolha discreta (MNL, Nested, Mixed Logit, MEV, Probit, ICLV, MDCEV), Valor do Tempo, elasticidades de passageiros e modelagem de Preferencia Declarada ou Revelada.",
+  "demanda_abm_comportamento": "Activity-Based Models, tours, trip-chaining, uso do tempo, prismas espaco-temporais de Hagerstrand, interacao intradomiciliar e psicologia e atitudes no comportamento de viagem.",
+  "uso_solo_acessibilidade_espacial": "Indicadores de acessibilidade espacial (cumulativa, gravitacional, 2SFCA, logsum), equidade espacial, LUTI, mercado imobiliario e DOT ou TOD, incluindo os guias BID DOT.",
+  "acessibilidade_arquitetonica_nbr": "Desenho universal, NBR 9050 e manuais de acessibilidade arquitetonica em calcadas, rampas, estacoes e veiculos, para pessoa com deficiencia ou mobilidade reduzida.",
+  "mobilidade_ativa_tdm": "Pedestres, walkability, ciclovias e bicicletas, micromobilidade, e gestao da demanda e do estacionamento, inclusive Zona Azul.",
+  "transporte_publico_tpc": "Planejamento e operacao de onibus, BRT, VLT e metro, TCQSM, paradas e terminais urbanos, headway, frota, tarifa, evasao e transporte sob demanda.",
+  "sustentabilidade_energia_clima": "Eletromobilidade (onibus eletricos, veiculos eletricos), emissoes de gases de efeito estufa e poluentes, energia, ruido e mudanca climatica em transportes.",
+  "planejamento_politica_legislacao": "PlanMob, cadernos do MCID e do MDR de politica urbana, governanca, Codigo de Transito Brasileiro, resolucoes do CONTRAN e do DENATRAN e legislacao setorial.",
+  "redes_alocacao_equilibrio": "Alocacao estatica rodoviaria e multimodal, escolha de rota, equilibrio de Wardrop (UE e SUE), curvas BPR e estimacao de matriz OD por contagens.",
+  "trafego_fluxo_simulacao": "Teoria do fluxo veicular, congestionamento dinamico, ondas cinematicas, alocacao dinamica e microssimulacao (Vissim, Aimsun, SUMO, Traffic Analysis Toolbox).",
+  "trafego_capacidade_sinalizacao": "HCM em todos os volumes, nivel de servico, semaforos, intersecoes e sinalizacao viaria (MUTCD, manuais da CET e do CONTRAN).",
+  "trafego_seguranca_viaria": "HSM, iRAP, manuais de seguranca viaria, acidentes e sinistros, auditoria viaria e contencao viaria.",
+  "logistica_transporte_carga": "Demanda de carga (geracao, distribuicao e escolha modal de frete), city logistics, cadeia de suprimentos, terminais de carga e roteirizacao (VRP, CVRP).",
+  "modos_ferro_aero_hidro": "Engenharia, capacidade, projetos e demanda especifica de ferrovias (inclusive DNIT ISF), aeroportos, e portos e hidrovias.",
+  "infraestrutura_rodoviaria_pavimentos": "Projeto geometrico rodoviario e urbano, projetos-padrao (DER-SP, DNIT, ARTESP, AASHTO), pavimentacao, HDM-4, drenagem, obras de terra e obras de arte especiais.",
+  "economia_avaliacao_regulacao": "Economia dos transportes, EVTEA, analise custo-beneficio, excedente do consumidor, precificacao e pedagio, financiamento, CAPEX e OPEX, concessoes e PPPs e regulacao.",
+  "pesquisa_levantamento_dados": "Pesquisas origem-destino, Traffic Monitoring Guide, desenho amostral, desenho experimental eficiente para preferencia declarada e paineis, contagens e dados passivos (smart card, GPS, video).",
+  "metodos_quantitativos_sig": "Livros e artigos puramente metodologicos de estatistica, econometria geral, pesquisa operacional, algoritmos, aprendizado de maquina e mineracao de dados, SIG e Python, e mapas rodoviarios ou ferroviarios de referencia.",
+  "fora_de_escopo": "Sem relacao direta com Engenharia de Transportes nem com metodo quantitativo de apoio a ela: redacao cientifica, gramatica, direito bancario, economia do trabalho ou informalidade em geral, ergonomia ocupacional fabril, historia colonial."
+ },
+ "naturezas": {
+  "artigo": "Artigo cientifico de periodico ou de congresso",
+  "livro": "Livro, livro-texto ou capitulo de livro",
+  "norma_manual": "Norma tecnica, manual de orgao, instrucao de servico, caderno de encargos",
+  "relatorio_institucional": "Relatorio, plano ou estudo de orgao publico, agencia, banco ou consultoria",
+  "tese_dissertacao": "Tese, dissertacao ou monografia academica",
+  "mapa_dado": "Mapa, base geografica, planilha de dados",
+  "apresentacao": "Apresentacao de slides, aula, palestra",
+  "outro": "Nao encaixa nas anteriores"
+ },
+ "regras_finais": "A. AS CINCO CLASSES DE DEMANDA SAO DIFERENTES ENTRE SI. Nao use uma como guarda-chuva.\n   geracao ou atracao de viagens por zona, ou polo gerador .... demanda_geracao_pgt\n   distribuicao, gravitacional, entropia, Fratar, matriz OD ... demanda_distribuicao_od\n   escolha modal, posse de veiculo, logit, valor do tempo ..... demanda_escolha_discreta\n   atividade, tour, encadeamento, uso do tempo, atitude ....... demanda_abm_comportamento\n   livro ou manual geral das quatro etapas .................... demanda_4sm_geral\n\nB. ESCOLHA DE ROTA NAO E ESCOLHA MODAL. Documento sobre escolha de rota, alocacao ou\n   equilibrio vai para redes_alocacao_equilibrio. Se ele usar logit ou probit para modelar\n   a rota, acrescente demanda_escolha_discreta como SECUNDARIA.\n\nC. DEMANDA DE MERCADORIA NAO E DEMANDA DE PASSAGEIRO. Geracao, distribuicao ou escolha modal\n   de CARGA vai para logistica_transporte_carga, mesmo que use os mesmos modelos.\n\nD. SECUNDARIA SO QUANDO CRUZA DE VERDADE, no maximo duas. Preencher secundaria em todo\n   documento esvazia o campo. A pergunta e: alguem que procurasse por essa segunda classe\n   ficaria satisfeito de achar este documento? Se a resposta for \"mais ou menos\", deixe vazia.\n   Exemplos que CRUZAM: escolha modal em corredor de BRT, principal demanda_escolha_discreta\n   e secundaria transporte_publico_tpc; desenho eficiente de experimento de escolha, principal\n   pesquisa_levantamento_dados e secundaria demanda_escolha_discreta.\n\nE. ULTIMA VERIFICACAO, A QUE MAIS ERRA: NAO FORCE VINCULO ARTIFICIAL COM TRANSPORTES.\n   Documento de economia do trabalho, informalidade em geral, sindicalismo, direito bancario,\n   ciencias naturais, atividade fisica, ergonomia ocupacional fabril, historia colonial,\n   gramatica ou redacao cientifica e fora_de_escopo, ainda que cite cidade, deslocamento ou\n   regiao metropolitana de passagem. Mencao nao e objeto. Classifique pelo OBJETO do estudo."
+}

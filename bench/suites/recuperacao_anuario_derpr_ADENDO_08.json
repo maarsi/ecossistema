@@ -1,0 +1,25 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_08",
+ "assunto": "PRE-REGISTRO de hipotese de fusao, gravado ANTES de qualquer calculo",
+ "registrado_em": "2026-11-21T22:29:46-03:00",
+ "suite_original": "recuperacao_anuario_derpr.json",
+ "sha256_original": "dde54454c84ddd7eadeb5b98d42657be4c901b67b6138d9b5419478adfe6c9e7",
+ "sha256_adendo_anterior": "dea260ad33e69ff215efa29e6259e2d3b9b93bc2fd0d4dfec43fd87ea192379a",
+ "motivo": "O braco B (texto com OCR) vence no acerto@1 (50,0%) e o braco D (embed-vl multimodal) chega perto no acerto@5 (71,4% contra 75,0%), com mecanismos de erro possivelmente diferentes: um le a camada recuperada por OCR, o outro olha a pagina como imagem. Fusao de rankings de origem diferente costuma ganhar quando os erros nao coincidem. Pergunta de arquitetura do indice do acervo: o indice deve ser texto, imagem, ou os dois?",
+ "hipotese_principal_unica": {
+  "metodo": "Reciprocal Rank Fusion, escore(p) = soma 1/(k + posicao), k = 60",
+  "bracos": [
+   "B",
+   "D"
+  ],
+  "origem_de_k": "valor padrao da literatura de RRF; NAO escolhido nesta bateria",
+  "criterio_de_sucesso": "fusao B+D supera o braco B em acerto@5 E nao perde para B em acerto@1, media das 3 passadas, mesmo pontuador (metricas de bat_pontuar.py)",
+  "pareamento_de_passadas": "B_pN com D_pN, N = 1..3"
+ },
+ "analises_exploratorias_declaradas": [
+  "RRF B+D com k em {10, 30, 100}: sensibilidade, NAO serve para escolher k",
+  "RRF B+G, B+C e B+D+G"
+ ],
+ "advertencia": "28 perguntas, um unico documento de um unico tipo. Exploratorio nao vira conclusao: o numero que pode ser citado e o da hipotese principal. Diferenca de 1 pergunta (3,6 pontos) e empate tecnico.",
+ "restricao": "nenhum ranking novo e gerado: a fusao usa os rankings salvos em bench/derpr/rank/"
+}

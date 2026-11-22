@@ -1,0 +1,68 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_09",
+ "assunto": "resultado da hipotese pre-registrada no ADENDO_08",
+ "executado_em": "2026-11-21T22:31:03-03:00",
+ "sha256_adendo_08": "857f4f66f3c35697dfe2767845288e436fea400e2a3416f9ac23008439ffdb56",
+ "prova_do_instrumento": "pontuador reproduziu exatamente B 50,0/75,0 e D 32,1/71,4 do ADENDO_07 antes de qualquer numero novo",
+ "hipotese_principal": {
+  "config": "RRF B+D k=60",
+  "acerto1": 42.9,
+  "acerto5": 83.3,
+  "pos_media": 5.95,
+  "referencia_B": {
+   "acerto1": 50.0,
+   "acerto5": 75.0,
+   "pos_media": 6.5
+  },
+  "criterio": "supera B no @5 E nao perde no @1",
+  "veredito": "NAO ATENDIDO: ganha 8,3 pontos no @5 e perde 7,1 no @1"
+ },
+ "exploratorio_nao_citavel": {
+  "B+D k=10": [
+   42.9,
+   85.7
+  ],
+  "B+D k=30": [
+   42.9,
+   82.1
+  ],
+  "B+D k=100": [
+   42.9,
+   83.3
+  ],
+  "B+G k=60": [
+   51.2,
+   71.4
+  ],
+  "B+C k=60": [
+   50.0,
+   78.6
+  ],
+  "B+D+G k=60": [
+   42.9,
+   79.8
+  ]
+ },
+ "complementaridade_passada_1": {
+  "top1": {
+   "so_B": 6,
+   "so_D": 1,
+   "ambos": 8,
+   "nenhum": 13
+  },
+  "top5": {
+   "so_B": 5,
+   "so_D": 4,
+   "ambos": 16,
+   "nenhum": 3
+  }
+ },
+ "leitura": [
+  "A fusao NAO domina o texto: troca precisao no topo por cobertura no top-5.",
+  "Qual numero importa depende do consumidor. O ecossistema le os 5 primeiros trechos (CLAUDE.md, licao de indice.py); para esse uso o @5 e a metrica operacional, e nela a fusao acha a pagina certa em 83% contra 75%. Mas o criterio declarado exigia as duas, e o veredito fica como esta.",
+  "Sensibilidade a k baixa (@1 fixo, @5 82 a 86): o efeito nao vem da escolha de k.",
+  "O custo de manter os dois indices NAO e armazenamento (D projeta 0,38 GB para 50 mil paginas); e TEMPO DE GPU: D indexou 58 paginas em 23,85 s, ~0,41 s por pagina, o que projeta ~23 h para as ~203 mil paginas do acervo, contra ~16 s / 58 pag. do Docling com OCR."
+ ],
+ "o_que_nao_sustenta": "Um documento, um tipo, 28 perguntas. Diferenca de 2 perguntas e pouco acima do empate tecnico. Nao decide a arquitetura do indice sozinho: decide que vale repetir num SEGUNDO tipo de documento antes de indexar 1.945.",
+ "correcao_de_afirmacao_do_claude": "Em 21/11 a fila dizia que sem a mensagem multimodal no chamar_nuvem 'os itens 2 e 3 nao existem'. Falso: a comparacao embed-vl contra texto ja havia rodado LOCALMENTE em 12/11 (braco D), sem nuvem."
+}
