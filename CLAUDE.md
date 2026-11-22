@@ -4026,3 +4026,21 @@ fora_de_escopo DECIDIDO (22/11 08h50): grupos A, B e C reclassificados (43 docs,
 ATENCAO INDEXACAO: os 13 do grupo C foram para economia_avaliacao_regulacao DEPOIS de essa colecao ser indexada
 (08:24). Ao fim da fase 1, rodar de novo so essa colecao (o indice e incremental). NAO editar indexar_acervo_v2.sh
 enquanto roda: o bash le o roteiro aos poucos e a edicao corrompe a execucao.
+
+## OVERTURE MAPS: VIABILIDADE MEDIDA EM SALVADOR (22/11/2026, autorizado por Mateus)
+Release 2026-11-18.0 (schema v2.0.0), lido direto do S3 publico pelo DuckDB 1.5.5 (httpfs + spatial), sem conta.
+Recorte retangular -38,70/-13,02 a -38,30/-12,75 (pega parte de Lauro de Freitas e mar). Script
+bench/overture/teste_salvador.py; parquet local em /mnt/nvme_lexar/datasets_sig/overture/.
+  places: 61.848 POI em 13 s. buildings: 615.032 poligonos em 95 s.
+  LICENCA (docs.overturemaps.org/guides, lido 22/11): places CDLA-Permissive-2.0 (122.530 registros de fonte),
+  Apache-2.0 (787), CC0 (415): uso comercial permitido. buildings ODbL (credito "(c) OpenStreetMap contributors,
+  Overture Maps Foundation"); base DERIVADA publicada herda ODbL, contagem por zona em relatorio e obra produzida.
+  Fontes das edificacoes: Google Open Buildings 435 mil, OSM 113 mil, Microsoft 68 mil.
+  POI por grande grupo: servicos 12.576, comercio 11.995, alimentacao 8.102, saude 5.027, educacao 3.625.
+  ORDEM DE GRANDEZA: ~24 POI por mil habitantes [estimativa, pop. ~2,5 mi]: abaixo do numero real de
+  estabelecimentos; o POI e AMOSTRA ENVIESADA para o que aparece em mapa, nao cadastro. Confianca mediana 0,57;
+  40% abaixo de 0,5. operating_status vazio em 99,9%: nao se sabe se o lugar ainda existe.
+  LIMITE QUE DERRUBA "AREA CONSTRUIDA": altura em 0,27% e andares em 2,5% das edificacoes. So da AREA DE
+  PROJECAO (66 km2 no recorte), nao area construida. Para atracao: contagem e area de projecao por zona.
+  Uso defensavel: variavel explicativa CANDIDATA na geracao de viagens, a validar contra RAIS/CNEFE e contra a
+  pesquisa OD; nunca substituto de cadastro.
