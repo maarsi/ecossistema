@@ -27,6 +27,7 @@ def jsonl(p):
 
 v1 = list(csv.DictReader(open(BC/"revisao_taxonomia_20261118.csv", encoding="utf-8-sig")))
 v2 = jsonl(BC/"catalogo_v2.jsonl"); st = jsonl(BC/"sem_texto_v2.jsonl"); co = jsonl(BC/"correcoes_v2.jsonl")
+oc = jsonl(BC/"catalogo_ocr_v2.jsonl")    # classificacao PELO TEXTO do OCR de 21/11 (os sem texto)
 dup = {r["rel"]: r for r in json.loads((BC/"duplicatas_v2.json").read_text())["registros"]}
 assert len(v1) == 1945, len(v1)
 faltam = [r["arquivo"] for r in v1 if r["arquivo"] not in v2]
@@ -65,6 +66,16 @@ for r in v1:
               "natureza": c.get("natureza") or "", "paginas": c.get("paginas") or r.get("paginas") or "",
               "status": c.get("status") if c else "nao_catalogado_v2"})   # nunca herdar status da v1
     princ, sec, conf, orig, aj = c.get("subarea_principal"), c.get("subarea_secundaria"), c.get("confianca"), "modelo_texto_v2", []
+    x = oc.get(a)
+    if o["status"] in ("pendente_ocr", "erro_leitura") and x and x.get("status") == "ok" and x.get("subarea_principal"):
+        # o OCR devolveu texto: classificacao pelo texto, que e melhor que pelo nome (40% de
+        # concordancia medida). Os metadados (titulo, ano, autores) tambem vem do texto do OCR.
+        princ, sec, conf, orig = x["subarea_principal"], x.get("subarea_secundaria"), x.get("confianca"), "modelo_texto_ocr_v2"
+        for k in ("titulo", "ano", "veiculo", "idioma", "natureza"):
+            o[k] = x.get(k) or o[k]
+        o["autores"] = "; ".join(x.get("autores") or [])
+        o["status"] = "ok_ocr"
+        c = {**c, "motivo_secundaria": x.get("motivo_secundaria")}
     if o["status"] in ("pendente_ocr", "erro_leitura") or (c and not princ):
         s = st.get(a)
         if s and s.get("subarea_principal"):
@@ -119,6 +130,12 @@ sufixo = "_PARCIAL" if PARCIAL else ""
 with open(BC/f"revisao_taxonomia_v2{sufixo}.csv", "w", encoding="utf-8-sig", newline="") as f:
     w = csv.DictWriter(f, fieldnames=COLS); w.writeheader(); w.writerows(saida)
 json.dump({"cols": COLS, "linhas": saida}, open(BC/f"revisao_taxonomia_v2{sufixo}.json", "w"), ensure_ascii=False)
+# catalogo para o indice: SO o que tem texto (original ou OCR) e classe final; o indexador le status ok
+with open(BC/f"catalogo_indice_v2{sufixo}.jsonl", "w", encoding="utf-8") as f:
+    for o in saida:
+        if o["status"] in ("ok", "ok_ocr") and o["subarea_principal"]:
+            f.write(json.dumps({**{k: o[k] for k in ("arquivo", "titulo", "ano", "natureza", "subarea_principal",
+                     "subarea_secundaria", "veiculo", "duplicata", "duplicata_tipo")}, "status": "ok"}, ensure_ascii=False) + "\n")
 
 # ---------------------------------------------------------------- conferencias
 assert len(saida) == 1945

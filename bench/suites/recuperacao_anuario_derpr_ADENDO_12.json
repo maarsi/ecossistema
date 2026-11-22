@@ -1,0 +1,35 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_12",
+ "assunto": "resultado do braco I pre-registrado no ADENDO_11",
+ "executado_em": "2026-11-21T23:19:23-03:00",
+ "sha256_adendo_11": "3ff4f266fc0d550fc63dc73cb09ecddede8f47301071f2e5777f556eb9a2347c",
+ "resultado": {
+  "A": {
+   "acerto1": 17.9,
+   "acerto5": 39.3,
+   "pos_media": 16.27,
+   "dp_acerto1": 0.0
+  },
+  "B": {
+   "acerto1": 50.0,
+   "acerto5": 75.0,
+   "pos_media": 6.5,
+   "dp_acerto1": 0.0
+  },
+  "H": {
+   "acerto1": 39.3,
+   "acerto5": 71.4,
+   "pos_media": 5.73,
+   "dp_acerto1": 0.0
+  },
+  "I": {
+   "acerto1": 32.1,
+   "acerto5": 67.9,
+   "pos_media": 5.77,
+   "dp_acerto1": 0.0
+  }
+ },
+ "OCRmyPDF_segundos_58_paginas": 251,
+ "observacao_tempo": "CPU disputada pelo OCR em lote e pelo catalogo: nao comparavel",
+ "leitura": "A cadeia de producao para PDF digitalizado (I: OCRmyPDF por+eng -> PyMuPDF) fica em @1 32.1% e @5 67.9%, contra B 50.0/75.0, H 39.3/71.4 e A (sem OCR) 17.9/39.3. Um documento, 28 perguntas: diferenca de uma pergunta (3,6 pontos) e empate."
+}

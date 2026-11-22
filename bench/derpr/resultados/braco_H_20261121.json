@@ -1,0 +1,58 @@
+{
+ "A": {
+  "acerto1": 17.9,
+  "acerto5": 39.3,
+  "dp_acerto1": 0.0,
+  "pos_media": 16.27,
+  "deterministico": false,
+  "seg_indexacao": 9.11
+ },
+ "B": {
+  "acerto1": 50.0,
+  "acerto5": 75.0,
+  "dp_acerto1": 0.0,
+  "pos_media": 6.5,
+  "deterministico": false,
+  "seg_indexacao": 16.21
+ },
+ "C": {
+  "acerto1": 17.9,
+  "acerto5": 64.3,
+  "dp_acerto1": 0.0,
+  "pos_media": 10.43,
+  "deterministico": true,
+  "seg_indexacao": 21.35
+ },
+ "D": {
+  "acerto1": 32.1,
+  "acerto5": 71.4,
+  "dp_acerto1": 0.0,
+  "pos_media": 7.25,
+  "deterministico": true,
+  "seg_indexacao": 23.85
+ },
+ "E": {
+  "acerto1": 17.9,
+  "acerto5": 71.4,
+  "dp_acerto1": 0.0,
+  "pos_media": 7.43,
+  "deterministico": true,
+  "seg_indexacao": 23.85
+ },
+ "G": {
+  "acerto1": 35.7,
+  "acerto5": 66.7,
+  "dp_acerto1": 0.0,
+  "pos_media": 8.5,
+  "deterministico": false,
+  "seg_indexacao": 15.45
+ },
+ "H": {
+  "acerto1": 39.3,
+  "acerto5": 71.4,
+  "dp_acerto1": 0.0,
+  "pos_media": 5.73,
+  "deterministico": false,
+  "seg_indexacao": 37.51
+ }
+}

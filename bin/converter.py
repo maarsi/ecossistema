@@ -17,7 +17,11 @@ CACHE = RAIZ / "cache" / "docling"
 VERSAO_FORMATO = "v2"  # v2: marcadores de inicio e fim de pagina (v1 gerava citacao deslocada em uma pagina)
 FORMATOS = {".pdf", ".docx", ".pptx", ".xlsx", ".html", ".htm"}
 MIN_CHARS_PAGINA = 200  # abaixo disso, o PDF provavelmente e imagem sem camada de texto
-OCR_CMD = ["ocrmypdf", "-l", "por", "--oversample", "300", "--rotate-pages", "--rotate-pages-threshold", "2",
+# por+eng desde 21/11/2026: o acervo e 73% em ingles (1.422 en contra 374 pt no catalogo) e o
+# tesseract so com "por" degrada palavra inglesa. Arquivos convertidos antes seguem no cache com o
+# metodo antigo registrado no cabecalho do .md, e nada e refeito por causa desta mudanca.
+OCR_IDIOMAS = "por+eng"
+OCR_CMD = ["ocrmypdf", "-l", OCR_IDIOMAS, "--oversample", "300", "--rotate-pages", "--rotate-pages-threshold", "2",
            "--deskew", "--jobs", "6", "--output-type", "pdf"]
 
 
@@ -54,6 +58,20 @@ def _ocr(pdf, destino):
     return destino
 
 
+def _ocr_valido(original, processado):
+    try:
+        import pymupdf
+        with pymupdf.open(original) as a, pymupdf.open(processado) as b:
+            return a.page_count == b.page_count and b.page_count > 0
+    except Exception:
+        return False
+
+
+def chave_cache(caminho, ocr=False):
+    """Mesma chave usada por converter(); exposta para quem pre-processa o cache."""
+    return f"{VERSAO_FORMATO}_{_hash(Path(caminho))}" + ("_ocr" if ocr else "")
+
+
 def converter(caminho, ocr=False, forcar=False):
     """Retorna (caminho_md, info). Usa cache quando o mesmo arquivo ja foi convertido com a mesma opcao."""
     p = Path(caminho)
@@ -67,7 +85,14 @@ def converter(caminho, ocr=False, forcar=False):
         info = json.loads(meta.read_text(encoding="utf-8")); info["cache"] = True
         return md, info
     t = time.time()
-    origem = _ocr(p, CACHE / f"{chave}_ocr.pdf") if (ocr and suf == ".pdf") else p
+    # PDF ja processado por OCR no cache e REAPROVEITADO: permite distribuir o OCR em lote entre
+    # maquinas (bin/ocr_lote.py) e converter depois sem refazer. Conferencia minima: abre e tem
+    # o mesmo numero de paginas do original; senao refaz.
+    destino = CACHE / f"{chave}_ocr.pdf"
+    if ocr and suf == ".pdf" and destino.exists() and _ocr_valido(p, destino):
+        origem = destino
+    else:
+        origem = _ocr(p, destino) if (ocr and suf == ".pdf") else p
     doc = _conversor().convert(str(origem)).document
     n = len(getattr(doc, "pages", {}) or {})
     if suf == ".pdf" and n:
@@ -76,7 +101,7 @@ def converter(caminho, ocr=False, forcar=False):
     else:
         texto = doc.export_to_markdown()
     from importlib.metadata import version
-    metodo = ("OCRmyPDF por 300dpi + " if ocr else "") + f"Docling {version('docling')} sem OCR proprio, tabelas accurate"
+    metodo = (f"OCRmyPDF {OCR_IDIOMAS} 300dpi + " if ocr else "") + f"Docling {version('docling')} sem OCR proprio, tabelas accurate"
     md.write_text(f"<!-- origem: {p.name} | sha256 {chave} | {metodo} -->\n\n{texto}", encoding="utf-8")
     uteis = len(texto) - 20 * n
     info = {"arquivo": p.name, "paginas": n, "tabelas": len(doc.tables), "caracteres": len(texto),

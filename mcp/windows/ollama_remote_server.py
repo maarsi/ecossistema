@@ -149,6 +149,28 @@ async def consultar_papel(papel: str, instrucao: str, caminho_arquivo: str = "",
                                       f"llm_{papel}", "", background, SSH_TIMEOUT_S)
 
 @mcp.tool()
+async def consultar_acervo_referencias(pergunta: str, subarea: str = "", k: int = 6, filtro: str = "",
+                                      por_documento: int = 2) -> str:
+    """BUSCA na base de conhecimento do acervo 40 - REFERENCIAS (1.945 documentos, uma colecao por
+    subarea da taxonomia v2). Devolve trechos com citacao: titulo, ano, veiculo, PAGINA e arquivo.
+    Diferente de buscar_similaridade_local, que so REORDENA trechos ja em maos: esta ferramenta busca.
+    - subarea: vazio busca em todas; ou chaves separadas por virgula, ex.: "demanda_escolha_discreta,transporte_publico_tpc"
+    - filtro: SQL sobre metadado, ex.: "natureza = 'norma_manual' AND ano >= 2015"
+    - por_documento: maximo de trechos do mesmo arquivo (padrao 2, para o topo nao ser um documento so)
+    Ler os k primeiros: a similaridade e cosseno do embedder qwen3-embedding:4b, nao relevancia julgada.
+    Acrescentada em 22/11/2026 (item 6 da fila). Ubuntu: ~/ecossistema/bin/consulta_acervo.py."""
+    args = [pergunta, "-k", int(k), "--por-documento", int(por_documento)]
+    if subarea:
+        args += ["--subarea", subarea]
+    if filtro:
+        args += ["--filtro", filtro]
+    cmd = f"{ECOSSISTEMA}/bin/consulta_acervo.py " + " ".join(shlex.quote(str(x)) for x in args)
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_POOL, _executar_job, cmd, "transporte", "bash",
+                                      "acervo", "", False, SSH_TIMEOUT_S)
+
+
+@mcp.tool()
 async def consultar_modelo_local(modelo: str, prompt: str, num_ctx: int = 16384) -> str:
     """[LEGADO] Consulta direta a um modelo local pelo nome. Preferir consultar_papel.
     Agora passa pelo gateway llm.py com num_ctx fixo e RECUSA se o prompt nao couber.

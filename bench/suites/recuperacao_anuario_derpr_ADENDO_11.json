@@ -1,0 +1,13 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_11",
+ "assunto": "PRE-REGISTRO do braco I, gravado ANTES de qualquer execucao",
+ "registrado_em": "2026-11-21T23:09:55-03:00",
+ "sha256_adendo_10": "d73d03368d2ac056ba306e01251bfaf079b95a5ffbfe903c9fc1075c59d8a8f4",
+ "braco_I": {
+  "cadeia": "OCRmyPDF (flags do converter.py, por+eng, --force-ocr quando houver texto) -> texto por pagina pelo PyMuPDF -> qwen3-embedding:4b",
+  "por_que": "e EXATAMENTE a cadeia que o indice do acervo usa para os 141 documentos digitalizados na noite de 21-22/11. Sem medi-la, o indice desses documentos nasceria sem nenhuma evidencia de qualidade.",
+  "passadas": 3,
+  "pontuador": "o mesmo que reproduz o ADENDO_07"
+ },
+ "o_que_se_conclui": "nada sobre o vencedor: o braco I e comparado com B (vencedor) e com H para saber se a cadeia de producao fica no patamar dos bracos com OCR (B, H) ou no do texto sem OCR (A). Diferenca de 1 pergunta e empate."
+}

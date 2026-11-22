@@ -286,14 +286,18 @@ SUBAREAS (a principal foi removida da lista de proposito):
 # assunto so?" convida a dizer sim tambem. A escolha FORCADA remove o convite: ele tem que
 # escolher alguma, e o que filtra nao e mais a vontade dele de agradar, e a confianca declarada.
 # So `alta` vira secundaria; `media` e `baixa` sao descartadas e ficam registradas no motivo.
+# MOTIVO PRIMEIRO. Com decodificacao restrita o modelo emite as chaves NA ORDEM do esquema; com
+# 'motivo' por ultimo ele escolhia a subarea e declarava a confianca ANTES de raciocinar. Medido em
+# 21/11/2026 na classificacao por nome: motivo ultimo colapsou 19 de 40 na classe generica, motivo
+# primeiro 8 de 40. O catalogo v2 de 21/11 rodou com a ordem ANTIGA (subarea, confianca, motivo).
 ESQUEMA_SECUNDARIA = {
     "type": "object",
     "properties": {
+        "motivo": {"type": "string"},
         "subarea": {"type": "string"},
         "confianca": {"type": "string", "enum": ["alta", "media", "baixa"]},
-        "motivo": {"type": "string"},
     },
-    "required": ["subarea", "confianca", "motivo"],
+    "required": ["motivo", "subarea", "confianca"],
 }
 
 

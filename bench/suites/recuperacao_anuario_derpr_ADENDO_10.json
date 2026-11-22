@@ -1,0 +1,53 @@
+{
+ "adendo": "recuperacao_anuario_derpr_ADENDO_10",
+ "assunto": "execucao do braco H, pre-registrado no ADENDO_02 (11/11) e NAO EXECUTADO no ADENDO_06 (12/11)",
+ "executado_em": "2026-11-21T23:09:41-03:00",
+ "sha256_adendo_09": "c275516f2b671b04302ae0de761be243e62287bb568b472412c8d498fe62e101",
+ "o_que_destravou": "quinta tentativa de compilacao: torch 2.15+cu132, nvcc 13.4 do env_cuopt, gcc-13 e o pacote compilado em -std=c++20 em vez do c++17 fixado em scripts/build-extension.py. A terceira tentativa de 12/11 havia falhado exatamente por cabecalho C++20 do torch contra pacote C++17; a quarta trocou o torch por um antigo e colidiu com o nvcc. Ninguem havia tentado mudar o padrao do pacote.",
+ "ambiente": "~/env_extracao; fonte compilada em /mnt/nvme_lexar/modelos_extracao/nemotron-ocr-src-cxx20 (a fonte de 12/11 ficou intocada)",
+ "pre_voo_de_validade": {
+  "instrumento": "a MESMA lambda de prevoo2.sh, pagina 10, criterio declarado no ADENDO_02",
+  "ingles": {
+   "acentuados": 56,
+   "taxa": "95%",
+   "tipos_preservados": "88%",
+   "veredito": "COM RESSALVA: entra"
+  },
+  "multilingue": {
+   "acentuados": 58,
+   "taxa": "98%",
+   "tipos_preservados": "79,7%",
+   "veredito": "REPROVADO, por 0,3 ponto, nao arredondado"
+  },
+  "achado": "a variante multilingue acerta a QUANTIDADE de acentos e erra o TIPO (a com circunflexo vira agudo, E com circunflexo vira agudo); a inglesa poe menos acentos e erra menos",
+  "pendente": "passo 3 do protocolo, conferencia a olho por Mateus das saidas em prevoo/saidas/ocr_*_p10/13/21.txt"
+ },
+ "resultado_3_passadas": {
+  "H": {
+   "acerto1": 39.3,
+   "acerto5": 71.4,
+   "dp_acerto1": 0.0,
+   "pos_media": 5.73,
+   "deterministico": false
+  },
+  "referencia_B": {
+   "acerto1": 50.0,
+   "acerto5": 75.0,
+   "pos_media": 6.5
+  },
+  "referencia_G": {
+   "acerto1": 35.7,
+   "acerto5": 66.7,
+   "pos_media": 8.5
+  }
+ },
+ "prova_do_instrumento": "o pontuador reproduziu exatamente os 6 bracos do ADENDO_07 antes de pontuar H",
+ "vencedor_pelo_criterio_declarado": "B, inalterado",
+ "o_que_H_responde": "o proposito declarado de H era separar, no ganho de G, o que vem de ESTRUTURA e o que vem de OCR. H (OCR puro) iguala ou supera G em @1 (+3,6, uma pergunta, empate tecnico) e @5 (+4,8). Logo, neste corpus, o ganho de G sobre o texto puro e explicado pelo OCR, nao pela compreensao de estrutura.",
+ "ressalvas": [
+  "um documento, 28 perguntas: diferenca de 1 pergunta e empate",
+  "o tempo de indexacao de H (37,5 s) foi medido com a GPU disputada pelo catalogo e NAO e comparavel aos demais; o OCR sozinho levou 12 a 13 s para 58 paginas",
+  "H entra 'com ressalva' pelo pre-voo; a variante multilingue foi reprovada",
+  "o braco B usa o OCR INTERNO do Docling; o converter.py do ecossistema usa OCRmyPDF/tesseract e depois Docling sem OCR. Sao cadeias diferentes, e a do converter nao foi medida nesta suite"
+ ]
+}
