@@ -214,7 +214,7 @@ def chamar_local(modelo, prompt, ctx, max_tokens, temperatura,
 
 
 def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esforco="",
-                 imagens=None):
+                 imagens=None, timeout=300):
     """imagens: saida de preparar_imagens(). Sem imagem o corpo e identico ao anterior, com
     'content' em string: nao se muda a forma da chamada de quem nao pediu imagem."""
     if provedor not in PROVEDORES_OPENAI:
@@ -245,7 +245,7 @@ def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esf
                      f"{', '.join(validos)}. A API aceitaria o valor errado sem reclamar e "
                      f"cobraria o esforco padrao, por isso a recusa e local.")
         corpo["reasoning_effort"] = esforco
-    r = requests.post(p["url"], timeout=300,
+    r = requests.post(p["url"], timeout=timeout,
                       headers={"Authorization": f"Bearer {chave_env(p['chave'])}"}, json=corpo)
     if r.status_code != 200:
         # O corpo entra na mensagem porque 'HTTP 400' sozinho nao diagnostica nada; passa pela
@@ -274,6 +274,44 @@ def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esf
         sys.exit(f"ERRO nuvem {provedor}: resposta vazia em {modelo}, sem motivo declarado. "
                  "Resposta vazia nao e resposta.")
     return texto, u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
+
+
+# Falha do PROVEDOR, que justifica tentar a reserva: sem resposta, conexao, modelo inexistente ou
+# retirado, cota, erro interno. Erro 400/401/403 NAO entra: e pedido mal formado ou credencial, e
+# esconde-lo atras de uma reserva seria pior que parar. Medido em 22/11/2026: google/gemma-4-31b-it
+# aparecia em /v1/models e NAO respondia (40 s sem primeiro byte) enquanto nemotron-3-ultra, na
+# mesma chave, respondia em 1,3 s. O papel redacao-nuvem ficou horas sem resposta por nao ter reserva.
+FALHA_DE_PROVEDOR = re.compile(r"HTTP (404|410|429|5\d\d)")
+
+
+def chamar_papel_nuvem(cfg, prompt, max_tokens, temperatura, imgs=None):
+    """Titular e depois cada item de cfg['reserva'] (lista de {provedor, modelo[, esforco]}).
+    Devolve (texto, tin, tout, config_que_respondeu)."""
+    tentativas = [cfg] + [{**cfg, **r, "reserva": []} for r in cfg.get("reserva", [])]
+    motivos = []
+    for c in tentativas:
+        if imgs and not c.get("visao"):
+            motivos.append(f"{c['modelo']}: nao declara visao"); continue
+        try:
+            if c.get("provedor") == "google":
+                r = chamar_google(c["modelo"], prompt, max_tokens, temperatura, c.get("ctx_max", 0),
+                                  c.get("persona", ""), imgs)
+            else:
+                r = chamar_nuvem(c["modelo"], prompt, max_tokens, temperatura, c.get("provedor", "nvidia"),
+                                 c.get("esforco", ""), imgs, c.get("timeout_s", 300))
+            if motivos:
+                print(f"[llm] RESERVA respondeu: {c.get('provedor', 'nvidia')}/{c['modelo']} "
+                      f"(antes: {' | '.join(motivos)})", file=sys.stderr)
+            return (*r, c)
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            motivos.append(f"{c['modelo']}: {type(e).__name__}")
+        except SystemExit as e:
+            if not FALHA_DE_PROVEDOR.search(str(e)) or not cfg.get("reserva"):
+                raise
+            motivos.append(f"{c['modelo']}: {FALHA_DE_PROVEDOR.search(str(e)).group(0)}")
+        if not cfg.get("reserva"):
+            break
+    sys.exit("ERRO nuvem: titular e reservas falharam: " + " | ".join(motivos))
 
 
 def chamar_google(modelo_, prompt, max_tokens, temperatura, ctx_max=0, persona="", imagens=None):
@@ -472,14 +510,8 @@ def main():
             print(json.dumps(prova_real(cfg, prompt, a.referencia, max_tokens),
                              ensure_ascii=False, indent=2))
             return
-        if cfg.get("provedor") == "google":
-            texto, tin, tout = chamar_google(cfg["modelo"], prompt, max_tokens,
-                                             a.temperatura, cfg.get("ctx_max", 0),
-                                             cfg.get("persona", ""), imgs)
-        else:
-            texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura,
-                                            cfg.get("provedor", "nvidia"), cfg.get("esforco", ""),
-                                            imgs)
+        texto, tin, tout, quem = chamar_papel_nuvem(cfg, prompt, max_tokens, a.temperatura, imgs)
+        cfg = {**cfg, "modelo": quem["modelo"]}       # as estatisticas dizem quem respondeu de fato
         modo = "nuvem"
     else:
         res, est = (None, estimar_tokens(conteudo)) if a.partes else executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)

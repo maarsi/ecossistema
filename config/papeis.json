@@ -41,10 +41,24 @@
   },
   "redacao-nuvem": {
     "onde": "nuvem",
-    "modelo": "google/gemma-4-31b-it",
+    "provedor": "deepseek",
+    "modelo": "deepseek-flash",
     "max_tokens": 4096,
-    "uso": "Sintese de texto publico longo; nao para redacao final de entregavel",
-    "teste": "18/10: mistral-nemotron saiu do ar (HTTP 410, modelo descontinuado). Substituto escolhido em teste: gemma-4-31b-it deu a definicao mais precisa em PT-BR em 20,5 s; nemotron-3-nano-omni respondeu em 2,2 s porem vago; nemotron-3-super-120b voltou vazio; deepseek-v4.1-flash estourou 100 s"
+    "timeout_s": 90,
+    "reserva": [
+      {
+        "provedor": "google",
+        "modelo": "gemini-4-argon",
+        "ctx_max": 1048576
+      },
+      {
+        "provedor": "nvidia",
+        "modelo": "nvidia/nemotron-3-ultra-550b-a55b"
+      }
+    ],
+    "uso": "Sintese de texto publico longo; nao para redacao final de entregavel | Reserva automatica: se o titular nao responder em 90 s ou der 404/410/429/5xx, o gateway tenta a proxima e avisa quem respondeu.",
+    "teste": "22/11/2026, suite redacao (bench/suite_redacao.py, 4 itens com conferencia automatica pelas regras de Mateus: fidelidade numerica, sem travessao, numero de frases, sem referencia inventada; 2 passadas): deepseek-flash 8/8 em 3,0 s, nemotron-3-ultra 8/8 em 2,5 s, gemini-4-argon 8/8 em 8,9 s, kimi-k3 7/8 em 20,7 s. Suite NO TETO: nao mede qualidade de prosa, so obediencia as regras; titular por latencia entre os pagos. O titular anterior, google/gemma-4-31b-it na NVIDIA gratuita, nunca havia sido medido em redacao e ficou horas sem responder em 21/11: a conta gratuita e limitada a 40 rpm e o tráfego de outros usuarios estrangula modelos concorridos (tela da conta, 22/11). Por isso a NVIDIA gratuita e a ULTIMA reserva.",
+    "historico": "ate 22/11/2026: nvidia/google/gemma-4-31b-it"
   },
   "visao": {
     "onde": "local",

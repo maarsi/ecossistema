@@ -1,0 +1,328 @@
+[
+ {
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "passada": 1,
+  "item": "R1",
+  "falhas": [],
+  "s": 48.8,
+  "texto": "A metodologia consistiu em uma pesquisa de contagem classificada realizada em 6 postos, com 12 horas de observação por posto. Os dados coletados foram ajustados pelo fator de expansão diária de 1,18, obtendo-se um volume médio de 4.350 veículos por dia."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "passada": 1,
+  "item": "R2",
+  "falhas": [],
+  "s": 42.0,
+  "texto": "O intervalo entre as partidas, medido no horário de pico da manhã, ficou acima do previsto; o retorno dos operadores, ainda preliminar, confirma a defasagem."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "passada": 1,
+  "item": "R3",
+  "falhas": [],
+  "s": 57.3,
+  "texto": "A calibração de um modelo de escolha discreta compara as participações modais observadas com as estimadas. Em seguida, ajusta as constantes específicas de cada alternativa até que a diferença fique abaixo da tolerância definida. Por fim, verifica os sinais e as magnitudes dos coeficientes de tempo e de custo, cuja razão fornece o valor do tempo implícito."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 1,
+  "item": "R1",
+  "falhas": [],
+  "s": 4.0,
+  "texto": "A metodologia consistiu na realização de pesquisa de contagem classificada em 6 postos com duração de 12 horas por posto onde os dados coletados foram submetidos a um fator de expansao diaria de 1,18 para estimar o volume total resultando em um volume medio de 4.350 veiculos por dia."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 1,
+  "item": "R2",
+  "falhas": [],
+  "s": 2.7,
+  "texto": "O intervalo medido no pico da manhã ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma a diferença."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 1,
+  "item": "R3",
+  "falhas": [],
+  "s": 1.8,
+  "texto": "A calibração de um modelo de escolha discreta compara as participações modais observadas e estimadas, ajustando as constantes específicas de alternativa até que a diferença fique abaixo da tolerância definida. Em seguida, verifica-se a consistência dos sinais e a magnitude dos coeficientes de tempo e custo. Por fim, a razão entre esses coeficientes determina o valor do tempo implícito no modelo."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 1,
+  "item": "R4",
+  "falhas": [],
+  "s": 1.7,
+  "texto": "A demanda por transporte coletivo tende a ser inelástica em relação à tarifa no curto prazo, pois os usuários dependem do serviço para deslocamentos essenciais e não possuem alternativas imediatas de mobilidade. Dessa forma, variações no preço das passagens geram uma redução proporcionalmente menor na quantidade de passageiros transportados."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 2,
+  "item": "R1",
+  "falhas": [],
+  "s": 2.0,
+  "texto": "A metodologia consistiu em uma pesquisa de contagem classificada em 6 postos com duração de 12 horas por posto onde se aplicou um fator de expansao diaria de 1,18 para estimar o volume medio de 4.350 veiculos por dia."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 2,
+  "item": "R2",
+  "falhas": [],
+  "s": 2.8,
+  "texto": "O intervalo medido no pico da manhã ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma a diferença."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 2,
+  "item": "R3",
+  "falhas": [],
+  "s": 2.5,
+  "texto": "A calibração de um modelo de escolha discreta compara as participações modais observadas e estimadas, ajustando as constantes específicas de alternativa até que a diferença fique abaixo da tolerância definida. Em seguida, verifica-se a consistência dos sinais e a magnitude dos coeficientes de tempo e custo. Por fim, a razão entre esses coeficientes determina o valor do tempo implícito no modelo."
+ },
+ {
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3-ultra-550b-a55b",
+  "passada": 2,
+  "item": "R4",
+  "falhas": [],
+  "s": 1.7,
+  "texto": "A demanda por transporte coletivo costuma ser inelástica em relação à tarifa no curto prazo, pois os usuários não possuem alternativas imediatas de deslocamento. Dessa forma, variações no preço das passagens geram uma redução proporcionalmente menor na quantidade de passageiros transportados."
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 1,
+  "item": "R1",
+  "falhas": [],
+  "s": 9.1,
+  "texto": "A metodologia adotada para o estudo de tráfego consistiu na realização de uma pesquisa de contagem classificada em 6 postos estratégicos, com duração de 12 horas por posto para o registro contínuo do fluxo viário. A fim de estimar a demanda para o período integral do dia, os dados brutos coletados em campo foram ajustados mediante a aplicação de um fator de expansão diária de 1,18. Esse procedimento analítico permitiu a consolidação das informações e resultou na identificação de um volume médio de 4.350 veículos por dia na rede monitorada."
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 1,
+  "item": "R2",
+  "falhas": [],
+  "s": 9.1,
+  "texto": "Aqui estão três opções de reescrita, variando levemente o estilo, mas todas respeitando suas regras (usando vírgulas ou parênteses no lugar dos travessões e substituindo os termos em inglês):\n\n**Opção 1 (Mais direta e natural - Recomendada):**\n\"O intervalo entre as viagens, medido no horário de pico da manhã, ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma essa defasagem.\"\n\n**Opção 2 (Mais formal):**\n\"O tempo de espera entre os veículos, que foi medido no pico da manhã, ficou acima do planejado; a avaliação dos operadores, ainda preliminar, confirma a discrepânci"
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 1,
+  "item": "R3",
+  "falhas": [],
+  "s": 8.9,
+  "texto": "A calibração de um modelo de escolha discreta inicia com a comparação entre as participações modais observadas e as estimadas. Em seguida, ajustam-se as constantes específicas de cada alternativa até que a diferença entre elas fique abaixo do limite de tolerância. Por fim, são conferidos os sinais e a magnitude dos coeficientes de tempo e custo, cuja razão determina o valor do tempo implícito."
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 1,
+  "item": "R4",
+  "falhas": [],
+  "s": 6.7,
+  "texto": "A elasticidade da demanda do transporte coletivo em relação à tarifa costuma ser inelástica no curto prazo, o que indica uma baixa sensibilidade dos passageiros às variações de preço. Isso acontece porque a maioria dos usuários depende diariamente desse serviço para deslocamentos essenciais e não dispõe de alternativas viáveis de mobilidade imediata diante de um aumento tarifário."
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 2,
+  "item": "R1",
+  "falhas": [],
+  "s": 7.5,
+  "texto": "A metodologia adotada para a coleta e análise dos dados baseou-se na realização de uma pesquisa de contagem classificada em 6 postos estrategicamente selecionados na malha viária. O levantamento de campo teve a duração contínua de 12 horas por posto, permitindo o registro detalhado do fluxo ao longo do período de observação. Posteriormente, para projetar a demanda total, aplicou-se aos dados brutos coletados um fator de expansão diária de 1,18. Esse procedimento metodológico possibilitou o cálculo e a consolidação das informações de tráfego, resultando na estimativa de um volume médio de 4.350"
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 2,
+  "item": "R2",
+  "falhas": [],
+  "s": 6.1,
+  "texto": "Aqui estão três opções de reescrita, mantendo o sentido original (comum na área de transportes e logística), substituindo os travessões por vírgulas ou parênteses e trocando os termos em inglês por equivalentes em português:\n\n**Opção 1 (Usando vírgulas - mais fluida):**\n\"O intervalo entre as viagens, que foi medido no horário de pico da manhã, ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma essa defasagem.\"\n\n**Opção 2 (Mais direta e concisa):**\n\"O tempo de espera, medido no pico da manhã, superou o planejado; a avaliação dos operadores, ainda preliminar, confirma"
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 2,
+  "item": "R3",
+  "falhas": [],
+  "s": 11.9,
+  "texto": "A calibração de um modelo de escolha discreta inicia-se pela comparação entre as participações modais observadas e as estimadas. Em seguida, ajustam-se as constantes específicas de alternativa até que a diferença entre elas fique abaixo do limite de tolerância. Por fim, verificam-se os sinais e a magnitude dos coeficientes de tempo e custo, cuja razão fornece o valor do tempo implícito."
+ },
+ {
+  "provedor": "google",
+  "modelo": "gemini-4-argon",
+  "passada": 2,
+  "item": "R4",
+  "falhas": [],
+  "s": 7.0,
+  "texto": "A elasticidade da demanda pelo transporte coletivo em relação ao valor da tarifa costuma ser inelástica no curto prazo. Isso ocorre porque a maioria dos passageiros depende diariamente desse serviço para deslocamentos essenciais e não possui alternativas imediatas de mobilidade diante de um aumento nos preços."
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 1,
+  "item": "R1",
+  "falhas": [],
+  "s": 43.5,
+  "texto": "A pesquisa de tráfego foi realizada por meio de contagem classificada de veículos em 6 postos, distribuídos de forma a contemplar os principais pontos da área de estudo. Em cada posto, a coleta de dados foi executada durante 12 horas, com registro dos veículos por categoria, permitindo captar as variações do fluxo ao longo do período pesquisado. Para a obtenção de valores representativos do dia completo, os dados levantados em campo foram ajustados pela aplicação de fator de expansão diária de 1,18, responsável por corrigir as diferenças entre o período efetivamente observado e o comportamento"
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 1,
+  "item": "R2",
+  "falhas": [],
+  "s": 21.8,
+  "texto": "\"O intervalo medido no pico da manhã ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma o desvio.\"\n\nSe preferir manter as informações adicionais em evidência, outra opção é usar parênteses:\n\n\"O intervalo (medido no pico da manhã) ficou acima do planejado; o retorno dos operadores (ainda preliminar) confirma o desvio.\""
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 1,
+  "item": "R3",
+  "falhas": [],
+  "s": 12.5,
+  "texto": "A calibração de um modelo de escolha discreta consiste em comparar as participações modais observadas com as estimadas pelo modelo. Para isso, as constantes específicas de alternativa são ajustadas iterativamente até que a diferença entre essas participações fique abaixo da tolerância estabelecida. Por fim, verificam-se os sinais e as magnitudes dos coeficientes de tempo e custo, cuja razão fornece o valor do tempo implícito."
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 1,
+  "item": "R4",
+  "falhas": [],
+  "s": 11.1,
+  "texto": "A elasticidade da demanda por transporte coletivo em relação à tarifa costuma ser inelástica no curto prazo, pois os passageiros dispõem de poucas alternativas imediatas de deslocamento e não conseguem ajustar rapidamente seus hábitos de viagem. Assim, aumentos tarifários tendem a provocar reduções proporcionalmente menores no número de viagens, ao menos até que os usuários possam reorganizar seus padrões de locomoção no longo prazo."
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 2,
+  "item": "R1",
+  "falhas": [],
+  "s": 22.2,
+  "texto": "**Metodologia**\n\nA pesquisa de tráfego foi conduzida por meio de contagem volumétrica classificada, estruturada em 6 postos de contagem distribuídos ao longo da área de estudo, de forma a contemplar os diferentes perfis de fluxo viário observados na região. Em cada posto, a coleta de dados foi executada durante 12 horas, período considerado representativo do comportamento do tráfego ao longo do dia, permitindo a identificação dos horários de maior e menor movimento. Para a conversão dos volumes parciais registrados em campo em estimativas diárias, aplicou-se o fator de expansão diária de 1,18,"
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 2,
+  "item": "R2",
+  "falhas": [],
+  "s": 20.7,
+  "texto": "O intervalo, que foi medido no pico da manhã, ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma a divergência.\n\nSubstituições feitas:\n- **headway** → intervalo (entre trens, veículos ou partidas, conforme o contexto)\n- **feedback** → retorno (também poderia ser \"parecer\" ou \"avaliação\")\n- **gap** → divergência (também poderia ser \"lacuna\" ou \"desvio\")\n- Os travessões foram substituídos por vírgulas."
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 2,
+  "item": "R3",
+  "falhas": [],
+  "s": 12.8,
+  "texto": "A calibração de um modelo de escolha discreta baseia-se na comparação entre as participações modais observadas e as estimadas pelo modelo. Nesse processo, as constantes específicas de alternativa são ajustadas iterativamente até que a diferença entre essas participações fique abaixo da tolerância definida. Por fim, verificam-se os sinais e a magnitude dos coeficientes de tempo e custo, cuja razão fornece o valor do tempo implícito."
+ },
+ {
+  "provedor": "moonshot",
+  "modelo": "kimi-k3",
+  "passada": 2,
+  "item": "R4",
+  "falhas": [
+   "travessao"
+  ],
+  "s": 13.0,
+  "texto": "No curto prazo, a demanda por transporte coletivo costuma apresentar elasticidade inelástica em relação à tarifa, uma vez que os usuários dispõem de poucas alternativas imediatas de deslocamento e dependem do serviço para suas atividades cotidianas, como trabalho e estudo. Assim, aumentos tarifários tendem a provocar reduções proporcionalmente menores no número de passageiros nesse horizonte de tempo, já que ajustes de comportamento — como a migração para outros modos de transporte ou a reorganização de rotinas — geralmente exigem prazos mais longos para se consolidar."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-v4-pro",
+  "passada": 1,
+  "item": "R1",
+  "falhas": [],
+  "s": 11.4,
+  "texto": "A metodologia consistiu em uma pesquisa de contagem classificada realizada em 6 postos, com 12 horas de coleta por posto. Os dados obtidos foram expandidos por um fator de expansão diária de 1,18, resultando em um volume médio de 4.350 veículos por dia."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 1,
+  "item": "R1",
+  "falhas": [],
+  "s": 3.4,
+  "texto": "A metodologia adotada consistiu na realização de pesquisa de contagem classificada em 6 postos, com 12 horas por posto, aplicando-se fator de expansão diária de 1,18 sobre o volume médio de 4.350 veículos por dia."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 1,
+  "item": "R2",
+  "falhas": [],
+  "s": 3.8,
+  "texto": "O intervalo entre veículos, medido no horário de pico da manhã, ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma a diferença."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 1,
+  "item": "R3",
+  "falhas": [],
+  "s": 1.8,
+  "texto": "A calibração de um modelo de escolha discreta compara as participações modais observadas e estimadas. Em seguida, ajustam-se as constantes específicas de alternativa até que a diferença fique abaixo da tolerância. Por fim, conferem-se os sinais e a magnitude dos coeficientes de tempo e custo, cuja razão fornece o valor implícito do tempo."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 1,
+  "item": "R4",
+  "falhas": [],
+  "s": 1.5,
+  "texto": "A demanda por transporte coletivo tende a ser inelástica em relação à tarifa no curto prazo. Isso significa que aumentos de tarifa costumam provocar reduções proporcionalmente menores na quantidade demandada nesse horizonte."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 2,
+  "item": "R1",
+  "falhas": [],
+  "s": 3.0,
+  "texto": "A metodologia adotada consistiu em realizar pesquisa de contagem classificada em 6 postos, com 12 horas por posto, aplicando-se fator de expansão diária de 1,18 para estimar o volume médio de 4.350 veículos por dia."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 2,
+  "item": "R2",
+  "falhas": [],
+  "s": 3.8,
+  "texto": "O intervalo entre veículos, que foi medido no pico da manhã, ficou acima do planejado; o retorno dos operadores, ainda preliminar, confirma a diferença."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 2,
+  "item": "R3",
+  "falhas": [],
+  "s": 1.7,
+  "texto": "A calibração de um modelo de escolha discreta compara as participações modais observadas com as estimadas. Em seguida, ajustam-se as constantes específicas de alternativa até que a diferença fique abaixo da tolerância. Por fim, conferem-se os sinais e a magnitude dos coeficientes de tempo e custo, cuja razão fornece o valor do tempo implícito."
+ },
+ {
+  "provedor": "deepseek",
+  "modelo": "deepseek-flash",
+  "passada": 2,
+  "item": "R4",
+  "falhas": [],
+  "s": 2.0,
+  "texto": "A elasticidade da demanda por transporte coletivo em relação à tarifa costuma ser inelástica no curto prazo, indicando que variações no preço tendem a provocar alterações proporcionalmente menores na quantidade demandada. Isso ocorre porque, nesse horizonte, os usuários têm poucas alternativas imediatas de deslocamento e tendem a manter o uso do serviço mesmo diante de reajustes tarifários."
+ }
+]

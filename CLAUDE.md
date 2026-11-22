@@ -3926,3 +3926,25 @@ e 73% ingles). O ensaio com 6 documentos pegou dois defeitos antes do lote:
 RECAIDA EM ERRO JA REGISTRADO: encadeei um job com 'while pgrep -f teste_ferrovia.py', e a linha
 de comando do proprio bash -c contem esse texto. O pgrep casou consigo mesmo e a espera nunca
 terminaria; perdi 9 minutos. Esperar por PID, ou usar o padrao '[t]este_ferrovia.py'.
+
+### CORRECAO DE DIAGNOSTICO: A NVIDIA NAO ESTAVA FORA (22/11/2026, 00h)
+Por cerca de 5 horas registrei "NVIDIA fora" porque google/gemma-4-31b-it nao respondia e
+DeepSeek e Moonshot respondiam. Mateus verificou que a plataforma estava normal, e a matriz por
+CAMADA confirmou: rede normal, /v1/models 200 em 0,4 s, nemotron-3-ultra respondendo em 1,3 s NA
+MESMA CHAVE. O que travava era o MODELO. A tela da conta explica: conta gratuita "Up to 40 rpm",
+limite que "varia por modelo", e trafego de outros usuarios estrangula modelos concorridos.
+Na suite de redacao, gemma-4-31b, mistral-large-4, kimi-k3.1-pro, glm-5.3-flash e minimax ficaram
+sem resposta; nemotron-3-ultra respondeu. Nao somos nos: havia UMA conexao nossa aberta.
+ERRO DE METODO: o controle comparava PROVEDORES entre si e nunca outro MODELO do mesmo provedor.
+Controle no nivel errado produz diagnostico no nivel errado. Regra: falha de inferencia se isola
+por camada (rede, autenticacao, modelo) e, dentro do provedor, com outro modelo, antes de concluir.
+CONSEQUENCIA: modelo hospedado na NVIDIA gratuita nao serve como TITULAR de papel que precisa
+responder; so como reserva.
+
+PLANO B APLICADO: llm.py ganhou RESERVA por papel (lista 'reserva' e prazo 'timeout_s'). Cai para a
+reserva so em falha de provedor (sem resposta, conexao, 404/410/429/5xx); 400/401/403 param, porque
+sao erro nosso. Testado: titular travado -> reserva em 16 s; modelo inexistente para em 1 s sem
+mascarar; papel sem reserva identico. redacao-nuvem passou a deepseek-flash, reservas
+gemini-4-argon e nemotron-3-ultra, por medicao na suite NOVA bench/suite_redacao.py (o papel nunca
+havia sido medido em redacao). Resultados no campo 'teste' do papel. Suite no TETO: mede obediencia
+as regras de Mateus, nao qualidade de prosa.
