@@ -4044,3 +4044,13 @@ bench/overture/teste_salvador.py; parquet local em /mnt/nvme_lexar/datasets_sig/
   PROJECAO (66 km2 no recorte), nao area construida. Para atracao: contagem e area de projecao por zona.
   Uso defensavel: variavel explicativa CANDIDATA na geracao de viagens, a validar contra RAIS/CNEFE e contra a
   pesquisa OD; nunca substituto de cadastro.
+
+## BATERIA VRPTW (22/11/2026): PREPARADA E ENCADEADA, NAO RODADA
+Pre-registro em bench/vrptw/PRE_REGISTRO.md (objetivo identico escrito nas duas pontas: custo fixo 10^7 por
+veiculo + distancia; validador independente a partir das coordenadas, que REPRODUZIU a BKS de C101 e R101).
+Piloto com GPU disputada so para parametro: OR-Tools com PATH_CHEAPEST_ARC NAO acha solucao viavel em 30 s em
+R101 e RC101; com PARALLEL_CHEAPEST_INSERTION acha. LICAO: em VRPTW a heuristica de partida decide se o OR-Tools
+chega a ter solucao; comparar com a partida errada mediria a partida, nao o solver.
+bin/apos_indexacao_22nov.sh espera o PID da indexacao, reindexa economia_avaliacao_regulacao e roda as 56
+instancias (30 s, cuOpt x3) quando a GPU cair abaixo de 10%. Log ~/.claude_jobs/apos_indexacao.log;
+resultado bench/resultados/<data>_vrptw_cuopt_ortools.jsonl. Duracao estimada: 56 x 120 s, ~2 h.
