@@ -4087,3 +4087,9 @@ sincronizada que o argon-auditor do Windows le (ARGON_CORE) esta 9 dias defasada
 DEFEITO DO MEU INSTRUMENTO: a "prova da trava" pedia `pip install mcp --dry-run`; com o mcp instalado o pip nao tem
 o que instalar e a prova nunca sai. Trocado por `pip install "mcp>=2" --dry-run`, que a trava tem de recusar.
 Divergencia menor: mcp 1.29.0 em C:\TransportMCP e 1.29.1 em D:\TransportMCP.
+CAUSA da Duebendorf fora: Syncthing instalado pelo WINGET (v2.1.5, so o binario em %LOCALAPPDATA%\Microsoft\WinGet\
+Packages\Syncthing.Syncthing_...\), sem icone nem inicio automatico; o reinicio do Windows por volta de 13/11 o
+derrubou. 22/11 09h27 religado por syncthing_iniciar.bat: conectado, ecossistema 100%. 09h29 criado atalho
+Syncthing.lnk em shell:startup (syncthing_inicio_automatico.bat/.ps1, com log). A 1a versao do .bat falhou sem
+dizer por que; a 2a grava cada passo em log. REGRA: script para Mateus rodar no Windows SEMPRE grava log legivel
+pela Ubuntu, senao a falha vira adivinhacao.
