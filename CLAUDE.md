@@ -3974,3 +3974,15 @@ OCR FINAL: 137 de 141 validos. Invalidos: dr08.pdf (prancha de 1 pagina com 2.41
 classificados pelo texto do OCR; 38 (24 com texto insuficiente mesmo apos OCR) por caminho e nome.
 Cache de OCR em ~/ecossistema/cache/docling: 19 GB (PDF com imagem a 300 dpi; um livro deu 1,5 GB).
 Nao sincroniza (cache no .stignore). Candidato a limpeza depois da indexacao.
+
+## 22/11/2026 madrugada: item 3 fechado (VRAM dos modelos grandes de extracao) e item 7
+Medido com bench/vram_grandes.py, bf16, nvidia-smi pelo PID, com o qwen3:14b do Ollama ocupando a GPU em paralelo
+(logo o numero por processo vale; a soma livre nao foi medida em isolamento):
+| modelo | carga | 1a chamada | regime | pico torch | processo (NVML) |
+|---|---|---|---|---|---|
+| llama-nemotron-embed-vl-1b-v2 | 28,7 s | 2,6 s | 0,62 s | 3.449 MB | 3.764 MB |
+| llama-nemotron-rerank-vl-1b-v2 | 22,4 s | 1,34 s | 0,63 s | 3.449 MB | 3.764 MB |
+| Nemotron-3.5-Parse | 22,3 s | 8,86 s | 5,99 s/pagina | 1.565 MB | 2.104 MB |
+Os tres cabem na 5060 Ti junto com o qwen3:14b. Pico identico entre embed e rerank: mesma espinha de 1B,
+plausivel, nao investigado. Amostra de uma execucao por modelo. PaddleOCR-VL nao testado.
+Item 7: cache do pip apagado (13 GB, reconstruivel). Cache do restic e __pycache__ mantidos de proposito.
