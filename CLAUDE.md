@@ -4072,3 +4072,6 @@ arquivos, de "arquivos novos", e conta propostas aguardando revisao. A checagem 
 misturada com os backups .antes_*, que ninguem lia.
 LIMITE: a regra e escrita, nao trava. Se o agente roda como mateus, ele PODE editar; a vigilancia diaria e o
 que pega. A trava de verdade seria o agente rodar como usuario proprio sem escrita na pasta (ver usuario kimi).
+22/11 09h20, decisao de Mateus: os 3 PDFs ilegiveis (freight route Cullinane/Toy TRE 2000, Edinburgh Transport
+Policy 2002, HSM-1S) FICAM COMO ESTAO, catalogados pelo nome e fora da busca. Nao ha versao aberta legal (busca
+web 22/11). Alteracao do Kimi de 00:31 revisada e aprovada (commit 6eca156).
