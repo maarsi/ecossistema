@@ -4021,3 +4021,8 @@ Indexacao (bin/indexar_acervo_v2.sh) lancada 07:07, log ~/.claude_jobs/indexar_a
    C socioeconomico 13, D escrita 5, E provavelmente alheios 14).
 CORRECOES ao relatorio da manha: item 3 NAO estava fechado (faltam nemotron-ocr e PaddleOCR-VL); sao 3 e nao 4
 os PDFs a substituir (dr08 so precisa de dpi menor); indexacao fase 1 leva 20 a 29 s/doc, ~10 a 13 h.
+fora_de_escopo DECIDIDO (22/11 08h50): grupos A, B e C reclassificados (43 docs, origem revisao_manual, arquivo
+~/base_conhecimento/revisao_mateus_v2.jsonl); D e E (19) ficam na base com rotulo fora_de_escopo; NENHUMA exclusao.
+ATENCAO INDEXACAO: os 13 do grupo C foram para economia_avaliacao_regulacao DEPOIS de essa colecao ser indexada
+(08:24). Ao fim da fase 1, rodar de novo so essa colecao (o indice e incremental). NAO editar indexar_acervo_v2.sh
+enquanto roda: o bash le o roteiro aos poucos e a edicao corrompe a execucao.
