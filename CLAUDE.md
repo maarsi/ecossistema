@@ -4104,3 +4104,14 @@ consultar_papel (raciocinio-nuvem, redacao-nuvem, visao-nuvem com imagem) e kimi
 PARADA UNICA, depois da indexacao, com o Claude Desktop FECHADO: copiar mcp/windows/ollama_remote_server.py
 (aposentadoria + consultar_acervo_referencias) para C:\TransportMCP\, reabrir e conferir pelo ESQUEMA que as 4
 sumiram e a nova apareceu. Conferir sha256 normalizado (tr -d '\r') no destino antes de reabrir.
+
+## PENDENCIA 5 (22/11/2026 09h40): VRAM DO nemotron-ocr E DO PaddleOCR-VL, COM A GPU DISPUTADA
+bench/vram_ocr.py, paginas reais do DER-PR (1489 x 2105 px), um processo por modelo:
+  nemotron-ocr-v1 (env_extracao): carga 6,2 s; pico do torch 1.822 MB; 1a pagina 8,9 s, depois 0,58 s/pagina
+    (TETO, GPU disputada). Cabe folgado ao lado de tudo.
+  PaddleOCR-VL pelo transformers (env_nemotron_parse): processo chegou a 10.138 MB no nvidia-smi e NAO terminou
+    4 paginas em 15 min (cortado pelo timeout). O proprio cartao avisa: o caminho transformers e para ELEMENTO
+    recortado (tabela, formula), nao pagina inteira; pagina inteira e o pipeline oficial do PaddlePaddle, que nao
+    esta instalado. Pagina inteira como imagem unica gera tokens visuais demais. NAO serve assim; so por recorte.
+Nota de instrumento: no nemotron-ocr o NVML do fim (1.156 MB) ficou ABAIXO do pico do torch (1.822 MB), porque o
+NVML le o instante final e o torch o pico. Para dimensionar, vale o PICO.

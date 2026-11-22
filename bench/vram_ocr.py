@@ -2,13 +2,16 @@
 Medida feita COM A GPU DISPUTADA pela indexacao do acervo: memoria do processo (NVML) e pico do torch valem;
 latencia e TETO, nao numero de regime. Uso: python vram_ocr.py nemotron-ocr|paddleocr-vl <n_paginas>"""
 import json, sys, time, glob, os, statistics as st
-import torch, pynvml
+import torch, subprocess
 from PIL import Image
 nome, n = sys.argv[1], int(sys.argv[2])
-pynvml.nvmlInit(); h = pynvml.nvmlDeviceGetHandleByIndex(0)
 def mem_proc():
-    for p in pynvml.nvmlDeviceGetComputeRunningProcesses(h):
-        if p.pid == os.getpid(): return (p.usedGpuMemory or 0) / 2**20
+    # nvidia-smi pelo PID, e nao pynvml: os ambientes de bateria (env_nemotron_*) nao recebem pacote novo.
+    out = subprocess.run(["nvidia-smi", "--query-compute-apps=pid,used_memory", "--format=csv,noheader,nounits"],
+                         capture_output=True, text=True).stdout
+    for l in out.splitlines():
+        pid, mb = [x.strip() for x in l.split(",")]
+        if int(pid) == os.getpid(): return float(mb)
     return float("nan")
 pags = sorted(glob.glob("/home/mateus/ecossistema/bench/derpr/paginas/p*.png"))[:n]
 torch.cuda.reset_peak_memory_stats(); t0 = time.time()
