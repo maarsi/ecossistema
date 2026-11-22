@@ -23,7 +23,10 @@ def roteiro(jobs):
     f = " ".join(FLAGS)
     # TESSDATA_PREFIX: os notebooks nao tem osd.traineddata no sistema, e --rotate-pages exige.
     # Medido em 21/11/2026: sem ele, codigo 7 em 4 de 4. Instalado em ~/tessdata sem sudo.
-    return f"""set -u; export TESSDATA_PREFIX=$HOME/tessdata; cd ~/lote/ocr; mkdir -p out; : > lote.log
+    # TMPDIR no DISCO: no Fedora o /tmp e tmpfs com cota, e o OCRmyPDF grava ali as imagens de
+    # 300 dpi de cada pagina. Medido em 22/11/2026: livros de 600 a 1.000 paginas estouravam a cota
+    # ("OSError: Disk quota exceeded", codigo 15) depois de 14 a 23 minutos de processamento.
+    return f"""set -u; export TESSDATA_PREFIX=$HOME/tessdata TMPDIR=$HOME/lote/tmp; mkdir -p $HOME/lote/tmp; cd ~/lote/ocr; mkdir -p out; : > lote.log
 for p in in/*.pdf; do n=$(basename "$p" .pdf); t0=$(date +%s)
   ~/venv_lote/bin/ocrmypdf {f} --jobs {jobs} "$p" "out/${{n}}_ocr.pdf" >> erros.log 2>&1; rc=$?
   if [ $rc -eq 6 ]; then ~/venv_lote/bin/ocrmypdf {f} --jobs {jobs} --force-ocr "$p" "out/${{n}}_ocr.pdf" >> erros.log 2>&1; rc=$?; fi

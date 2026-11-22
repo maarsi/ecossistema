@@ -3948,3 +3948,16 @@ mascarar; papel sem reserva identico. redacao-nuvem passou a deepseek-flash, res
 gemini-4-argon e nemotron-3-ultra, por medicao na suite NOVA bench/suite_redacao.py (o papel nunca
 havia sido medido em redacao). Resultados no campo 'teste' do papel. Suite no TETO: mede obediencia
 as regras de Mateus, nao qualidade de prosa.
+
+### OCR NOS NOTEBOOKS: O /tmp DO FEDORA TEM COTA (22/11/2026, 04h)
+Das falhas de codigo 15 do lote, parte era PDF marcado (Tagged PDF, resolvido com --force-ocr) e
+parte era "OSError: Disk quota exceeded": no Fedora o /tmp e tmpfs com cota, e o OCRmyPDF grava ali
+as imagens de 300 dpi; livro de 600 a 1.000 paginas estoura no meio, depois de 14 a 23 minutos.
+ERRO MEU: chamei TODAS as falhas de "PDF marcado" pela contagem geral do log, sem ler o erro
+documento a documento; a refacao com --force-ocr falhou de novo nos 4 do geneve, e so ai li a causa.
+Corrigido na ferramenta: o roteiro remoto do ocr_lote.py exporta TMPDIR=$HOME/lote/tmp.
+REGRA: erro de lote se le POR ITEM antes de propor remedio; a contagem agregada mistura causas.
+Arquivos do acervo que nenhuma ferramenta abre (substituir pela fonte): 'Identifying in ̄uential
+attributes in freight route.pdf' tem 0 BYTE tambem no original do D:; HSM-1S.pdf e 'Using
+accessibility measures ... Edinburgh and the Lothians.pdf' tem cabecalho de PDF valido e estrutura
+danificada (PyMuPDF e pikepdf recusam).
