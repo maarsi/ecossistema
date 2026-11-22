@@ -4009,3 +4009,15 @@ Indexacao (bin/indexar_acervo_v2.sh) lancada 07:07, log ~/.claude_jobs/indexar_a
 - 22/11 07:25, 12 h depois do inicio: inferencia NVIDIA ainda trava (35 s, timeout de leitura), DeepSeek 0,9 s e
   Moonshot 2,0 s respondendo. Leitura vigente: estrangulamento por modelo na conta gratuita, nao queda do
   provedor. redacao-nuvem JA tem titular DeepSeek com reservas Google e NVIDIA desde a madrugada.
+
+## DECISOES DE MATEUS, 22/11/2026 08h45
+1. redacao-nuvem: MANTER deepseek-flash como titular, reservas gemini-4-argon e nemotron-3-ultra.
+2. Indice do acervo: SO TEXTO com OCR por agora. A camada visual (embed-vl, ~23 h de GPU) fica para quando
+   houver teste em mais de um documento; o resultado de um unico anuario nao decide arquitetura.
+3. Bloco II: AUTORIZADOS (a) bateria VRPTW cuOpt x OR-Tools nas instancias de Solomon e (b) Overture Maps
+   (POI e edificacoes por zona via DuckDB, licenca conferida antes de uso). NAO autorizado agora: braco J.
+4. fora_de_escopo: Claude pre-agrupa e Mateus decide por grupo. Arquivo
+   D:\95 - TEMP\taxonomia_v2\fora_de_escopo_grupos.xlsx, 5 grupos (A comportamental 20, B metodos 10,
+   C socioeconomico 13, D escrita 5, E provavelmente alheios 14).
+CORRECOES ao relatorio da manha: item 3 NAO estava fechado (faltam nemotron-ocr e PaddleOCR-VL); sao 3 e nao 4
+os PDFs a substituir (dr08 so precisa de dpi menor); indexacao fase 1 leva 20 a 29 s/doc, ~10 a 13 h.
