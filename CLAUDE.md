@@ -2965,11 +2965,18 @@ que depende de renderizador vira linha ilegivel na janela de contexto.
     OCR           cadeia completa nas tres Linux, verificada por funcao
     r5py 1.1.7 e r5r 2.5.0 instalados, confrontados e equivalentes no tempo de viagem
 
-  PENDENCIAS ABERTAS, todas de DADO e nenhuma de infraestrutura:
-    1. OT TRANS com vigencia compativel com a dos demais feeds (pedido a SEMOB).
-    2. agency_id unico por operador no GTFS da RMS (pedido a SEMOB; ha remendo nosso).
-    3. Conferir onde estao RMS_GTFS_MUNICIPAL_SUNT2024.zip e RMS_GTFS_COMPLEMENTO.zip,
-       citados na nota tecnica de 24/10 e nao localizados em /media nem em /mnt.
+  PENDENCIAS DE DADO DO GTFS DA RMS: TODAS FECHADAS EM 14/11/2026, por decisao do
+  coordenador registrada em 04.7 - Dados SEMOB/Adendo_Integridade_GTFS_2026-11-14.md.
+  (Este bloco ficou desatualizado ate 21/11 e fez a fila de 21/11 propor de novo um pedido a
+  SEMOB que ja havia sido DECIDIDO nao fazer. Decisao de projeto registrada so na pasta do
+  projeto precisa vir para ca tambem.)
+    1. OT TRANS e agency_id: NAO sera enviado oficio a SEMOB. Os defeitos sao DECLARADOS nos
+       produtos (secao 3 do adendo). O remendo de agency_id e nosso e se declara como tal.
+    2. Safra municipal de referencia do Projeto Basico: SUNT mai/24. A SEMOB nov/25 e o
+       ssa_gtfs ficam como fonte complementar (headway do metro, tarifa declarada).
+    3. Os dois zips estao em 13 - Inventario e Analises/Analises_Rede_2026-10/Export_Visum/.
+       A nota de 24/10 cita a pasta como '13 - Inventario e Diagnostico', nome que nao existe:
+       por isso a busca de 13/11 nao achou.
 
 
 ===============================================================================
@@ -3848,3 +3855,74 @@ RESSALVA: os tres em 4/4 = TETO. Prova o CANAL, nao ordena leitores de grafico.
 PAPEIS. Novo visao-nuvem (deepseek-flash, por latencia; reservas medidas com o mesmo
 acerto: gemini-4-argon e kimi-k3, ou seja, TEM provedor alternativo, ao contrario de
 redacao-nuvem). doc-longo-argon passou a declarar visao.
+
+
+================================================================================
+21-22/11/2026 (madrugada, sem Mateus presente) - TAXONOMIA V2 E A FILA
+================================================================================
+
+FERROVIA CLASSIFICADA COMO RODOVIA, E A CAUSA RAIZ. No catalogo v2, os 31 documentos ISF do
+DNIT (Instrucao de Servico FERROVIARIA) sairam 16 como infraestrutura_rodoviaria_pavimentos.
+Descoberto pelo par secundario dominante rodoviaria -> modos_ferro (18 casos): a TERCEIRA
+passada acertava e a primeira errava. Conferido no TEXTO: 6 ocorrencias de "ferrovi", zero de
+rodovia. Duas camadas de causa:
+  1. a descricao da classe certa JA dizia "inclusive DNIT ISF" e perdeu, porque a classe errada
+     coincidia em quatro termos do titulo (projeto geometrico, drenagem, terraplenagem, obra de
+     arte). DESCRICAO QUE INCLUI NAO VENCE DESCRICAO QUE COINCIDE MAIS: precisa EXCLUIR.
+  2. mais funda: os 31 estao em '3 - Ferrovias/DNIT ISF/' e o prompt do catalogo recebe so o
+     NOME do arquivo, nunca o caminho. A evidencia mais forte estava fora do prompt.
+Correcao medida, taxonomia antiga contra nova, mesmos documentos e processo: ISF 14/31 -> 31/31;
+trilho urbano e frete ferroviario 7/7 nas duas (a excecao metro/VLT -> transporte_publico_tpc
+foi acrescentada ANTES de medir esse braco, porque a regra 'o modo decide' podia puxa-los).
+REGRA NOVA: classificador que descarta o caminho da pasta descarta evidencia; quando o acervo
+tem pastas tematicas, o caminho entra no prompt. Na v2 entrou como regra de pasta da propria
+especificacao, aplicada depois, registrada em origem_classificacao.
+
+O BRACO DE CONTROLE ESTAVA CONTAMINADO, duas vezes na mesma noite:
+  - "rodovia genuina" foi selecionado por ausencia de 'railway' no texto; entraram manuais de
+    'railroad' e 'track maintenance'. A queda aparente 11/12 -> 9/12 eram CORRECOES.
+  - "trilho urbano" foi selecionado por 'metro' no nome e casou com Metropolis-Hastings e
+    Regiao Metropolitana. Declarados invalidos ANTES de ver o resultado deles.
+LICAO: selecao de controle por palavra-chave tem de ser lida a mao antes de rodar. Controle que
+voce nao leu nao e controle.
+
+ORDEM DAS PROPRIEDADES NO ESQUEMA JSON E DECISAO DE PROJETO. Com decodificacao restrita o modelo
+emite as chaves na ordem do esquema. Classificacao so por caminho+nome, 40 documentos com texto,
+referencia = classificacao pelo texto (concordancia, nao acerto), uma passada:
+    motivo PRIMEIRO  16/40   classe generica demanda_4sm_geral em  8
+    motivo ULTIMO    12/40   classe generica demanda_4sm_geral em 19
+O sinal forte e o COLAPSO na classe generica, nao a diferenca de 4: obrigado a escolher antes de
+pensar, o modelo despeja metade na classe mais vaga. Regra: campo de raciocinio vem ANTES do
+rotulo em todo esquema. (Conferir: detectar_secundaria do catalogo tem 'motivo' depois.)
+E O ACHADO DE PRODUTO: classificar so pelo nome concorda com o texto em 40%. Rotulo por nome de
+arquivo e pouco mais que palpite; vale so como recuo quando nao ha texto nenhum.
+
+ITEM 1 FECHADO (registrado acima). ITEM 2: JA ESTAVA MEDIDO em 12/11, braco D da bateria do
+DER-PR, rodado LOCALMENTE. A fila dizia que dependia do item 1: falso. Faltava a fusao, feita
+agora com pre-registro (ADENDO_08) e resultado (ADENDO_09): RRF texto+embed-vl k=60 da
+@1 42,9% e @5 83,3% contra 50,0% e 75,0% do texto. Criterio pre-registrado NAO atendido. O custo
+de manter os dois indices e TEMPO de GPU (~0,41 s/pag no embed-vl, ~23 h para o acervo), nao
+armazenamento. Decisao da arquitetura do indice: de Mateus; o padrao segue texto com OCR.
+
+ITEM 3: baixados e com licenca lida no CARTAO (NVIDIA Open Model License, "ready for commercial
+use"): nemotron-table-structure-v1, page-elements-v3, graphic-elements-v1, nemotron-ocr-v1, e
+PaddleOCR-VL (Apache 2.0). Ambiente isolado ~/env_extracao (torch 2.15+cu132, sm_120).
+Medido, um processo por modelo, 8 paginas do DER-PR, GPU DISPUTADA com o catalogo (latencia e
+teto): os tres detectores YOLOX, 54,2 M parametros cada, ~700 MB de VRAM do processo pelo NVML
+(445 MB de pico do torch), 0,08 a 0,11 s por pagina. Os tres juntos cabem em ~2,1 GB.
+
+ITEM 10: JA ESTAVA FECHADO em 14/11 (ver o bloco de pendencias do GTFS, corrigido nesta data).
+
+OCR DOS 141 SEM TEXTO, distribuido. 24.306 paginas divididas pela capacidade medida: workstation
+9.714, geneve 7.771, fedora/Zurich 6.799. bin/ocr_lote.py grava no cache do converter.py com a
+MESMA chave, e o converter agora REAPROVEITA PDF ja processado. Idioma passou a por+eng (o acervo
+e 73% ingles). O ensaio com 6 documentos pegou dois defeitos antes do lote:
+  - notebooks sem osd.traineddata, que --rotate-pages exige: codigo 7 em 4 de 4. O teste de OCR de
+    13/11 passou porque NAO usava essa flag. TESTE QUE NAO USA A FLAG DE PRODUCAO NAO VALIDA A
+    PRODUCAO. Resolvido sem sudo: ~/tessdata do usuario e TESSDATA_PREFIX.
+  - TESSDATA_PREFIX substitui o diretorio INTEIRO, inclusive configs/hocr: codigo 9. Copiado o
+    tessdata completo do sistema mais o osd.
+
+RECAIDA EM ERRO JA REGISTRADO: encadeei um job com 'while pgrep -f teste_ferrovia.py', e a linha
+de comando do proprio bash -c contem esse texto. O pgrep casou consigo mesmo e a espera nunca
+terminaria; perdi 9 minutos. Esperar por PID, ou usar o padrao '[t]este_ferrovia.py'.
