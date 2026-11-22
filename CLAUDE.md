@@ -4057,7 +4057,7 @@ resultado bench/resultados/<data>_vrptw_cuopt_ortools.jsonl. Duracao estimada: 5
 
 ## REGRA (22/11/2026): NUNCA `git commit -a` NESTE REPOSITORIO
 Em 22/11 07:26 um `git commit -qam` levou junto bin/buscar_acervo.py e bin/indexar_acervo.py, alterados em
-22/11 00:31 por OUTRA sessao (nao por Mateus nem pela sessao que commitou). Desfeito no commit d5aca5e: o
+22/11 00:31 por OUTRA sessao, segundo Mateus o Kimi Desktop (nenhum job da ponte MCP tocou esses arquivos entre 00:20 e 00:45). Desfeito no commit d5aca5e: o
 repositorio voltou a versao anterior e as alteracoes ficaram intactas no disco, fora do versionamento, como
 estavam. A pasta e compartilhada por varios agentes; `-a` versiona trabalho alheio sem ninguem ver.
 Regra: `git add <arquivo>` explicito, e `git status --short` antes de todo commit.
