@@ -4061,3 +4061,14 @@ Em 22/11 07:26 um `git commit -qam` levou junto bin/buscar_acervo.py e bin/index
 repositorio voltou a versao anterior e as alteracoes ficaram intactas no disco, fora do versionamento, como
 estavam. A pasta e compartilhada por varios agentes; `-a` versiona trabalho alheio sem ninguem ver.
 Regra: `git add <arquivo>` explicito, e `git status --short` antes de todo commit.
+
+## REGRA DE MATEUS (22/11/2026): OUTROS AGENTES PROPOEM, O CLAUDE REVISA E APLICA
+Kimi Desktop, Kimi Code e qualquer agente que nao seja a sessao do Claude responsavel NAO editam ~/ecossistema.
+Gravam proposta em /mnt/nvme_lexar/propostas_ecossistema/<data>_<agente>_<assunto>/ (LEIA_ME.md + arquivo
+.novo ou .patch), conforme o LEIA_ME.txt de la. O Claude revisa, testa e aplica, ou recusa com REVISAO.md.
+Avisos aos agentes em AGENTS.md (o Kimi Code procura CLAUDE.md OU AGENTS.md; medido em 21/11).
+VIGILANCIA: bin/saude.py (c_git) agora separa "codigo rastreado alterado fora de commit", com os NOMES dos
+arquivos, de "arquivos novos", e conta propostas aguardando revisao. A checagem antiga so dava uma contagem
+misturada com os backups .antes_*, que ninguem lia.
+LIMITE: a regra e escrita, nao trava. Se o agente roda como mateus, ele PODE editar; a vigilancia diaria e o
+que pega. A trava de verdade seria o agente rodar como usuario proprio sem escrita na pasta (ver usuario kimi).

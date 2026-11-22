@@ -342,10 +342,22 @@ def c_syncthing():
 
 
 def c_git():
-    rc, out = sh("cd %s && git status --porcelain | wc -l" % (RAIZ,))
-    sujo = int(out) if out.strip().isdigit() else -1
-    anota("git", "arvore limpa", OK if sujo == 0 else AVISO, "%d arquivos alterados" % sujo,
-          "" if sujo == 0 else "cd ~/ecossistema && git status")
+    rc, out = sh("cd %s && git status --porcelain" % (RAIZ,))
+    linhas = [l for l in out.splitlines() if l.strip()]
+    # split e nao l[3:]: sh() apara a saida e come o espaco inicial da 1a linha (" M .gitignore")
+    rastreados = [l.split(None, 1)[1] for l in linhas if not l.startswith("??")]
+    novos = [l.split(None, 1)[1] for l in linhas if l.startswith("??")]
+    # Codigo rastreado alterado e nao commitado: ou e trabalho em curso desta sessao, ou e edicao de OUTRO
+    # agente, o que a regra de 22/11/2026 proibe (propostas vao para /mnt/nvme_lexar/propostas_ecossistema).
+    anota("git", "codigo alterado fora de commit", OK if not rastreados else AVISO,
+          "nenhum" if not rastreados else ", ".join(rastreados[:6]),
+          "" if not rastreados else "conferir AUTORIA antes de commitar; nunca git commit -a")
+    anota("git", "arquivos novos nao versionados", OK if len(novos) < 40 else AVISO, "%d" % len(novos),
+          "" if len(novos) < 40 else "cd ~/ecossistema && git status --short | grep '^??'")
+    rc, out = sh("ls -A /mnt/nvme_lexar/propostas_ecossistema 2>/dev/null | grep -v LEIA_ME | wc -l")
+    np_ = int(out) if out.strip().isdigit() else 0
+    anota("git", "propostas de outros agentes", OK if np_ == 0 else AVISO, "%d aguardando revisao" % np_,
+          "" if np_ == 0 else "ls /mnt/nvme_lexar/propostas_ecossistema")
     rc, out = sh("cd %s && git rev-list --count @{u}..HEAD 2>/dev/null" % (RAIZ,))
     n = int(out) if out.strip().isdigit() else 0
     anota("git", "empurrado", OK if n == 0 else AVISO, "%d commits locais a enviar" % n,
