@@ -20,7 +20,11 @@ RAIZ_ECO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ_ECO / "bin"))
 import llm  # noqa: E402
 
-CFG = json.loads((RAIZ_ECO / "config" / "subareas_transportes.json").read_text(encoding="utf-8"))
+# TAXONOMIA PARAMETRIZAVEL. A v1 agregava demais: 651 documentos (36%) caiam num unico
+# rotulo. A v2, especificada por Mateus em 21/11/2026, tem 22 classes. Trocar por variavel de
+# ambiente em vez de editar o codigo mantem as duas rodadas reproduziveis e comparaveis.
+TAXONOMIA = os.environ.get("TAXONOMIA_ACERVO", "subareas_transportes.json")
+CFG = json.loads((RAIZ_ECO / "config" / TAXONOMIA).read_text(encoding="utf-8"))
 SUB, NAT = CFG["subareas"], CFG["naturezas"]
 PAG_INICIO, MAX_CHARS = 3, 6000
 
@@ -39,7 +43,11 @@ ESQUEMA = {
         "idioma": {"type": "string"},
         "natureza": {"type": "string", "enum": list(NAT)},
         "subarea_principal": {"type": "string", "enum": list(SUB)},
-        "subarea_secundaria": {"type": ["string", "null"], "enum": list(SUB) + [None]},
+        # ATE DUAS secundarias, porque documento tecnico cruza dominio com frequencia
+        # (escolha modal em BRT; desenho de experimento de preferencia declarada). Array com
+        # maxItems fecha isso por construcao; na saida viram uma string separada por ";".
+        "subarea_secundaria": {"type": "array", "items": {"type": "string", "enum": list(SUB)},
+                               "maxItems": 2},
         "confianca": {"type": "string", "enum": ["alta", "media", "baixa"]},
     },
     "required": ["titulo", "autores", "ano", "veiculo", "idioma", "natureza",
@@ -156,34 +164,12 @@ INICIO DO DOCUMENTO:
 
 FIM DO DOCUMENTO.
 
-CONFIRA ANTES DE RESPONDER. Estas verificacoes vem depois do texto de proposito, e nesta
-ordem de proposito. MEDIDO em 18/11/2026, qwen3:14b, Codigo de Transito Brasileiro, 3 execucoes
-por variante: regra antes do documento, 3 de 3 erros; a mesma regra depois do documento mas
-seguida de outra regra, 3 de 3 erros; a mesma regra como ULTIMA linha do prompt, 3 de 3 acertos.
-Vale a ULTIMA instrucao. Quem editar este prompt deve manter a regra de escopo no fim.
+CONFIRA ANTES DE RESPONDER. Estas verificacoes vem depois do texto de proposito, e nesta ordem
+de proposito. MEDIDO em 18/11/2026, qwen3:14b: regra antes do documento, 0 de 3 acertos; depois
+do documento mas seguida de outra regra, 0 de 3; como ULTIMA do prompt, 3 de 3. Vale a ULTIMA
+instrucao. Quem editar isto mantem a regra de escopo no fim.
 
-A. O estudo modela a ESCOLHA do individuo (escolha modal, de destino ou de rota por
-   comportamento; preferencia declarada ou revelada; logit; probit; variavel latente; valor do
-   tempo; disposicao a pagar)? Entao e demanda_escolha, ainda que o texto fale de trafego, de
-   onibus ou de rodovia. trafego_capacidade e so para fluxo, capacidade de via, intersecao,
-   semaforo e nivel de servico, nao para comportamento do usuario.
-
-B. Metodo estatistico APLICADO a transportes vai para a subarea do transporte.
-   metodos_quantitativos e so para livro ou texto de metodo sem aplicacao a transportes.
-
-C. Mapa, anexo, folheto ou apresentacao de orgao de transportes se classifica pelo OBJETO.
-   A forma vai no campo natureza; ela nunca decide a subarea.
-
-D. fora_de_escopo e sinalizacao para revisao, nunca exclusao, e so cabe quando o documento
-   for de outro dominio por inteiro, como manual de linguagem de programacao, gramatica,
-   historia geral ou psicologia clinica. Todo fora_de_escopo passa por uma segunda pergunta
-   antes de valer, entao nao force a barra para evitar usa-lo.
-
-E. ULTIMA VERIFICACAO, A QUE MAIS ERRA: este documento e lei, norma, resolucao, decreto ou
-   regulamento? Entao classifique pelo OBJETO QUE ELE REGULA, e NUNCA como fora_de_escopo por
-   ser juridico. Codigo de Transito Brasileiro, lei de mobilidade urbana, Estatuto da Cidade,
-   resolucao do CONTRAN ou da ANTT, norma da ABNT, estudo de impacto de vizinhanca e lei de
-   protecao de dados aplicada a pesquisa de campo sao todos DENTRO do escopo.
+{regras}
 """
 
 
@@ -259,6 +245,80 @@ def confirmar_escopo(txt, nome, titulo, modelo):
     return None, (d.get("motivo") or "")[:120]
 
 
+# ----------------------------------------------------------------------------------
+# TERCEIRA PASSAGEM: SUBAREA SECUNDARIA
+# MEDIDO em 21/11/2026, controle de 30 documentos com a taxonomia v2: a regra de secundaria,
+# escrita como item D de uma lista de cinco no fim do prompt, foi obedecida ZERO vezes. Nao e
+# teimosia do modelo: a regra E vem depois dela, e vale a ULTIMA instrucao. Entre os 30 havia
+# casos inequivocamente duplos ("trip generation, distribution and mode choice"; "stated
+# preference of freight forwarders modal choice") e todos sairam com secundaria vazia.
+# Em vez de brigar com a posicao, a decisao virou chamada propria, com pergunta unica, que e a
+# mesma arquitetura que consertou a decisao de escopo em 18/11.
+PROMPT_SECUNDARIA = """Este documento ja foi classificado. A subarea principal dele e:
+    {principal}
+
+Titulo: {titulo}
+Arquivo: {nome}
+
+INICIO DO DOCUMENTO:
+{texto}
+
+FIM DO DOCUMENTO.
+
+PERGUNTA: SUPONHA que a subarea "{principal}" nao existisse. Em qual das subareas abaixo voce
+classificaria este documento? Escolha a melhor, e diga com que confianca.
+
+Use `alta` SOMENTE se o documento tratar desse segundo assunto de verdade, a ponto de quem
+procurasse por ele ficar satisfeito de encontrar este documento aqui.
+Use `baixa` quando for a menos ruim das opcoes, que e o caso mais comum: a maioria dos
+documentos tem UM assunto, e qualquer segunda classe sera so uma aproximacao.
+
+SUBAREAS (a principal foi removida da lista de proposito):
+{subareas}"""
+
+# ESCOLHA FORCADA COM CONFIANCA, e nao pergunta de sim ou nao.
+# MEDIDO em 21/11/2026, mesma amostra aleatoria de 30 documentos, tres formulacoes:
+#     regra enterrada numa lista de cinco, no fim do prompt ......  0% de preenchimento
+#     chamada propria pedindo "cruza tambem?", com exemplos ...... 80%, e 57% com duas
+#     chamada propria com porta booleana `assunto_unico` .........  0%
+# Ou seja: o modelo NAO estava julgando, estava seguindo a inclinacao de quem perguntou. Tres
+# formulacoes, tres respostas extremas. Perguntar "cruza?" convida a dizer sim; perguntar "e um
+# assunto so?" convida a dizer sim tambem. A escolha FORCADA remove o convite: ele tem que
+# escolher alguma, e o que filtra nao e mais a vontade dele de agradar, e a confianca declarada.
+# So `alta` vira secundaria; `media` e `baixa` sao descartadas e ficam registradas no motivo.
+ESQUEMA_SECUNDARIA = {
+    "type": "object",
+    "properties": {
+        "subarea": {"type": "string"},
+        "confianca": {"type": "string", "enum": ["alta", "media", "baixa"]},
+        "motivo": {"type": "string"},
+    },
+    "required": ["subarea", "confianca", "motivo"],
+}
+
+
+def detectar_secundaria(txt, nome, titulo, principal, modelo):
+    """Devolve (lista com ate uma subarea, motivo). Lista vazia e o caso mais comum."""
+    opcoes = {k: v for k, v in SUB.items() if k not in ("fora_de_escopo", principal)}
+    esquema = dict(ESQUEMA_SECUNDARIA)
+    esquema["properties"] = dict(esquema["properties"])
+    esquema["properties"]["subarea"] = {"type": "string", "enum": sorted(opcoes)}
+    pedido = PROMPT_SECUNDARIA.format(
+        principal=principal, titulo=titulo or "?", nome=nome, texto=txt,
+        subareas="\n".join("  %-36s %s" % (k, v) for k, v in opcoes.items()))
+    ctx = 8192 if len(pedido) < 18000 else 16384
+    bruto, _, _ = llm.chamar_local(modelo, pedido, ctx, 300, 0.1, esquema=esquema, pensar=False)
+    try:
+        d = json.loads((bruto or "").strip())
+    except Exception:
+        return [], "erro_3a_passagem"
+    sa, conf = d.get("subarea"), d.get("confianca")
+    motivo = "%s (%s): %s" % (sa, conf, (d.get("motivo") or "")[:90])
+    if conf == "alta" and sa in SUB and sa != principal:
+        return [sa], motivo
+    return [], motivo
+
+
 def catalogar_um(p, rel, modelo, num_ctx):
     txt, npag = primeiras_paginas(p)
     base = {"arquivo": rel, "paginas": npag, "bytes": p.stat().st_size,
@@ -276,7 +336,8 @@ def catalogar_um(p, rel, modelo, num_ctx):
     pedido = PROMPT.format(
         naturezas="\n".join("  %-24s %s" % (k, v) for k, v in NAT.items()),
         subareas="\n".join("  %-24s %s" % (k, v) for k, v in SUB.items()),
-        nome=p.name, texto=txt)
+        nome=p.name, texto=txt,
+        regras=CFG.get("regras_finais", ""))
     # num_ctx DIMENSIONADO PELO INSUMO. Sem isso o Ollama usa o padrao de 2048 e descarta
     # em silencio a maior parte do prompt, guardando so o final: o catalogo sairia do rodape
     # da terceira pagina em vez da capa. Doutrina do llm.py: nunca truncar em silencio.
@@ -296,8 +357,17 @@ def catalogar_um(p, rel, modelo, num_ctx):
         d["natureza_bruta"], d["natureza"] = d.get("natureza"), None
     if d.get("subarea_principal") not in SUB:
         d["subarea_bruta"], d["subarea_principal"] = d.get("subarea_principal"), None
-    if d.get("subarea_secundaria") not in SUB:
-        d["subarea_secundaria"] = None
+    sec = d.get("subarea_secundaria")
+    if isinstance(sec, str):
+        sec = [sec]
+    if not isinstance(sec, list):
+        sec = []
+    # secundaria nunca repete a principal nem a si mesma, e no maximo duas
+    vistas, limpas = {d.get("subarea_principal")}, []
+    for x in sec:
+        if x in SUB and x not in vistas:
+            vistas.add(x); limpas.append(x)
+    d["subarea_secundaria"] = ";".join(limpas[:2]) or None
     try:
         a = int(d.get("ano")) if d.get("ano") not in (None, "", "null") else None
         d["ano"] = a if a and 1900 <= a <= 2030 else None
@@ -310,6 +380,11 @@ def catalogar_um(p, rel, modelo, num_ctx):
             d["subarea_principal"] = sa
             d["confianca"] = "baixa"
             d["recuperado_na_2a"] = True
+    if d.get("subarea_principal") not in (None, "fora_de_escopo"):
+        sec, motivo = detectar_secundaria(txt, p.name, d.get("titulo"),
+                                          d["subarea_principal"], modelo)
+        d["subarea_secundaria"] = ";".join(sec) or None
+        d["motivo_secundaria"] = motivo
     base.update(d)
     base["status"] = "ok"
     return base

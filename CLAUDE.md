@@ -587,6 +587,57 @@ Studio Voice), calibracao quantica (ising-calibration). Fora do dominio.
 A regra nao muda por novidade de catalogo. Candidato e baixado ou apontado, passa na bateria, e
 e removido se nao vencer. Diferenca de uma tarefa entre dois modelos e empate tecnico.
 
+## TAXONOMIA v2 DO ACERVO, E UM ACHADO SOBRE PERGUNTAR A MODELO (21/11/2026)
+
+Mateus especificou uma taxonomia de 22 subareas, substituindo as 12 da v1. Motivo: a v1 agregava
+demais, com 651 documentos (36%) num unico rotulo `demanda_escolha`. A v2 separa as cinco etapas
+de demanda, destaca seguranca viaria, sustentabilidade, mobilidade ativa e acessibilidade
+arquitetonica, e da classe propria aos modos ferroviario, aeroportuario e hidroviario.
+Arquivo: `config/subareas_transportes_v2.json`, com as regras de desempate DENTRO dele, no campo
+`regras_finais`, para que prompt e taxonomia andem juntos. O classificador le a taxonomia da
+variavel `TAXONOMIA_ACERVO`, o que mantem as duas rodadas reproduziveis e comparaveis.
+
+### O ACHADO: O MODELO NAO ESTAVA JULGANDO, ESTAVA SEGUINDO A INCLINACAO DE QUEM PERGUNTOU
+Medido na MESMA amostra aleatoria de 30 documentos, quatro formulacoes da mesma pergunta sobre
+subarea secundaria:
+
+| formulacao | preenchimento |
+|---|---|
+| regra enterrada como item D de uma lista de cinco, no fim do prompt | 0% |
+| chamada propria: "alem da principal, pertence tambem a outra?", com exemplos positivos | 80%, e 57% com duas |
+| chamada propria com porta booleana `assunto_unico` e exemplos negativos | 0% |
+| escolha FORCADA: "suponha que a principal nao existisse, onde poria?", filtrada por confianca alta | 80%, com pares de qualidade visivelmente melhor |
+
+Perguntar "cruza tambem?" convida a dizer sim. Perguntar "e um assunto so?" convida a dizer sim
+tambem. As duas primeiras formulacoes mediram a MINHA inclinacao, nao o documento.
+A escolha forcada remove o convite: o modelo precisa escolher alguma classe de qualquer jeito, e
+o que filtra deixa de ser a vontade de agradar e passa a ser a confianca declarada.
+REGRA QUE FICA: **pergunta cuja resposta facil e "sim" nao mede nada.** Quando a decisao for
+binaria e o modelo tiver como adivinhar a resposta desejada, trocar por escolha forcada entre
+alternativas e usar um campo independente (confianca, ordem, justificativa) como filtro.
+
+RESSALVA HONESTA sobre o resultado adotado: o filtro de confianca descartou so 20% das escolhas,
+entao ele e filtro fraco. A coluna `subarea_secundaria` deve ser lida como "area relacionada", e
+nao como segunda casa do documento. Com 80% de preenchimento num acervo de pesquisa em
+transportes, que e transversal por natureza, isso e plausivel, e nao foi validado contra gabarito
+humano. O limiar de 40% que eu mesmo anunciei antes de medir era palpite sem dado, e os pares
+observados depois nao o sustentam: `Route choice under travel time uncertainty` com secundaria
+`demanda_escolha_discreta` e `Transit Capacity and Quality of Service` com `transporte_publico_tpc`
+sao cruzamentos reais.
+
+### OUTRO ERRO DE INSTRUMENTO, O MESMO DO DIA INTEIRO
+O primeiro conjunto de controle foi montado selecionando documentos por termos de MODELAGEM DE
+DEMANDA, que e a area mais transversal do acervo. Medir taxa de cruzamento ali e projetar para o
+acervo todo e viciar a amostra. Refeito com amostra ALEATORIA, e so entao o numero valeu.
+
+### PENDENCIA DECLARADA NA ESPECIFICACAO, QUE A ESPECIFICACAO NAO RESOLVE
+A regra B manda alocacao e escolha de rota para `redes_alocacao_equilibrio`; a regra C manda
+qualquer demanda de mercadoria para `logistica_transporte_carga`. Documento de ALOCACAO DE CARGA
+satisfaz as duas. No controle apareceu `Freight Traffic Assignment Methodology for Large-Scale
+Road-Rail Intermodal`, e o modelo escolheu logistica. Adotei a regra C como vencedora, com
+`redes_alocacao_equilibrio` como secundaria, porque a regra C foi escrita como correcao
+explicita. Fica registrado como decisao minha, a ser confirmada por Mateus.
+
 ## Licoes registradas (22/09/2026)
 - NAO usar a ferramenta MCP `consultar_modelo_local` para documentos: ela nao define num_ctx e o Ollama
   descarta cerca de metade do contexto guardando o FINAL do texto, sem aviso. Usar `bin/llm.py`.
