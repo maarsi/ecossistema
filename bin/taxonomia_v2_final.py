@@ -27,7 +27,10 @@ def jsonl(p):
 
 v1 = list(csv.DictReader(open(BC/"revisao_taxonomia_20261118.csv", encoding="utf-8-sig")))
 v2 = jsonl(BC/"catalogo_v2.jsonl"); st = jsonl(BC/"sem_texto_v2.jsonl"); co = jsonl(BC/"correcoes_v2.jsonl")
-oc = jsonl(BC/"catalogo_ocr_v2.jsonl")    # classificacao PELO TEXTO do OCR de 21/11 (os sem texto)
+oc = jsonl(BC/"catalogo_ocr_v2.jsonl")
+# Decisoes de Mateus sobre a v2 (a revisao da v1 de 18/11 fica como base; esta camada vence):
+# uma linha por arquivo com REVISAO_subarea, REVISAO_excluir e REVISAO_nota.
+rm = jsonl(BC/"revisao_mateus_v2.jsonl") if (BC/"revisao_mateus_v2.jsonl").exists() else {}    # classificacao PELO TEXTO do OCR de 21/11 (os sem texto)
 dup = {r["rel"]: r for r in json.loads((BC/"duplicatas_v2.json").read_text())["registros"]}
 assert len(v1) == 1945, len(v1)
 faltam = [r["arquivo"] for r in v1 if r["arquivo"] not in v2]
@@ -64,6 +67,8 @@ def regra_pasta(arq):
 saida = []
 for r in v1:
     a = r["arquivo"]; c = v2.get(a, {}); o = {}
+    if a in rm:
+        r = {**r, **{k: v for k, v in rm[a].items() if k.startswith("REVISAO_")}}
     o.update({"arquivo": a, "titulo": c.get("titulo") or r.get("titulo") or "",
               "autores": "; ".join(c.get("autores") or []), "ano": c.get("ano") or "",
               "veiculo": c.get("veiculo") or "", "idioma": c.get("idioma") or "",
