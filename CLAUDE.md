@@ -4075,3 +4075,15 @@ que pega. A trava de verdade seria o agente rodar como usuario proprio sem escri
 22/11 09h20, decisao de Mateus: os 3 PDFs ilegiveis (freight route Cullinane/Toy TRE 2000, Edinburgh Transport
 Policy 2002, HSM-1S) FICAM COMO ESTAO, catalogados pelo nome e fora da busca. Nao ha versao aberta legal (busca
 web 22/11). Alteracao do Kimi de 00:31 revisada e aprovada (commit 6eca156).
+
+## SAUDE DO WINDOWS, 22/11/2026 09h22 (item 8 da fila)
+Rodado por mcp/windows/saude_windows.bat (o clique direito em .ps1 nao gerou nada: provavel bloqueio da politica
+de execucao, que fecha a janela sem mensagem; o .bat usa -ExecutionPolicy Bypass so naquela execucao e grava a
+tela em saude_windows_console.txt). Resultado: discos, VPN (nenhuma), Tailscale, portas 22 e 11434 da Ubuntu,
+.stignore, ausencia de .env, 10 servidores MCP, pip.ini e truststore OK.
+ACHADO: SYNCTHING DA DUEBENDORF PARADO DESDE 13/11 (9 dias). A rotina de saude da Ubuntu NAO pegou porque a regra
+era "OK se ao menos 1 par conectado"; corrigida para nomear todo par fora ha mais de 1 dia. Consequencia: a copia
+sincronizada que o argon-auditor do Windows le (ARGON_CORE) esta 9 dias defasada.
+DEFEITO DO MEU INSTRUMENTO: a "prova da trava" pedia `pip install mcp --dry-run`; com o mcp instalado o pip nao tem
+o que instalar e a prova nunca sai. Trocado por `pip install "mcp>=2" --dry-run`, que a trava tem de recusar.
+Divergencia menor: mcp 1.29.0 em C:\TransportMCP e 1.29.1 em D:\TransportMCP.

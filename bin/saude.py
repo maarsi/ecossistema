@@ -22,6 +22,7 @@ NUNCA imprime valor de credencial: so impressao digital sha256 de 12 hex.
 NUNCA varre montagem de rede: todo find usa -xdev.
 NUNCA altera nada: este programa apenas OBSERVA e sugere o comando. Decisao e de Mateus.
 """
+import datetime
 import argparse, hashlib, json, os, re, socket, subprocess, sys, time
 from pathlib import Path
 
@@ -331,10 +332,31 @@ def c_syncthing():
     try:
         d = json.loads(out).get("connections", {})
         con = sum(1 for v in d.values() if v.get("connected"))
-        anota("syncthing", "dispositivos conectados", OK if con >= 1 else AVISO,
-              "%d de %d" % (con, len(d)), valor=con)
-    except Exception:
-        anota("syncthing", "api", AVISO, "resposta inesperada", "")
+        # ANTES: "OK se >= 1 conectado". Deixou a Duebendorf 9 dias fora (13 a 22/11) com tudo verde, e a
+        # copia sincronizada que o argon-auditor do Windows le ficou parada. Agora CADA par conta, pelo nome.
+        chave = "$(grep -oP '(?<=<apikey>)[^<]+' ~/.local/state/syncthing/config.xml 2>/dev/null | head -1)"
+        _, cfgd = sh('curl -s --max-time 10 -H "X-API-Key: %s" http://127.0.0.1:8384/rest/config/devices' % chave, 15)
+        _, std = sh('curl -s --max-time 10 -H "X-API-Key: %s" http://127.0.0.1:8384/rest/stats/device' % chave, 15)
+        nomes = {x["deviceID"]: x.get("name", x["deviceID"][:7]) for x in json.loads(cfgd)}
+        visto = {k: v.get("lastSeen", "") for k, v in json.loads(std).items()}
+        fora = []
+        agora = time.time()
+        for dev, v in d.items():
+            if v.get("connected"):
+                continue
+            ls = visto.get(dev, "")
+            try:
+                t = datetime.datetime.fromisoformat(ls.replace("Z", "+00:00")).timestamp()
+                dias = (agora - t) / 86400
+            except Exception:
+                dias = 999
+            if dias > 1:
+                fora.append("%s (%s)" % (nomes.get(dev, dev[:7]), "nunca" if dias > 900 else "%.0f dias" % dias))
+        anota("syncthing", "pares conectados", OK if not fora else AVISO,
+              "%d de %d" % (con, len(d)) + ("" if not fora else "; FORA HA MAIS DE 1 DIA: " + ", ".join(fora)),
+              "" if not fora else "ligar o Syncthing na(s) maquina(s) listada(s)", valor=len(fora))
+    except Exception as e:
+        anota("syncthing", "api", AVISO, "resposta inesperada: %s" % type(e).__name__, "")
     rc, n = sh("find %s/ecossistema -xdev -name '*.sync-conflict-*' 2>/dev/null | wc -l" % H)
     n = int(n) if n.strip().isdigit() else 0
     anota("syncthing", "conflitos no ecossistema", OK if n == 0 else AVISO, "%d" % n,
