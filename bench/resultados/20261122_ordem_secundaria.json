@@ -1,0 +1,365 @@
+{
+ "linhas": [
+  {
+   "arquivo": "Fundamental diagram estimation by using trajectories of probe vehicles.pdf",
+   "catalogo": "trafego_fluxo_simulacao",
+   "antiga": "trafego_fluxo_simulacao",
+   "nova": "trafego_fluxo_simulacao"
+  },
+  {
+   "arquivo": "1 - Aeroportos/150-5300-13A-chg1-interactive-201705.pdf",
+   "catalogo": "transporte_publico_tpc",
+   "antiga": "transporte_publico_tpc",
+   "nova": "transporte_publico_tpc"
+  },
+  {
+   "arquivo": "Profit maximization by a private toll road with cars and trucks.pdf",
+   "catalogo": "economia_avaliacao_regulacao",
+   "antiga": "economia_avaliacao_regulacao",
+   "nova": "economia_avaliacao_regulacao"
+  },
+  {
+   "arquivo": "Analysis of within-household effects and between-household differences in maintenance activity allocation.pdf",
+   "catalogo": "demanda_escolha_discreta",
+   "antiga": "demanda_escolha_discreta",
+   "nova": "demanda_escolha_discreta"
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/MCID/BRASIL Codigo de Transito Lei 9503_1997.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Qualitative response models.pdf",
+   "catalogo": "demanda_escolha_discreta",
+   "antiga": "demanda_escolha_discreta",
+   "nova": "demanda_escolha_discreta"
+  },
+  {
+   "arquivo": "Scale and accessibility implications for the analysis of land use-travel interaction.pdf",
+   "catalogo": "demanda_abm_comportamento",
+   "antiga": "demanda_abm_comportamento",
+   "nova": "demanda_abm_comportamento"
+  },
+  {
+   "arquivo": "Entropy in urban and regional modelling.pdf",
+   "catalogo": "metodos_quantitativos_sig",
+   "antiga": "demanda_4sm_geral",
+   "nova": "demanda_4sm_geral"
+  },
+  {
+   "arquivo": "Aliancas_Publico_Privadas_para_o_Desenvolvimento_APPDs_volume_I.pdf",
+   "catalogo": "planejamento_politica_legislacao",
+   "antiga": "planejamento_politica_legislacao",
+   "nova": null
+  },
+  {
+   "arquivo": "Accessibility and Environmental Quality Inequality in the Paris Housing Market.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/Engenharia de Tráfego/HighwaySafety/HSM/SPR-712-Final-Report.pdf",
+   "catalogo": "trafego_capacidade_sinalizacao",
+   "antiga": "trafego_capacidade_sinalizacao",
+   "nova": "trafego_capacidade_sinalizacao"
+  },
+  {
+   "arquivo": "Forecasting New Product Penetration with Flexible Substitution Patterns.pdf",
+   "catalogo": "demanda_4sm_geral",
+   "antiga": "demanda_4sm_geral",
+   "nova": "demanda_4sm_geral"
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/Engenharia de Tráfego/HCM/HCM2010/Volume 3 - Interrupted Flow/Index.pdf",
+   "catalogo": "trafego_fluxo_simulacao",
+   "antiga": "trafego_fluxo_simulacao",
+   "nova": "trafego_fluxo_simulacao"
+  },
+  {
+   "arquivo": "Disaggregate Multimodal Travel Demand Modeling Based on Road Pricing and Access to Transit.pdf",
+   "catalogo": "demanda_4sm_geral",
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/Engenharia de Tráfego/Denatran/ctb.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Design and implementation of efficient transit networks procedure, case study and validity test.pdf",
+   "catalogo": "redes_alocacao_equilibrio",
+   "antiga": "redes_alocacao_equilibrio",
+   "nova": null
+  },
+  {
+   "arquivo": "4 - Rodovias/DER-SP/RelatorioCVC-Anexo1.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Estimation of an O-D matrix from traffic counts - a review.pdf",
+   "catalogo": "redes_alocacao_equilibrio",
+   "antiga": "redes_alocacao_equilibrio",
+   "nova": "redes_alocacao_equilibrio"
+  },
+  {
+   "arquivo": "Modelling a railroad intermodal transportation system.pdf",
+   "catalogo": "modos_ferro_aero_hidro",
+   "antiga": "modos_ferro_aero_hidro",
+   "nova": null
+  },
+  {
+   "arquivo": "Recreation Demand Models with Taste Variation.pdf",
+   "catalogo": "economia_avaliacao_regulacao",
+   "antiga": "economia_avaliacao_regulacao",
+   "nova": null
+  },
+  {
+   "arquivo": "Nonlinear pricing on private roads with congestion and toll collection costs.pdf",
+   "catalogo": "redes_alocacao_equilibrio",
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Place-based versus People-based accessibility.pdf",
+   "catalogo": "demanda_abm_comportamento",
+   "antiga": "demanda_abm_comportamento",
+   "nova": null
+  },
+  {
+   "arquivo": "Parametric action decision trees incorporating continuous attribute variables into rule-based models of discrete choice.pdf",
+   "catalogo": "demanda_abm_comportamento",
+   "antiga": "demanda_abm_comportamento",
+   "nova": "demanda_abm_comportamento"
+  },
+  {
+   "arquivo": "Using simple genetic algorithms to calibrate spatial interaction model.pdf",
+   "catalogo": "redes_alocacao_equilibrio",
+   "antiga": "redes_alocacao_equilibrio",
+   "nova": null
+  },
+  {
+   "arquivo": "Emerging challenges to priced managed lanes.pdf",
+   "catalogo": "trafego_capacidade_sinalizacao",
+   "antiga": "trafego_capacidade_sinalizacao",
+   "nova": "trafego_capacidade_sinalizacao"
+  },
+  {
+   "arquivo": "TEXTO Melhores praticas em bicicletarios Sao Paulo.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Mapping accessibility in Belgium a tool for land-use and transport planning.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "0 - Arquivos_nao_cadastrados/1-s2.0-S0965856421001658-main.pdf",
+   "catalogo": "demanda_abm_comportamento",
+   "antiga": "demanda_abm_comportamento",
+   "nova": "demanda_abm_comportamento"
+  },
+  {
+   "arquivo": "Transportation Elasticities.pdf",
+   "catalogo": "economia_avaliacao_regulacao",
+   "antiga": "economia_avaliacao_regulacao",
+   "nova": "demanda_abm_comportamento"
+  },
+  {
+   "arquivo": "Impact of violations of model assumptions the role of lexicography, inconsistent choices and changing preferences in model estimation.pdf",
+   "catalogo": "demanda_4sm_geral",
+   "antiga": "demanda_4sm_geral",
+   "nova": "demanda_4sm_geral"
+  },
+  {
+   "arquivo": "Stochastic multi-modal transport network under demand uncertainties and adverse wether condition.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/Engenharia de Tráfego/PGT/Best Practices for Traffic Impact Studies.pdf",
+   "catalogo": "demanda_geracao_pgt",
+   "antiga": "demanda_geracao_pgt",
+   "nova": null
+  },
+  {
+   "arquivo": "4 - Rodovias/DNIT/DNIT manual_projeto_praticas_operacionais_publ_ipr_741.pdf",
+   "catalogo": "infraestrutura_rodoviaria_pavimentos",
+   "antiga": "trafego_capacidade_sinalizacao",
+   "nova": "trafego_capacidade_sinalizacao"
+  },
+  {
+   "arquivo": "The strategic dynamic and integrated urban land use and transport model MARS Metropolitan Activity Relocation Simulator.pdf",
+   "catalogo": "demanda_abm_comportamento",
+   "antiga": "sustentabilidade_energia_clima",
+   "nova": null
+  },
+  {
+   "arquivo": "Simultaneous modelling of multi-purpose multi-stop activity patterns and quantities consumed.pdf",
+   "catalogo": "demanda_abm_comportamento",
+   "antiga": "demanda_abm_comportamento",
+   "nova": "demanda_abm_comportamento"
+  },
+  {
+   "arquivo": "Risk uncertainty and discrete choice models.pdf",
+   "catalogo": null,
+   "antiga": "demanda_4sm_geral",
+   "nova": null
+  },
+  {
+   "arquivo": "0 - Arquivos_nao_cadastrados/1-s2.0-S1352231014006499-main.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/Engenharia de Tráfego/HighwaySafety/RISER-2006-D8 - Roadside infrastructure for safer european roads.pdf",
+   "catalogo": "infraestrutura_rodoviaria_pavimentos",
+   "antiga": "trafego_capacidade_sinalizacao",
+   "nova": "trafego_capacidade_sinalizacao"
+  },
+  {
+   "arquivo": "Turbo roundabouts design principles and safety performance.pdf",
+   "catalogo": "trafego_seguranca_viaria",
+   "antiga": "trafego_seguranca_viaria",
+   "nova": "trafego_seguranca_viaria"
+  },
+  {
+   "arquivo": "Perceived value of time for truck operators.pdf",
+   "catalogo": "demanda_escolha_discreta",
+   "antiga": "demanda_escolha_discreta",
+   "nova": "demanda_escolha_discreta"
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/Engenharia de Tráfego/HCM/HCM2010/Volume 1 - Concepts/2 - Applications.pdf",
+   "catalogo": "trafego_fluxo_simulacao",
+   "antiga": "trafego_fluxo_simulacao",
+   "nova": "trafego_fluxo_simulacao"
+  },
+  {
+   "arquivo": "Traffic forecasts ignoring induced demand a sharky fundamental for cost-benefit analyses.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Discrete-time-day-to-day-dynamic-congestion-pri_2017_Transportation-Research.pdf",
+   "catalogo": "trafego_fluxo_simulacao",
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "3 - Ferrovias/Railroad design and rehabilitation.pdf",
+   "catalogo": "modos_ferro_aero_hidro",
+   "antiga": "modos_ferro_aero_hidro",
+   "nova": "modos_ferro_aero_hidro"
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/MCID/MDR Diagnostico e benchmarking sobre onibus eletricos no contexto atual brasileiro.pdf",
+   "catalogo": "transporte_publico_tpc",
+   "antiga": "transporte_publico_tpc",
+   "nova": "transporte_publico_tpc"
+  },
+  {
+   "arquivo": "A-systematic-review-of-the-reliability-and-validity-of-_2016_Journal-of-Envi.pdf",
+   "catalogo": "economia_avaliacao_regulacao",
+   "antiga": "economia_avaliacao_regulacao",
+   "nova": null
+  },
+  {
+   "arquivo": "Empirical Mathematical Rules concerning the Distribution and Equilibrium of Population.pdf",
+   "catalogo": null,
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Analysing freight transport demand using stated preference data a survey and a research project for the friuli-venezia giulia regio.pdf",
+   "catalogo": "demanda_escolha_discreta",
+   "antiga": "demanda_escolha_discreta",
+   "nova": "demanda_escolha_discreta"
+  },
+  {
+   "arquivo": "Understanding the Potential of Variable Tolling to Smooth Congestion on Downstream Facilities.pdf",
+   "catalogo": "trafego_fluxo_simulacao",
+   "antiga": null,
+   "nova": "demanda_escolha_discreta"
+  },
+  {
+   "arquivo": "4 - Rodovias/DNIT/DNIT Manual de Drenagem de Rodovias.pdf",
+   "catalogo": null,
+   "antiga": "modos_ferro_aero_hidro",
+   "nova": null
+  },
+  {
+   "arquivo": "The maximum approximate composite marginal likelihood (MACML) estimation of multinomial probit-based unordered response choice models.pdf",
+   "catalogo": "demanda_4sm_geral",
+   "antiga": "demanda_4sm_geral",
+   "nova": null
+  },
+  {
+   "arquivo": "1 - Aeroportos/Improving the quality of demand forecasts through cross nested logit a stated choice case study of airport airline and access mode choice.pdf",
+   "catalogo": "demanda_4sm_geral",
+   "antiga": "demanda_abm_comportamento",
+   "nova": "metodos_quantitativos_sig"
+  },
+  {
+   "arquivo": "Impact of regulation on the performances of long-distance transport services A comparison of the different approaches in Sweden and Norway.pdf",
+   "catalogo": "transporte_publico_tpc",
+   "antiga": "transporte_publico_tpc",
+   "nova": null
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/MCID/MDR Relatorio da pesquisa para identificar o nivel de conhecimento sobre eletromobilidade.pdf",
+   "catalogo": "pesquisa_levantamento_dados",
+   "antiga": "pesquisa_levantamento_dados",
+   "nova": null
+  },
+  {
+   "arquivo": "The Impact of Choice Inconsistencies in Stated.pdf",
+   "catalogo": "economia_avaliacao_regulacao",
+   "antiga": "economia_avaliacao_regulacao",
+   "nova": "economia_avaliacao_regulacao"
+  },
+  {
+   "arquivo": "5 - Planejamento de Transportes/TPC/BusStopStation/busstop-designguide.pdf",
+   "catalogo": "acessibilidade_arquitetonica_nbr",
+   "antiga": "acessibilidade_arquitetonica_nbr",
+   "nova": "acessibilidade_arquitetonica_nbr"
+  },
+  {
+   "arquivo": "0 - Arquivos_nao_cadastrados/1-s2.0-S0965856418308644-main.pdf",
+   "catalogo": "economia_avaliacao_regulacao",
+   "antiga": null,
+   "nova": null
+  },
+  {
+   "arquivo": "Constructing experimental designs for discrete-choice experiments report of the ISPOR conjoint analysis experimental design good research practices task force.pdf",
+   "catalogo": "pesquisa_levantamento_dados",
+   "antiga": "pesquisa_levantamento_dados",
+   "nova": "demanda_4sm_geral"
+  },
+  {
+   "arquivo": "4 - Rodovias/Mapas de Rodovias/map_rodo_evolucao.pdf",
+   "catalogo": "metodos_quantitativos_sig",
+   "antiga": "metodos_quantitativos_sig",
+   "nova": "metodos_quantitativos_sig"
+  },
+  {
+   "arquivo": "MC Pesquisa nacional de mobilidade urbana 2018.pdf",
+   "catalogo": "metodos_quantitativos_sig",
+   "antiga": "demanda_geracao_pgt",
+   "nova": "demanda_geracao_pgt"
+  }
+ ],
+ "refazer": true
+}

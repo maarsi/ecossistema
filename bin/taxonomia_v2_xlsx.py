@@ -121,4 +121,14 @@ lista("sem_texto", lambda o: o["origem_classificacao"] in ("inferencia_caminho_t
       ["arquivo", "status", "subarea_principal", "subarea_secundaria", "confianca", "ajuste"],
       "Copia estatica. Classe PROVISORIA por caminho e nome; titulo, ano e autor nao foram inventados.")
 wb.move_sheet("taxonomia", offset=len(wb.sheetnames))
+# ---------------- leia_me (primeira aba): texto de /home/mateus/base_conhecimento/leia_me_taxonomia_v2.txt
+from pathlib import Path as _P
+_lm = _P("/home/mateus/base_conhecimento/leia_me_taxonomia_v2.txt")
+if _lm.exists():
+    wl = wb.create_sheet("leia_me", 0); wl.column_dimensions["A"].width = 160
+    for i, lin in enumerate(_lm.read_text(encoding="utf-8").splitlines(), 1):
+        c = wl.cell(i, 1, "" if lin == "#" else lin)
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        c.font = Font(name=F, bold=True, size=11) if (lin.isupper() and len(lin) > 3) else Font(name=F, size=10)
+    wb.active = 0
 wb.save(sai); print("gravado", sai, "abas:", wb.sheetnames)

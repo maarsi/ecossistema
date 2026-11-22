@@ -3961,3 +3961,16 @@ Arquivos do acervo que nenhuma ferramenta abre (substituir pela fonte): 'Identif
 attributes in freight route.pdf' tem 0 BYTE tambem no original do D:; HSM-1S.pdf e 'Using
 accessibility measures ... Edinburgh and the Lothians.pdf' tem cabecalho de PDF valido e estrutura
 danificada (PyMuPDF e pikepdf recusam).
+
+### 3a PASSADA REFEITA E O QUE A MEDICAO DISSE SOBRE A SECUNDARIA (22/11/2026, 04h45)
+bench/mede_ordem_secundaria.py, 60 documentos, regra declarada antes (refazer se |diferenca| > 10
+pontos ou concordancia < 70%): preenchimento catalogo 48/60, ordem antiga 45/60, ordem NOVA (motivo
+primeiro) 32/60; concordancia antiga x nova 28/46. Regra mandou REFAZER: bin/refaz_secundaria.py
+nos 1.751 (linha nova por documento, protocolo_secundaria registrado, a anterior guardada em
+subarea_secundaria_antes). ACHADO QUE NAO DEPENDE DA ORDEM: com o MESMO esquema, duas execucoes
+concordaram em 47/60. A secundaria e instavel por natureza; tratar como sugestao, nunca como dado.
+OCR FINAL: 137 de 141 validos. Invalidos: dr08.pdf (prancha de 1 pagina com 2.410 x 2.551 pt; a
+300 dpi o pdfium nao aloca o bitmap) e os 3 arquivos danificados ou vazios. 103 dos 141 foram
+classificados pelo texto do OCR; 38 (24 com texto insuficiente mesmo apos OCR) por caminho e nome.
+Cache de OCR em ~/ecossistema/cache/docling: 19 GB (PDF com imagem a 300 dpi; um livro deu 1,5 GB).
+Nao sincroniza (cache no .stignore). Candidato a limpeza depois da indexacao.
