@@ -24,7 +24,7 @@ def extrair(caminho):
         if ext == ".docx":
             import zipfile, re
             xml = zipfile.ZipFile(str(caminho)).read("word/document.xml").decode("utf-8", "ignore")
-            partes = re.findall(r"<w:t[^>]*>(.*?)</w:t>", xml, re.S)
+            partes = re.findall(r"<w:t(?:\s[^>]*)?>(.*?)</w:t>", xml, re.S)
             texto = " ".join(partes).replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
             return [(0, texto)]
         if ext in (".md", ".txt"):

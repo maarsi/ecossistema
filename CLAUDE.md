@@ -4006,3 +4006,6 @@ DOIS DEFEITOS PEGOS NO FECHAMENTO:
    XLSX agora forca tipo texto nas abas de dado. Regra: TODO texto vindo de modelo que vai para planilha
    passa por essa forca; o recalc so pegou porque era obrigatorio rodar.
 Indexacao (bin/indexar_acervo_v2.sh) lancada 07:07, log ~/.claude_jobs/indexar_acervo_v2.log.
+- 22/11 07:25, 12 h depois do inicio: inferencia NVIDIA ainda trava (35 s, timeout de leitura), DeepSeek 0,9 s e
+  Moonshot 2,0 s respondendo. Leitura vigente: estrangulamento por modelo na conta gratuita, nao queda do
+  provedor. redacao-nuvem JA tem titular DeepSeek com reservas Google e NVIDIA desde a madrugada.
