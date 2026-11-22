@@ -208,17 +208,38 @@ def listar_modelos() -> list[dict]:
     return saida
 
 
-def contar_tokens(texto: str, mod: str = "") -> tuple[int, str]:
+TOKENS_IMAGEM_PESSIMISTA = 4096  # [premissa] so para o RECUO; ver contar_tokens
+
+
+def _montar_contents(texto: str, imagens=None):
+    """Monta o conteudo para o SDK do Google. SEM imagem devolve a propria string, que e o
+    caminho antigo e intocado. COM imagem devolve [Part, Part, ..., texto]: a imagem vem ANTES
+    do texto pelo mesmo motivo MEDIDO que poe a instrucao no fim do prompt (vale a ultima
+    instrucao, 3 de 3 contra 0 de 3 nas outras posicoes, 18/11/2026).
+    imagens: lista de {'bytes': b'...', 'mime': 'image/png'}, como bin/llm.py monta."""
+    if not imagens:
+        return texto
+    from google.genai import types
+    return [types.Part.from_bytes(data=i["bytes"], mime_type=i["mime"]) for i in imagens] + [texto]
+
+
+def contar_tokens(texto: str, mod: str = "", imagens=None) -> tuple[int, str]:
     """Contagem REAL pela API; recuo para a estimativa pessimista de bin/llm.py.
-    Devolve (tokens, origem) com origem em {'api', 'estimado'}."""
+    Devolve (tokens, origem) com origem em {'api', 'estimado'}.
+    COM IMAGEM a contagem pela API e a unica confiavel: o custo de uma imagem em tokens depende
+    da resolucao e do ladrilhamento interno do modelo, que NAO se deduz do tamanho do arquivo.
+    Por isso o recuo cobra um teto deliberadamente alto por imagem, para errar recusando e nao
+    truncando."""
     try:
-        r = _cliente().models.count_tokens(model=modelo(mod), contents=texto)
+        r = _cliente().models.count_tokens(model=modelo(mod),
+                                           contents=_montar_contents(texto, imagens))
         n = getattr(r, "total_tokens", None)
         if isinstance(n, int) and n > 0:
             return n, "api"
     except Exception:
         pass
-    return int(len(texto) / CHARS_POR_TOKEN) + 1, "estimado"
+    n = int(len(texto) / CHARS_POR_TOKEN) + 1 + TOKENS_IMAGEM_PESSIMISTA * len(imagens or [])
+    return n, ("estimado" if not imagens else "estimado (teto por imagem)")
 
 
 def _texto_da_resposta(r) -> str:
@@ -283,8 +304,10 @@ SISTEMA = (
 
 def gerar_texto(prompt: str, sistema: str = "", mod: str = "", max_tokens: int = 4096,
                 temperatura: float = 0.2, ctx_max: int = 0, semente=None,
-                nao_sigiloso: bool = False) -> dict:
-    """Entrada generica. Usada por bin/llm.py nos papeis de nuvem do Google."""
+                nao_sigiloso: bool = False, imagens=None) -> dict:
+    """Entrada generica. Usada por bin/llm.py nos papeis de nuvem do Google.
+    imagens: lista de {'bytes', 'mime'} preparada por bin/llm.py (tipo decidido pelos bytes
+    iniciais, nao pela extensao). Sem imagem o caminho e identico ao anterior."""
     _exigir_autorizacao(nao_sigiloso)
     mod = modelo(mod)
     # Piso de saida: modelo de raciocinio consome o orcamento pensando antes de escrever, e com
@@ -292,7 +315,7 @@ def gerar_texto(prompt: str, sistema: str = "", mod: str = "", max_tokens: int =
     if max_tokens < 512:
         max_tokens = 512
     orcamento = ctx_max or CTX_PADRAO
-    tokens, origem = contar_tokens(prompt, mod)
+    tokens, origem = contar_tokens(prompt, mod, imagens)
     if tokens + max_tokens > orcamento:
         raise ArgonErro(
             f"insumo de {tokens} tokens ({origem}) mais {max_tokens} de resposta excede o "
@@ -315,7 +338,8 @@ def gerar_texto(prompt: str, sistema: str = "", mod: str = "", max_tokens: int =
     for tentativa in range(1, 4):
         try:
             r = _cliente().models.generate_content(
-                model=mod, contents=prompt, config=types.GenerateContentConfig(**cfg))
+                model=mod, contents=_montar_contents(prompt, imagens),
+                config=types.GenerateContentConfig(**cfg))
             break
         except Exception as e:
             ultimo = e

@@ -114,6 +114,75 @@ def limpar_raciocinio(txt):
 
 IMAGENS = []  # caminhos de imagem para papeis de visao (preenchido por --imagem)
 
+# Tetos de imagem. [premissa] NAO conferidos na API de nenhum provedor: sao limites LOCAIS,
+# escolhidos para recusar aqui, com mensagem que diz o que fazer, em vez de deixar o provedor
+# recusar com HTTP 400 generico ou, pior, aceitar e reescalar em silencio. Uma pagina A4 de PDF
+# rasterizada a 300 dpi em PNG fica tipicamente entre 1 e 4 MB, entao 8 MB acomoda a pagina densa
+# e barra o despejo de uma foto de camera inteira.
+TETO_IMAGEM_MB = 8          # por imagem, medida ANTES do base64
+TETO_IMAGENS_TOTAL_MB = 20  # soma DEPOIS do base64, que e o que trafega
+# [premissa] custo de uma imagem em tokens para os provedores de formato OpenAI. O valor real
+# depende da resolucao e do ladrilhamento interno de cada modelo, e nenhum dos tres declara o
+# numero numa rota consultavel. 4096 e teto alto de proposito: aqui o erro so pode ser para o
+# lado de RECUSAR, porque truncar em silencio e o que esta verificacao existe para impedir.
+# No Google NAO se usa esta constante: argon_core conta pela propria API, inclusive a imagem.
+TOKENS_POR_IMAGEM = 4096
+
+ASSINATURAS_IMAGEM = ((b"\x89PNG\r\n\x1a\n", "image/png"), (b"\xff\xd8\xff", "image/jpeg"),
+                      (b"GIF87a", "image/gif"), (b"GIF89a", "image/gif"))
+
+
+def _mime_da_imagem(dados, caminho):
+    """Tipo decidido pelo CONTEUDO, nunca pela extensao. Arquivo renomeado seria aceito pelo nome
+    e recusado la na frente, com erro que nao aponta para o nome."""
+    for assinatura, mime in ASSINATURAS_IMAGEM:
+        if dados.startswith(assinatura):
+            return mime
+    if dados[:4] == b"RIFF" and dados[8:12] == b"WEBP":
+        return "image/webp"
+    sys.exit(f"ERRO: {caminho} nao e PNG, JPEG, GIF nem WEBP pelos bytes iniciais "
+             f"({dados[:8]!r}). O tipo e decidido pelo conteudo e nao pela extensao.")
+
+
+class Imagem(dict):
+    """Dicionario com representacao CURTA. Motivo medido em 21/11/2026: a estrutura carrega os
+    bytes do arquivo e o base64, entao um print, um repr em traceback ou um log de depuracao
+    despejava centenas de milhares de caracteres (287 KB num teste de 9 casos). O conteudo
+    continua acessivel por chave; so a representacao e que nao o despeja."""
+
+    def __repr__(self):
+        return (f"<Imagem {Path(self['caminho']).name} {self['mime']} {self['mb']} MB "
+                f"base64 {len(self['b64'])} chars>")
+
+    __str__ = __repr__
+
+
+def preparar_imagens(caminhos=None):
+    """Le cada imagem UMA vez e devolve o que os dois caminhos de nuvem precisam: 'bytes' e
+    'mime' para o SDK do Google, 'b64' para o data URI do formato OpenAI. Recusa aqui, com
+    mensagem acionavel, o que o provedor recusaria com HTTP 400 sem explicar."""
+    import base64
+    saida, soma_b64 = [], 0
+    for c in (IMAGENS if caminhos is None else caminhos):
+        p = Path(c)
+        if not p.is_file():
+            sys.exit(f"ERRO: imagem nao encontrada: {p}")
+        dados = p.read_bytes()
+        mb = len(dados) / 1048576
+        if mb > TETO_IMAGEM_MB:
+            sys.exit(f"ERRO: {p.name} tem {mb:.1f} MB, acima do teto local de {TETO_IMAGEM_MB} MB "
+                     f"por imagem. Reduzir a resolucao (pagina de PDF a 150-200 dpi costuma "
+                     f"bastar para leitura de tabela) ou recortar a regiao de interesse.")
+        b64 = base64.b64encode(dados).decode()
+        soma_b64 += len(b64)
+        saida.append(Imagem(caminho=str(p), bytes=dados, b64=b64,
+                            mime=_mime_da_imagem(dados, p), mb=round(mb, 2)))
+    total = soma_b64 / 1048576
+    if total > TETO_IMAGENS_TOTAL_MB:
+        sys.exit(f"ERRO: as {len(saida)} imagens somam {total:.1f} MB ja em base64, acima do teto "
+                 f"local de {TETO_IMAGENS_TOTAL_MB} MB. Enviar em chamadas separadas.")
+    return saida
+
 
 def chamar_local(modelo, prompt, ctx, max_tokens, temperatura,
                  esquema=None, pensar=None):
@@ -144,12 +213,25 @@ def chamar_local(modelo, prompt, ctx, max_tokens, temperatura,
     return d.get("response", ""), d.get("prompt_eval_count", 0), d.get("eval_count", 0)
 
 
-def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esforco=""):
+def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esforco="",
+                 imagens=None):
+    """imagens: saida de preparar_imagens(). Sem imagem o corpo e identico ao anterior, com
+    'content' em string: nao se muda a forma da chamada de quem nao pediu imagem."""
     if provedor not in PROVEDORES_OPENAI:
         sys.exit(f"ERRO: provedor '{provedor}' desconhecido. Conhecidos: "
                  f"{', '.join(sorted(PROVEDORES_OPENAI))}.")
     p = PROVEDORES_OPENAI[provedor]
-    corpo = {"model": modelo, "messages": [{"role": "user", "content": prompt}],
+    if imagens:
+        # Formato OpenAI de mensagem multimodal: 'content' deixa de ser string e vira lista de
+        # partes. A imagem vem ANTES do texto pelo mesmo motivo medido que poe a instrucao no fim
+        # do prompt. Vai como data URI e nao como URL remota: a imagem esta em disco aqui, e uma
+        # URL exigiria publica-la em algum lugar.
+        conteudo = [{"type": "image_url",
+                     "image_url": {"url": f"data:{i['mime']};base64,{i['b64']}"}} for i in imagens]
+        conteudo.append({"type": "text", "text": prompt})
+    else:
+        conteudo = prompt
+    corpo = {"model": modelo, "messages": [{"role": "user", "content": conteudo}],
              "max_tokens": max_tokens}
     if modelo not in p.get("sem_temperatura", ()):
         corpo["temperature"] = temperatura
@@ -168,8 +250,14 @@ def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esf
     if r.status_code != 200:
         # O corpo entra na mensagem porque 'HTTP 400' sozinho nao diagnostica nada; passa pela
         # censura antes de sair.
+        dica = ""
+        if imagens and r.status_code in (400, 404, 415, 422):
+            dica = (f"\nDICA: a chamada levava {len(imagens)} imagem(ns). Recusa nesta faixa de "
+                    f"codigo costuma ser modelo que nao aceita entrada de imagem, e nao defeito "
+                    f"do pedido. Conferir se '{modelo}' declara entrada multimodal antes de mexer "
+                    f"no resto.")
         sys.exit(f"ERRO nuvem {provedor} HTTP {r.status_code} em {modelo}: "
-                 f"{_sem_credencial(r.text)[:400]}")
+                 f"{_sem_credencial(r.text)[:400]}{dica}")
     d = r.json()
     u = d.get("usage", {})
     msg = d["choices"][0]["message"]
@@ -188,7 +276,7 @@ def chamar_nuvem(modelo, prompt, max_tokens, temperatura, provedor="nvidia", esf
     return texto, u.get("prompt_tokens", 0), u.get("completion_tokens", 0)
 
 
-def chamar_google(modelo_, prompt, max_tokens, temperatura, ctx_max=0, persona=""):
+def chamar_google(modelo_, prompt, max_tokens, temperatura, ctx_max=0, persona="", imagens=None):
     """Papel de nuvem do Google (Argon/Gemini). Delega a bin/argon_core.py, que e a FONTE UNICA
     das regras de censura de credencial, de recusa em vez de truncar e de autorizacao de saida
     de dado. A autorizacao de saida aqui ja foi dada pela flag --nuvem, conferida em main().
@@ -202,7 +290,7 @@ def chamar_google(modelo_, prompt, max_tokens, temperatura, ctx_max=0, persona="
         r = argon_core.gerar_texto(
             prompt, sistema=(argon_core.SISTEMA if persona == "auditor" else ""),
             mod=modelo_, max_tokens=max_tokens, temperatura=temperatura,
-            ctx_max=ctx_max, nao_sigiloso=True)
+            ctx_max=ctx_max, nao_sigiloso=True, imagens=imagens)
     except argon_core.ArgonErro as e:
         sys.exit(f"ERRO nuvem Google: {e}")
     return r["texto"], r["tokens_in"], r["tokens_out"]
@@ -284,7 +372,8 @@ def main():
     ap.add_argument("--temperatura", type=float, default=0.2)
     ap.add_argument("--modelo", help="modelo Ollama avulso, sem papel (uso legado)")
     ap.add_argument("--ocr", action="store_true", help="PDF digitalizado: aplicar OCRmyPDF antes do Docling")
-    ap.add_argument("--imagem", action="append", default=[], help="imagem (PNG/JPG) para papel de visao; repetivel")
+    ap.add_argument("--imagem", action="append", default=[], help="imagem (PNG, JPEG, GIF ou WEBP) para papel que declare visao, local ou de "
+                         "nuvem; repetivel. O tipo e decidido pelos bytes, nao pela extensao")
     ap.add_argument("--ctx", type=int, default=16384, help="num_ctx fixo para --modelo")
     ap.add_argument("--consolidar", choices=["concatenar", "llm"], default="concatenar",
                     help="modo partes: concatenar (extracao, deterministico) ou llm (sintese/resumo)")
@@ -312,8 +401,13 @@ def main():
         sys.exit(f"ERRO: '{a.papel}' e papel de embeddings (vetores), nao gera texto.")
     max_tokens = a.max_tokens or cfg.get("max_tokens", 2048)
     if a.imagem:
+        # A capacidade de ler imagem e declarada NO PAPEL, e papel so muda por medicao. Nao ha
+        # tabela de modelos multimodais aqui de proposito: ela envelheceria em silencio, como ja
+        # aconteceu com catalogo de modelo de nuvem duas vezes neste ecossistema.
         if not cfg.get("visao"):
-            sys.exit(f"ERRO: papel '{a.papel}' nao le imagem. Usar o papel 'visao'.")
+            visuais = [n for n, c in PAPEIS.items() if c.get("visao")]
+            sys.exit(f"ERRO: o papel '{a.papel}' nao declara leitura de imagem. Papeis que "
+                     f"declaram: {', '.join(visuais) or 'nenhum'}.")
         IMAGENS.extend(a.imagem)
 
     conteudo = ""
@@ -338,6 +432,9 @@ def main():
         conteudo = a.texto
     instrucao = a.instrucao
     if not instrucao and not conteudo:
+        if a.imagem:
+            sys.exit("ERRO: imagem sem --instrucao. A imagem e o material, nao a pergunta: dizer "
+                     "o que extrair dela (ex.: --instrucao \"Transcreva a tabela em CSV\").")
         sys.exit("ERRO: informar --instrucao e/ou conteudo.")
 
     t0 = time.time()
@@ -346,12 +443,21 @@ def main():
             sys.exit("ERRO: papel de NUVEM exige --nuvem explicito. O conteudo sai da workstation: "
                      "nao usar com dado de cliente, pesquisa bruta ou material sob NDA.")
         prompt = montar_prompt(instrucao, conteudo)
+        imgs = preparar_imagens() if IMAGENS else None
+        if imgs:
+            print(f"[llm] {len(imgs)} imagem(ns): "
+                  + ", ".join(f"{Path(i['caminho']).name} {i['mime'].split('/')[1]} {i['mb']} MB"
+                              for i in imgs), file=sys.stderr)
         # RECUSA EM VEZ DE TRUNCAR, agora tambem na nuvem. Ate 23/10/2026 esta verificacao
         # existia apenas no ramo local, e papel de nuvem mandava o insumo inteiro e deixava o
         # provedor cortar em silencio. Papel sem ctx_max declarado nao e verificado, e isso esta
         # dito no campo uso: contexto que eu nao conferi na API nao entra como numero aqui.
         if cfg.get("ctx_max"):
-            est = estimar_tokens(prompt)
+            # A imagem NAO entra em estimar_tokens, que conta caracteres. Sem a parcela abaixo,
+            # um prompt curto com varias imagens passaria na verificacao e seria o provedor a
+            # cortar, que e exatamente o que esta verificacao existe para impedir. No provedor
+            # google a conta de verdade e refeita por argon_core contra a API, com a imagem junto.
+            est = estimar_tokens(prompt) + TOKENS_POR_IMAGEM * len(imgs or [])
             if est + max_tokens > cfg["ctx_max"]:
                 sys.exit(f"ERRO: insumo de ~{est} tokens (estimativa pessimista de "
                          f"{CHARS_POR_TOKEN} caracteres por token) mais {max_tokens} de resposta "
@@ -369,10 +475,11 @@ def main():
         if cfg.get("provedor") == "google":
             texto, tin, tout = chamar_google(cfg["modelo"], prompt, max_tokens,
                                              a.temperatura, cfg.get("ctx_max", 0),
-                                             cfg.get("persona", ""))
+                                             cfg.get("persona", ""), imgs)
         else:
             texto, tin, tout = chamar_nuvem(cfg["modelo"], prompt, max_tokens, a.temperatura,
-                                            cfg.get("provedor", "nvidia"), cfg.get("esforco", ""))
+                                            cfg.get("provedor", "nvidia"), cfg.get("esforco", ""),
+                                            imgs)
         modo = "nuvem"
     else:
         res, est = (None, estimar_tokens(conteudo)) if a.partes else executar_local(cfg, instrucao, conteudo, max_tokens, a.temperatura)

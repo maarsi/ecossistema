@@ -3798,3 +3798,53 @@ BASE DE CONHECIMENTO DO ACERVO 40 - REFERENCIAS  (17/11/2026)
       documento por documento antes do primeiro envio
     ferramenta MCP dedicada para consulta (o buscar_similaridade_local NAO busca,
       so reordena trechos que ja se tem)
+
+
+================================================================================
+21/11/2026 (noite) - IMAGEM NOS PAPEIS DE NUVEM: item 1 da fila, MEDIDO
+================================================================================
+
+O QUE ENTROU. bin/llm.py aceita --imagem tambem em papel de NUVEM que declare
+"visao": true. Formato OpenAI (nvidia, deepseek, moonshot): content vira lista de
+partes, imagem como data URI. Google: bin/argon_core.py monta [Part, ..., texto] e
+CONTA os tokens pela propria API, imagem incluida. Sem imagem, as duas chamadas sao
+byte a byte as de antes.
+
+DECISOES DE PROJETO, com o motivo:
+  - TIPO PELOS BYTES INICIAIS, nao pela extensao. Arquivo renomeado passaria pelo nome
+    e quebraria na API com erro que nao aponta o nome.
+  - IMAGEM ANTES DO TEXTO, nas duas formas: e a regra medida "vale a ultima instrucao".
+  - TOKENS DE IMAGEM NO ORCAMENTO. estimar_tokens conta caracteres e nao ve imagem;
+    sem a parcela, prompt curto com varias imagens passaria e o provedor cortaria.
+    TOKENS_POR_IMAGEM = 4096 e [premissa], teto alto de proposito (erra recusando).
+    No Google nao se estima: count_tokens devolve o numero real.
+  - TETOS LOCAIS [premissa, nao conferidos em API]: 8 MB por imagem, 20 MB somados em
+    base64. Recusa aqui com mensagem acionavel em vez de HTTP 400 generico la.
+  - Erro 400/404/415/422 COM imagem ganha dica: costuma ser modelo sem entrada de imagem.
+  - Capacidade de visao e declarada NO PAPEL, nao numa tabela de modelos, que
+    envelheceria em silencio.
+
+DEFEITO MEU ACHADO PELO TESTE: imprimir o retorno de preparar_imagens despejou 287 KB
+de base64 na saida. Nao era credencial, mas num traceback ou log seria o mesmo despejo.
+Corrigido NA FERRAMENTA: classe Imagem(dict) com repr curto. Provado: repr de 53
+caracteres, base64 ausente, conteudo acessivel por chave.
+
+MEDICAO (21/11, uma passada, material sintetico com gabarito sorteado na hora):
+  T1 tabela com 4 numeros de 4 digitos; T2 barras SEM rotulo, leitura de escala (5%);
+  CONTROLE: mesma pergunta SEM imagem.
+                     T1     T2    controle   latencia T1/T2
+  deepseek-flash    4/4    4/4     0/4        3,8 / 4,3 s
+  gemini-4-argon    4/4    4/4     0/4        7,9 / 5,6 s
+  kimi-k3           4/4    4/4     0/4        8,3 / 5,7 s
+  Dois dos tres responderam "nao recebi a imagem" no controle. Travas: 9/9 casos
+  sinteticos. Ponta a ponta por linha de comando: 4/4 em visao-nuvem e doc-longo-argon,
+  e a falta de --nuvem continua recusando.
+  ACHADO: deepseek-flash LE IMAGEM, o que nao estava registrado em lugar nenhum.
+  OBSERVADO E NAO EXPLICADO: deepseek reporta 300 tokens de entrada para a imagem que
+  o Google conta como ~1.100. O acerto com numero sorteado prova que foi lida.
+
+RESSALVA: os tres em 4/4 = TETO. Prova o CANAL, nao ordena leitores de grafico.
+
+PAPEIS. Novo visao-nuvem (deepseek-flash, por latencia; reservas medidas com o mesmo
+acerto: gemini-4-argon e kimi-k3, ou seja, TEM provedor alternativo, ao contrario de
+redacao-nuvem). doc-longo-argon passou a declarar visao.

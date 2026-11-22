@@ -87,7 +87,8 @@
     "ctx_max": 1048576,
     "max_tokens": 8192,
     "uso": "Documento PUBLICO muito extenso, que estoura os 262K tokens do papel doc-longo local. SEM dado sigiloso: exige --nuvem. Nao usar para redacao final de entregavel",
-    "teste": "NAO MEDIDO na suite doc. Entrou apenas pelo contexto de 1.048.576 tokens de entrada declarado pela API em 22/10/2026, quatro vezes o do gemma4:12b local. Medir na suite doc antes de usar em producao"
+    "teste": "NAO MEDIDO na suite doc. Entrou apenas pelo contexto de 1.048.576 tokens de entrada declarado pela API em 22/10/2026, quatro vezes o do gemma4:12b local. Medir na suite doc antes de usar em producao | VISAO: 21/11/2026, teste de canal com gabarito sorteado na hora: T1 tabela com 4 numeros de 4 digitos (nao se adivinham), T2 grafico de barras SEM rotulo numerico (leitura de escala, tolerancia 5%). Braco de controle: mesma pergunta SEM imagem. UMA passada. Resultado nos tres provedores: T1 4/4, T2 4/4, controle 0/4 (dois deles responderam 'nao recebi a imagem'). Latencia T1/T2: deepseek-flash 3,8/4,3 s, gemini-4-argon 7,9/5,6 s, kimi-k3 8,3/5,7 s. Medicao de canal, nao da suite doc.",
+    "visao": true
   },
   "auditor-kimi": {
     "onde": "nuvem",
@@ -98,5 +99,14 @@
     "esforco": "max",
     "uso": "CANDIDATO, NAO titular de nada. Existe para dar segunda opiniao de LINHAGEM DIFERENTE do auditor-argon, que e o criterio que justificou o papel conferencia: falha complementar, nao qualidade. Dois pareceres de familias distintas que discordam sao informacao; dois da mesma familia que concordam podem ser eco. SEM dado sigiloso: exige --nuvem. ATENCAO: este papel NAO carrega o prompt de auditoria, que vive em bin/argon_core.py e so e aplicado no caminho do Google; aqui a instrucao de auditoria tem de vir no --instrucao.",
     "teste": "NAO MEDIDO. Nao entrou por desempenho, entrou para fechar o furo de seguranca: ate 23/10/2026 o Kimi era alcancavel apenas pelo servidor MCP kimi-assistant, fora do gateway, logo sem a exigencia de autorizacao para saida de dado e sem a recusa por orcamento de contexto. Medido na API em 23/10, e so isso: contexto 1.048.576 tokens, igual ao do gemini-4-argon e quatro vezes o doc-longo local; aceita texto, IMAGEM e VIDEO na entrada, que nenhum outro papel do ecossistema aceita; raciocinio do tipo 'only' com esforco padrao max; reasoning_effort honrado (low 4,2 s e 112 caracteres de raciocinio contra max 10,9 s e 1.748, quatro repeticoes cada, intervalos sem sobreposicao) porem NAO validado pela API. NAO PROMOVER sem medicao, e a medicao hoje nao decide: a suite auditoria esta no teto com tres modelos de fronteira em 9/9. Construir itens mais dificeis primeiro."
+  },
+  "visao-nuvem": {
+    "onde": "nuvem",
+    "provedor": "deepseek",
+    "modelo": "deepseek-flash",
+    "visao": true,
+    "max_tokens": 2048,
+    "uso": "Leitura de imagem PUBLICA ou SINTETICA: tabela, grafico, prancha, mapa. Substituto do deplot enquanto a NVIDIA estiver fora. SEM dado sigiloso: exige --nuvem. Para imagem de cliente usar o papel local 'visao'. Reservas medidas com o mesmo acerto: gemini-4-argon (papel doc-longo-argon) e kimi-k3 (papel auditor-kimi), ou seja, este papel TEM provedor alternativo, ao contrario de redacao-nuvem",
+    "teste": "21/11/2026, teste de canal com gabarito sorteado na hora: T1 tabela com 4 numeros de 4 digitos (nao se adivinham), T2 grafico de barras SEM rotulo numerico (leitura de escala, tolerancia 5%). Braco de controle: mesma pergunta SEM imagem. UMA passada. Resultado nos tres provedores: T1 4/4, T2 4/4, controle 0/4 (dois deles responderam 'nao recebi a imagem'). Latencia T1/T2: deepseek-flash 3,8/4,3 s, gemini-4-argon 7,9/5,6 s, kimi-k3 8,3/5,7 s. Titular escolhido pela LATENCIA, porque o acerto empatou: com os tres em 4/4 o teste esta no TETO e nao ordena modelos. Prova que o canal funciona, nao que este e o melhor leitor de grafico. Medicao seria de extracao de tabela e grafico real fica para a bateria do item 2/3 da fila de 21/11. OBSERVADO e nao explicado: tokens de entrada reportados 305 contra 1.126 do Google e 657 do Kimi para a mesma imagem; o acerto com numeros sorteados prova que a imagem foi lida."
   }
 }
