@@ -4054,3 +4054,10 @@ chega a ter solucao; comparar com a partida errada mediria a partida, nao o solv
 bin/apos_indexacao_22nov.sh espera o PID da indexacao, reindexa economia_avaliacao_regulacao e roda as 56
 instancias (30 s, cuOpt x3) quando a GPU cair abaixo de 10%. Log ~/.claude_jobs/apos_indexacao.log;
 resultado bench/resultados/<data>_vrptw_cuopt_ortools.jsonl. Duracao estimada: 56 x 120 s, ~2 h.
+
+## REGRA (22/11/2026): NUNCA `git commit -a` NESTE REPOSITORIO
+Em 22/11 07:26 um `git commit -qam` levou junto bin/buscar_acervo.py e bin/indexar_acervo.py, alterados em
+22/11 00:31 por OUTRA sessao (nao por Mateus nem pela sessao que commitou). Desfeito no commit d5aca5e: o
+repositorio voltou a versao anterior e as alteracoes ficaram intactas no disco, fora do versionamento, como
+estavam. A pasta e compartilhada por varios agentes; `-a` versiona trabalho alheio sem ninguem ver.
+Regra: `git add <arquivo>` explicito, e `git status --short` antes de todo commit.
