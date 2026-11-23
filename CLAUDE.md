@@ -4162,3 +4162,38 @@ seguem abaixo NAO sao corrupcao: indices remissivos do HCM 2010, mapas, manual d
 de calculo e algebra linear, onde formula, numero e sigla derrubam a fracao de "palavras". Ou seja, o limiar 0,5
 tem falso positivo nesses generos; a lista REAL de texto corrompido e de 48. Bateria VRPTW terminou 00:45.
 Cadeia de reclassificacao e reindexacao comecou 01:55. Geneve continua offline.
+
+## RESULTADOS DE 23/11/2026 (madrugada)
+
+### CONCLUSAO CONSOLIDADA VRPTW (so estes numeros podem ser citados fora)
+Desenho em bench/vrptw/PRE_REGISTRO.md: 56 instancias de Solomon (100 clientes), 30 s por resolucao, objetivo
+identico escrito nas duas pontas (10^7 por veiculo + distancia), OR-Tools com PARALLEL_CHEAPEST_INSERTION + GLS,
+cuOpt x3 (mediana), GPU em 0% no inicio das 56, validacao independente pelas coordenadas.
+Resultado bruto: bench/resultados/20261122_vrptw_cuopt_ortools.jsonl.
+  Placar: cuOpt vence 42, empate 14 (mesmos veiculos e < 1% de distancia), OR-Tools vence 0.
+  | familia | n | CNV cuOpt / OR-Tools | CTD cuOpt / OR-Tools |
+  | C1 | 9 | 90 / 90 | 7.455 / 7.633 |
+  | C2 | 8 | 24 / 24 | 4.719 / 4.751 |
+  | R1 | 12 | 144 / 154 | 14.672 / 14.626 |
+  | R2 | 11 | 30 / 34 | 10.805 / 10.492 |
+  | RC1 | 8 | 93 / 106 | 11.153 / 11.190 |
+  | RC2 | 8 | 26 / 28 | 9.166 / 9.234 |
+  Contra a melhor solucao conhecida (49 instancias com BKS): cuOpt usa o mesmo numero de veiculos em 47 (2 a mais
+  no total), gap mediano de distancia 0,19%; OR-Tools em 29 (26 veiculos a mais), gap mediano 2,65%.
+  A vantagem esta no NUMERO DE VEICULOS (CNV 407 contra 436, -6,7%): onde o OR-Tools usa mais veiculos, a
+  distancia dele pode ser menor (R1 e R2), o que nao e vitoria na convencao hierarquica.
+  Ruido do cuOpt: com GPU livre, as 3 repeticoes nao variaram no numero de veiculos em nenhuma das 55 instancias
+  com 3 solucoes validas; a oscilacao 12/11 do piloto em C101 foi efeito da GPU disputada. 1 resolucao inviavel
+  do cuOpt em 168 (familia RC1), reportada.
+  RESSALVA: Solomon e janela de tempo + capacidade, deposito unico, frota homogenea, 30 s. Nao extrapolar para
+  frota heterogenea, multiplos depositos, jornada ou instancia real.
+
+### CORROMPIDOS: FECHADO
+48 legiveis apos OCR forcado, 15 mudaram de classe (corrompidos_antes_depois.json), reindexados 14 colecoes as
+02:02-02:23 (48 documentos reprocessados, 15 removidos das colecoes antigas). Busca conferida: Ferraz e Torres p. 325
+volta legivel ("16.9 Importancia do valor correto da tarifa"). Planilha regerada: origem modelo_texto_ocr_corrigido
+44 linhas (4 dos 48 tem revisao manual de Mateus, que vence). XLSX recalculado: 372 formulas, 0 erro, total por
+origem = 1.945 OK. DEFEITO CORRIGIDO NO GERADOR: o resumo omitia a origem modelo_texto_ocr_v2 (98 linhas) e por isso
+nao somava 1.945; agora lista todas e confere o total.
+Reclassificacoes duvidosas, para Mateus olhar: PNAD 2002 -> planejamento_politica_legislacao; Banco de Dados
+Integrados de Uberlandia 2005 -> infraestrutura_rodoviaria_pavimentos.

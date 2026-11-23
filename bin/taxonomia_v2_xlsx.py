@@ -39,7 +39,7 @@ dv.error = "Use uma das 22 chaves da aba taxonomia."; ws.add_data_validation(dv)
 dv2 = DataValidation(type="list", formula1='"sim,nao"', allow_blank=True); ws.add_data_validation(dv2)
 dv2.add(f"{C['REVISAO_excluir']}2:{C['REVISAO_excluir']}{N}")
 ws[f"{C['REVISAO_subarea']}1"].comment = Comment("PREENCHER AQUI. Lista suspensa com as 22 chaves. O valor vence qualquer classificacao de modelo na proxima geracao.", "Claude")
-ws[f"{C['origem_classificacao']}1"].comment = Comment("modelo_texto_v2 | inferencia_caminho_titulo | correcao_dirigida | regra_pasta_especificacao | revisao_manual | pendente. Ver aba leia_me.", "Claude")
+ws[f"{C['origem_classificacao']}1"].comment = Comment("modelo_texto_v2 | modelo_texto_ocr_v2 | modelo_texto_ocr_corrigido | inferencia_caminho_titulo | correcao_dirigida | regra_pasta_especificacao | revisao_manual | pendente. Ver aba leia_me.", "Claude")
 
 # ---------------- taxonomia
 wt = wb.create_sheet("taxonomia"); wt.append(["chave", "descricao (especificacao de 21/11/2026, com a correcao de ferrovia registrada no leia_me)"])
@@ -64,10 +64,15 @@ wr.append(["conferencia: linhas com classe na aba revisao", f'=COUNTIF(revisao!$
 for r in range(2, t + 2): wr[f"C{r}"].number_format = "0.0%"
 wr[f"C{t+1}"].number_format = "General"
 r0 = t + 4; wr.cell(r0, 1, "origem_classificacao").font = fh; wr.cell(r0, 1).fill = azul; wr.cell(r0, 2, "linhas").font = fh; wr.cell(r0, 2).fill = azul
-for j, og in enumerate(["modelo_texto_v2", "inferencia_caminho_titulo", "correcao_dirigida",
-                        "regra_pasta_especificacao", "revisao_manual", "pendente"], start=r0 + 1):
+# lista completa das origens (a anterior omitia modelo_texto_ocr_v2, com 103 linhas: o resumo nao somava 1.945)
+ORIGENS = ["modelo_texto_v2", "modelo_texto_ocr_v2", "modelo_texto_ocr_corrigido", "inferencia_caminho_titulo",
+           "correcao_dirigida", "regra_pasta_especificacao", "revisao_manual", "pendente"]
+for j, og in enumerate(ORIGENS, start=r0 + 1):
     wr.cell(j, 1, og); wr.cell(j, 2, f"=COUNTIF(revisao!${O}$2:${O}${N},A{j})")
-r1 = r0 + 8; Dp = C["duplicata"]
+jt = r0 + len(ORIGENS) + 1
+wr.cell(jt, 1, "TOTAL (tem de dar o numero de linhas)"); wr.cell(jt, 2, f"=SUM(B{r0+1}:B{jt-1})")
+wr.cell(jt, 3, f'=IF(B{jt}=COUNTA(revisao!$B$2:$B${N}),"OK","DIVERGE")')
+r1 = jt + 2; Dp = C["duplicata"]
 wr.cell(r1, 1, "duplicatas").font = fh; wr.cell(r1, 1).fill = azul; wr.cell(r1, 2, "linhas").font = fh; wr.cell(r1, 2).fill = azul
 for j, dp in enumerate(["canonico", "duplicata_raiz", "duplicata"], start=r1 + 1):
     wr.cell(j, 1, dp); wr.cell(j, 2, f"=COUNTIF(revisao!${Dp}$2:${Dp}${N},A{j})")
