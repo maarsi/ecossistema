@@ -4123,3 +4123,17 @@ NVML le o instante final e o torch o pico. Para dimensionar, vale o PICO.
    do Grok ("pode seguir generico nao aprova") foi REJEITADA.
 3. DEPOIS das entregas: (a) pagina curta na frente deste registro (regras, numeros citaveis, pendencias); (b) Grok
    testado na bateria de auditoria, colando os 9 itens, antes de qualquer oficio. Ate la, Grok = juizo nao medido.
+
+## 22/11/2026 22h45: PARADA UNICA FEITA E UM ACHADO DE QUALIDADE NO INDICE
+Servidor ollama-remote do Windows trocado (parada_unica.bat, hash conferido no destino, copia de seguranca
+C:\TransportMCP\ollama_remote_server.antes_20261122.py). Conferido pelo ESQUEMA apos reabrir: as 4 ferramentas
+NVIDIA sumiram e consultar_acervo_referencias apareceu; chamada real pela ponte devolveu trechos com citacao.
+Antes, conferido que a producao era a versao f911c6c (21/10) e que as unicas diferencas eram as duas de 21-22/11.
+consulta_acervo.py: uma linha por pagina no top-k.
+ACHADO: CAMADA DE TEXTO CORROMPIDA. Ferraz e Torres (Transporte Publico Urbano) voltou na busca com texto ilegivel
+("$ +cF!AF/:=NL"): o PDF TEM texto, mas com codificacao de fonte quebrada. O pipeline so mandava para OCR o que NAO
+tinha texto. Varredura do indice (fracao de palavras plausiveis por trecho, mediana por documento): 61 de 1.780
+documentos com mediana < 0,5, varios centrais (valor do tempo, GEV, acessibilidade, Ferraz e Torres).
+Lista em ~/base_conhecimento/texto_corrompido_20261122.json. Esses documentos tambem foram CLASSIFICADOS sobre
+texto ilegivel, entao a classe deles na taxonomia vale tanto quanto a inferencia pelo nome.
+REGRA: "tem texto" nao e "tem texto legivel". Conferir a legibilidade, nao a presenca.
