@@ -26,10 +26,14 @@ for c in alvo:
     if a.filtro: t = t.where(a.filtro, prefilter=True)
     for r in t.limit(a.k * 3).to_list():
         r.pop("vetor", None); r["colecao"] = c[6:]; r["similaridade"] = round(1 - r.pop("_distance"), 4); res.append(r)
-res.sort(key=lambda r: -r["similaridade"]); vistos, out = {}, []
+res.sort(key=lambda r: -r["similaridade"]); vistos, out, paginas = {}, [], set()
 for r in res:
+    # uma linha por PAGINA: dois trechos da mesma pagina, ou a mesma obra em dois arquivos (copia provavel,
+    # nao exata, que o indice nao pulou), ocupavam duas vagas do top-k com a mesma referencia (medido 22/11).
+    chave_pag = ((r.get("titulo") or r["arquivo"]).strip().lower(), r["pagina"])
+    if chave_pag in paginas: continue
     if vistos.get(r["arquivo"], 0) < a.por_documento:
-        vistos[r["arquivo"]] = vistos.get(r["arquivo"], 0) + 1; out.append(r)
+        vistos[r["arquivo"]] = vistos.get(r["arquivo"], 0) + 1; out.append(r); paginas.add(chave_pag)
     if len(out) == a.k: break
 if a.json:
     print(json.dumps(out, ensure_ascii=False, default=str)); sys.exit()
