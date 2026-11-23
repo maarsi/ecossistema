@@ -28,6 +28,8 @@ def jsonl(p):
 v1 = list(csv.DictReader(open(BC/"revisao_taxonomia_20261118.csv", encoding="utf-8-sig")))
 v2 = jsonl(BC/"catalogo_v2.jsonl"); st = jsonl(BC/"sem_texto_v2.jsonl"); co = jsonl(BC/"correcoes_v2.jsonl")
 oc = jsonl(BC/"catalogo_ocr_v2.jsonl")
+# 22/11/2026: documentos com camada de texto CORROMPIDA, reclassificados pelo texto do OCR forcado
+occ = jsonl(BC/"catalogo_ocr_corrompidos.jsonl") if (BC/"catalogo_ocr_corrompidos.jsonl").exists() else {}
 # Decisoes de Mateus sobre a v2 (a revisao da v1 de 18/11 fica como base; esta camada vence):
 # uma linha por arquivo com REVISAO_subarea, REVISAO_excluir e REVISAO_nota.
 rm = jsonl(BC/"revisao_mateus_v2.jsonl") if (BC/"revisao_mateus_v2.jsonl").exists() else {}    # classificacao PELO TEXTO do OCR de 21/11 (os sem texto)
@@ -75,6 +77,15 @@ for r in v1:
               "natureza": c.get("natureza") or "", "paginas": c.get("paginas") or r.get("paginas") or "",
               "status": c.get("status") if c else "nao_catalogado_v2"})   # nunca herdar status da v1
     princ, sec, conf, orig, aj = c.get("subarea_principal"), c.get("subarea_secundaria"), c.get("confianca"), "modelo_texto_v2", []
+    y = occ.get(a)
+    if y and y.get("status") == "ok" and y.get("subarea_principal"):
+        # texto original ilegivel: a classe anterior foi tirada de lixo; vale a do texto do OCR
+        if y["subarea_principal"] != princ:
+            aj.append(f"texto original corrompido; reclassificado pelo OCR: {princ} -> {y['subarea_principal']}")
+        princ, sec, conf, orig = y["subarea_principal"], y.get("subarea_secundaria"), y.get("confianca"), "modelo_texto_ocr_corrigido"
+        for k in ("titulo", "ano", "veiculo", "idioma", "natureza"):
+            o[k] = y.get(k) or o[k]
+        o["autores"] = "; ".join(y.get("autores") or [])
     x = oc.get(a)
     if o["status"] in ("pendente_ocr", "erro_leitura") and x and x.get("status") == "ok" and x.get("subarea_principal"):
         # o OCR devolveu texto: classificacao pelo texto, que e melhor que pelo nome (40% de

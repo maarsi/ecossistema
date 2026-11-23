@@ -4137,3 +4137,16 @@ documentos com mediana < 0,5, varios centrais (valor do tempo, GEV, acessibilida
 Lista em ~/base_conhecimento/texto_corrompido_20261122.json. Esses documentos tambem foram CLASSIFICADOS sobre
 texto ilegivel, entao a classe deles na taxonomia vale tanto quanto a inferencia pelo nome.
 REGRA: "tem texto" nao e "tem texto legivel". Conferir a legibilidade, nao a presenca.
+CORRECAO DOS 61 EM ANDAMENTO (22/11 23h, autorizada por Mateus):
+  bin/ocr_corrompidos.py: OCR forcado (--force-ocr) SO nos notebooks (geneve 25 docs/2.741 p., Zurich 36/4.518 p.),
+    para nao disputar a workstation com a indexacao e a bateria VRPTW. Confere legibilidade antes e depois.
+  bin/indice.py: extrair() passa a usar o OCR do cache tambem quando a legibilidade do texto nativo e < 0,5
+    (antes so quando faltava texto); nova opcao --refazer-lista (reextrai mesmo com hash igual, sem Docling,
+    extrator "ocr_forcado"). Teste: frase normal 0,83, texto corrompido 0,0, Ferraz e Torres nativo 0,04.
+  bin/classificar_corrompidos.py + taxonomia_v2_final.py: origem nova "modelo_texto_ocr_corrigido" (revisao
+    manual de Mateus continua vencendo).
+  bin/apos_ocr_corrompidos.sh: espera OCR E a bateria VRPTW, reclassifica, regenera a taxonomia, reindexa so as
+    colecoes afetadas e grava corrompidos_antes_depois.json. Log ~/.claude_jobs/apos_ocr_corrompidos.log.
+  PENDENTE PARA DE MANHA, com Mateus: planilha XLSX nova (recalc so pela ponte), leia_me com a origem nova.
+  RISCO JA VISTO NA BUSCA: manuais de software (IBM SPSS) aparecem para pergunta de transporte; a regra de
+  22/09 manda indexa-los em colecao propria e isso nao foi feito no acervo 40. Fica anotado, nao corrigido.

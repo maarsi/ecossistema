@@ -85,6 +85,23 @@ def pdf_ocr_no_cache(p):
     return q if q.exists() and conv._ocr_valido(p, q) else None
 
 
+_PAL = re.compile(r"^[A-Za-z\u00C0-\u00FF]{2,}$"); _VOG = re.compile(r"[aeiouAEIOU\u00E1\u00E9\u00ED\u00F3\u00FA\u00E2\u00EA\u00F4\u00E3\u00F5\u00E0\u00C1\u00C9\u00CD\u00D3\u00DA\u00C2\u00CA\u00D4\u00C3\u00D5]")
+
+
+def legibilidade(pags):
+    """Mediana, por pagina com 20+ palavras, da fracao de palavras plausiveis (so letras, 2+, com vogal).
+    Texto normal fica entre 0,7 e 0,95; camada corrompida perto de 0. None se nao ha pagina avaliavel."""
+    v = []
+    for _, t in pags:
+        tk = t.split()
+        if len(tk) >= 20:
+            v.append(sum(1 for x in tk if _PAL.match(x.strip('.,;:()"\'')) and _VOG.search(x)) / len(tk))
+    if not v:
+        return None
+    v.sort()
+    return v[len(v) // 2]
+
+
 def extrair(p):
     """Lista de (pagina, texto). pagina = -1 quando o formato nao tem paginas.
     PDF sem camada de texto usa o PDF ja processado por OCR do cache, quando existe: assim o
@@ -94,7 +111,11 @@ def extrair(p):
         import pymupdf
         with pymupdf.open(p) as d:
             pags = [(i + 1, pg.get_text()) for i, pg in enumerate(d)]
-        if sum(len(t.strip()) for _, t in pags) < 100 * max(1, len(pags)):
+        # 22/11/2026: "tem texto" nao e "tem texto legivel". PDF com codificacao de fonte quebrada devolve
+        # texto ilegivel ("$ +cF!AF/:=NL", Ferraz e Torres); 61 de 1.780 documentos. Usa o OCR do cache
+        # tanto para o que nao tem texto quanto para o que tem texto ilegivel.
+        leg = legibilidade(pags)
+        if sum(len(t.strip()) for _, t in pags) < 100 * max(1, len(pags)) or (leg is not None and leg < 0.5):
             q = pdf_ocr_no_cache(p)
             if q is not None:
                 with pymupdf.open(q) as d:
@@ -199,7 +220,7 @@ def q(s):
 
 def indexar(pasta, nome, incluir_codigo, excluir_extra=(), via_docling=False,
             catalogo=None, docling_para=("norma_manual", "relatorio_institucional"),
-            subarea=None, pular_duplicatas=False, sem_docling=False, refazer_docling=False):
+            subarea=None, pular_duplicatas=False, sem_docling=False, refazer_docling=False, refazer=()):
     """subarea: indexa SO os arquivos cuja subarea_principal no catalogo e esta (colecao por
     subarea, decisao de Mateus em 17/11/2026). pular_duplicatas: pula copia EXATA (sha256 igual).
     sem_docling: adia o Docling (fase 1 rapida); o manifesto guarda o extrator usado.
@@ -236,14 +257,15 @@ def indexar(pasta, nome, incluir_codigo, excluir_extra=(), via_docling=False,
         h = hash_arq(p)
         meta = {k: v for k, v in cat.get(rel, {}).items() if not k.startswith("_")}
         rota_docling = via_docling or (meta.get("natureza") in docling_para)
-        if rel in man and man[rel]["hash"] == h:
+        refazer_este = rel in refazer   # lista explicita: reextrai mesmo com hash inalterado, sem Docling
+        if rel in man and man[rel]["hash"] == h and not refazer_este:
             if not (refazer_docling and rota_docling and man[rel].get("extrator") == "pymupdf"):
                 puladas += 1; continue
         # ROTEAMENTO MEDIDO: Docling custa 0,81 s/pagina contra milissegundos do PyMuPDF, e
         # recupera de 27% a 62% mais caracteres em documento normativo, onde o dado esta na
         # tabela. Passar o acervo inteiro por ele custaria 46 h; passar so onde a tabela
         # importa custa uma fracao disso. Medido em 17/11/2026.
-        usar_docling = rota_docling and not sem_docling
+        usar_docling = rota_docling and not sem_docling and not refazer_este
         try:
             paginas = extrair_docling(p) if usar_docling else extrair(p)
         except Exception as e:
@@ -266,7 +288,7 @@ def indexar(pasta, nome, incluir_codigo, excluir_extra=(), via_docling=False,
         else:
             tbl.add(tabela(registros))
         novos.append({"arquivo": rel, "hash": h, "n_trechos": len(registros), "status": "ok",
-                      "extrator": "docling" if usar_docling else "pymupdf"})
+                      "extrator": "docling" if usar_docling else ("ocr_forcado" if refazer_este else "pymupdf")})
         n_trechos += len(registros)
         print(f"  + {rel[:90]} ({len(registros)} trechos)", flush=True)
         # MANIFESTO PARCIAL a cada 25 arquivos. Antes so era gravado no fim: medido em 21/11/2026,
@@ -360,6 +382,7 @@ if __name__ == "__main__":
     a1.add_argument("--pular-duplicatas", action="store_true", help="pula copia exata (campo duplicata do catalogo)")
     a1.add_argument("--sem-docling", action="store_true", help="fase 1: adia o Docling, registra o extrator")
     a1.add_argument("--refazer-docling", action="store_true", help="fase 2: reextrai com Docling o que foi por PyMuPDF")
+    a1.add_argument("--refazer-lista", help="arquivo com caminhos relativos a reextrair mesmo inalterados (sem Docling)")
     a1.add_argument("--docling-para", default="norma_manual,relatorio_institucional",
                     help="naturezas que passam pelo Docling quando ha catalogo")
     a2 = sub.add_parser("buscar"); a2.add_argument("nome"); a2.add_argument("pergunta"); a2.add_argument("-k", type=int, default=6)
@@ -370,7 +393,8 @@ if __name__ == "__main__":
     if a.cmd == "indexar":
         indexar(a.pasta, a.nome, a.incluir_codigo, a.excluir, a.via_docling, a.catalogo,
                 tuple(x.strip() for x in a.docling_para.split(",") if x.strip()),
-                a.subarea, a.pular_duplicatas, a.sem_docling, a.refazer_docling)
+                a.subarea, a.pular_duplicatas, a.sem_docling, a.refazer_docling,
+                set(l.strip() for l in open(a.refazer_lista) if l.strip()) if a.refazer_lista else set())
     elif a.cmd == "buscar": buscar(a.nome, a.pergunta, a.k, filtro=a.filtro)
     elif a.cmd == "validar": validar(a.nome, a.n)
     else: listar()
