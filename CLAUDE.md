@@ -4157,3 +4157,8 @@ Resgate: bin/ocr_corrompidos_resgate.py coleta o Zurich (35 de 36 prontos, 0 fal
 no Zurich; a cadeia apos_ocr_corrompidos.sh foi relancada esperando o resgate.
 LICAO: laco de espera por maquina remota precisa de PRAZO e de teste de alcance; "sem resposta" nao e "ainda
 rodando". Indexacao terminou 23:00 sem erro; bateria VRPTW em andamento (RC103 as 00:21).
+23/11 02h: resgate concluido no Zurich, 0 falhas. 61 de 61 com OCR valido; 48 legiveis depois (>= 0,5). Os 13 que
+seguem abaixo NAO sao corrupcao: indices remissivos do HCM 2010, mapas, manual de sinalizacao do DER-SP e livros
+de calculo e algebra linear, onde formula, numero e sigla derrubam a fracao de "palavras". Ou seja, o limiar 0,5
+tem falso positivo nesses generos; a lista REAL de texto corrompido e de 48. Bateria VRPTW terminou 00:45.
+Cadeia de reclassificacao e reindexacao comecou 01:55. Geneve continua offline.
