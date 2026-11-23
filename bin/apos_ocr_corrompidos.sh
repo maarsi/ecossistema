@@ -5,9 +5,9 @@
 # afetados (colecoes antigas e novas, com --refazer-lista) e grava o antes/depois das classes.
 set -u
 BC=/home/mateus/base_conhecimento; PY=/home/mateus/env_transporte/bin/python; BIN=/home/mateus/ecossistema/bin
-for P in 870315 612414; do while kill -0 $P 2>/dev/null; do sleep 60; done; done
+for P in 891960 612414; do while kill -0 $P 2>/dev/null; do sleep 60; done; done
 echo "[$(date +%F' '%H:%M)] OCR e bateria terminados"
-grep -q "^FIM" /home/mateus/.claude_jobs/ocr_corrompidos.log || { echo "OCR NAO TERMINOU BEM; paro aqui"; exit 1; }
+grep -q "^FIM" /home/mateus/.claude_jobs/ocr_corrompidos_resgate.log || { echo "OCR NAO TERMINOU BEM; paro aqui"; exit 1; }
 cp $BC/revisao_taxonomia_v2.csv $BC/revisao_taxonomia_v2_antes_corrompidos.csv
 $PY $BIN/classificar_corrompidos.py 2>&1 | tail -3
 cd $BC && $PY $BIN/taxonomia_v2_final.py 2>&1 | tail -4

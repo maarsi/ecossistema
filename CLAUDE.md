@@ -4150,3 +4150,10 @@ CORRECAO DOS 61 EM ANDAMENTO (22/11 23h, autorizada por Mateus):
   PENDENTE PARA DE MANHA, com Mateus: planilha XLSX nova (recalc so pela ponte), leia_me com a origem nova.
   RISCO JA VISTO NA BUSCA: manuais de software (IBM SPSS) aparecem para pergunta de transporte; a regra de
   22/09 manda indexa-los em colecao propria e isso nao foi feito no acervo 40. Fica anotado, nao corrigido.
+23/11 00h20: o GENEVE SAIU DA REDE no meio do OCR (Tailscale "offline, last seen 1h", ping sem resposta). Causa nao
+investigada (suspensao, travamento termico ou falta de memoria com 6 OCR de livros grandes em 7,4 GB sao hipoteses).
+O orquestrador ficaria esperando para sempre: o laco de espera nao tinha prazo nem detectava maquina fora.
+Resgate: bin/ocr_corrompidos_resgate.py coleta o Zurich (35 de 36 prontos, 0 falhas) e refaz a parte do geneve
+no Zurich; a cadeia apos_ocr_corrompidos.sh foi relancada esperando o resgate.
+LICAO: laco de espera por maquina remota precisa de PRAZO e de teste de alcance; "sem resposta" nao e "ainda
+rodando". Indexacao terminou 23:00 sem erro; bateria VRPTW em andamento (RC103 as 00:21).
