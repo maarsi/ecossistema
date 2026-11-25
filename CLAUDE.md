@@ -1,5 +1,89 @@
 # Ecossistema de processamento de Mateus: regras de orquestracao
 
+# PAGINA DE FRENTE (25/11/2026). LER ISTO PRIMEIRO; O RESTO DO ARQUIVO E HISTORICO.
+Tudo abaixo desta pagina e o diario de 22/09 a 23/11/2026: os casos, as medicoes e os erros que geraram cada regra.
+Em conflito entre o diario e esta pagina, vale esta pagina. Numero que nao esta na secao 4 nao se cita fora.
+
+## 1. Quem decide e como
+- MATEUS decide nos pontos de bifurcacao. Decisao vai por pop-up de multipla escolha, com alternativas sugeridas.
+- AUTONOMIA (11/11, reafirmada em 22/11): o Claude executa o que puder sem pedir confirmacao a cada passo.
+  Continua exigindo aval explicito: o que nao se desfaz, mudanca de configuracao permanente, gasto, envio de
+  mensagem, e qualquer coisa que saia da workstation com dado de cliente.
+- O CLAUDE (sessao do ecossistema) orquestra: metodo, critica de premissa, redacao, revisao, e aplica o que outros
+  agentes PROPOEM. Os demais modelos informam, nao votam. Numero nao se vota: o modelo escreve o criterio, o script
+  calcula, a auditoria confere o script.
+
+## 2. A equipe
+| quem | papel | estado |
+|---|---|---|
+| Claude (chat) | orquestracao, metodo, redacao, revisao | titular |
+| Claude Code (Ubuntu) | tarefa longa: bateria, indexacao, lote | em uso |
+| modelos locais (bin/llm.py --papel) | dado sigiloso, extracao, classificacao, visao local | qwen3:30b-a3b 8/8 em raciocinio |
+| DeepSeek (redacao-nuvem, raciocinio-nuvem) | redacao e conta, so material publico | titular, 8/8 nas duas suites |
+| Gemini Argon (argon-auditor) | auditoria independente de metodo e codigo | titular, deteccao 6/6, falso positivo 1/6 |
+| Kimi (kimi-assistant, Kimi Code, Kimi Desktop) | documento longo, imagem; agente com shell so na cerca | NAO medido; propoe, nao edita |
+| Perplexity | busca com fonte; acionar quando faltar dado | em uso |
+| NVIDIA gratuita | ultima reserva da redacao | estrangulada (40 rpm por modelo) |
+| Grok | segunda leitura de premissa | EM ESPERA ate passar na suite de auditoria |
+| HERE, TomTom, Google Maps | geocodificacao, rota, matriz | t0 de BPR: HERE ou TomTom, nunca o estatico do Google |
+Maquinas: workstation Ubuntu (RTX 5060 Ti; unica com GPU, credenciais e modelos), Duebendorf (Windows, Claude
+Desktop e servidores MCP), Zurich e geneve (notebooks de lote, SEM credencial e SEM dado de cliente).
+
+## 3. Proibicoes duras
+1. Credencial nunca passa pelo chat; nunca ler valor de chave; texto de erro de API sai censurado. Chave que
+   trafegou pelo chat e chave a rotacionar. Credenciais em ~/TransportMCP/.env (600, nao sincronizado).
+2. Dado de cliente, microdado, OD bruta e bilhetagem: processa por script na workstation e devolve so agregado.
+   Nuvem (inclusive Argon, DeepSeek, Grok) so com material publico ou sintetico.
+3. Nunca `git commit -a`: `git add` por arquivo e `git status --short` antes. A pasta e compartilhada por agentes.
+4. Outros agentes NAO editam ~/ecossistema: propoem em /mnt/nvme_lexar/propostas_ecossistema/ (ver AGENTS.md).
+5. Nunca instalar em ~/TransportMCP/.venv ou ~/env_transporte sem a trava mcp<2; nunca instalar nos ambientes
+   de bateria (env_nemotron_*, env_colpali). Nunca lancar kimi de /home/mateus.
+6. Lote nunca le do D: (CIFS sobre Tailscale): copiar para /mnt/nvme_lexar/ primeiro. find de home sempre -xdev.
+7. Servidor MCP do Windows: editar o espelho mcp/windows/ e aplicar em C:\TransportMCP com o app FECHADO,
+   conferindo hash no destino; prova de que subiu e o ESQUEMA da ferramenta depois de reabrir.
+
+## 4. Numeros que podem sair (os demais estao superados ou sao de amostra de um)
+- CVRP cuOpt x OR-Tools (frota e objetivo igualados): 1000 pontos, 4,7% a 10,5% a favor do cuOpt; ate 50 pontos,
+  empate. Secao "CONCLUSAO CONSOLIDADA CVRP".
+- VRPTW Solomon, 56 instancias, 30 s: cuOpt vence 42, empata 14, perde 0; frota total 407 contra 436 (-6,7%);
+  mesma frota da melhor conhecida em 47 de 49 contra 29 de 49. Secao "CONCLUSAO CONSOLIDADA VRPTW".
+- TomTom x HERE x Google (8 polos de Salvador): HERE e TomTom concordam no t0 (mediana -0,1%); o estatico do
+  Google fica 15% a 18% acima. Secao "CONCLUSAO CONSOLIDADA TRES FONTES".
+- Recuperacao no Anuario DER-PR: texto com OCR, pagina certa em 1o em 50% e no top 5 em 75%; combinado com o
+  modelo visual, 43% e 83% (nao atingiu o criterio). Um documento so.
+- Ressalva que acompanha QUALQUER numero acima: o desenho e as condicoes da secao de origem.
+
+## 5. Regras de metodo (cada uma nasceu de um erro registrado no diario)
+1. Resultado que surpreende: suspeitar do INSTRUMENTO antes de explicar a causa.
+2. Comparar ferramentas so com criterio igualado; diferenca de um lado so e parametro, nao ruido.
+3. Diagnosticar pela CAMADA (rede, autenticacao, modelo, disco, protocolo, instrumento), com controle no nivel certo.
+4. Gravacao "com sucesso" nao prova conteudo: conferir hash no destino. Arquivo vindo do chat nao e fonte.
+5. Uma pergunta por chamada; descricao junto de cada valor de enum; campo de raciocinio ANTES do rotulo; nunca
+   mandar a propria conclusao junto do pedido de segunda opiniao.
+6. Vigia mede a propriedade que importa, nao a facil (ex.: cada par do Syncthing pelo nome, nao "ao menos 1").
+7. "Tem texto" nao e "tem texto legivel". Espera por maquina remota tem prazo e teste de alcance.
+8. Decisao que fecha pendencia entra neste registro no mesmo dia.
+9. Script para Mateus rodar no Windows grava log legivel pela Ubuntu.
+
+## 6. Onde estao as coisas
+- Acervo 40 - REFERENCIAS: busca pela ferramenta MCP consultar_acervo_referencias (22 colecoes ref40_<subarea>);
+  explicacao em ~/base_conhecimento/LEIA_TAXONOMIA_ACERVO.md; planilha em D:\95 - TEMP\taxonomia_v2\.
+- Rotina de saude: bin/saude.py (diaria 05:47, completa domingo 06:23); relatorio em ~/base_conhecimento/saude/.
+- Baterias: bench/ (pre-registro em adendo datado; nunca editar o original).
+
+## 7. Pendencias abertas (atualizar a cada decisao)
+- geneve fora da rede desde 22/11 23h20: ligar e conferir Syncthing e linger.
+- Revisao da taxonomia por Mateus, em especial as 15 reclassificacoes de 23/11 (PNAD 2002 e Banco de Dados de
+  Uberlandia parecem erradas).
+- Grok: suite de auditoria colada a mao antes de qualquer oficio.
+- Manuais de software (ex.: IBM SPSS) misturados as colecoes do acervo: separar em colecao propria.
+- cuOpt: migrar do servidor HTTP legado antes da 26.12 (lembrete agendado para 01/12).
+- NGC_API_KEY no .env com valor antigo (21/11): conferir se ainda ha consumidor, ja que as 4 ferramentas NGC
+  foram aposentadas.
+
+---------------------------------------------------------------------------------------------------------------
+# DIARIO (historico de 22/09 a 23/11/2026)
+
 Fonte unica da verdade para qualquer agente (Claude Desktop, Claude Code no Ubuntu).
 Antes de tarefa relevante: `~/ecossistema/bin/inventario.py --resumo`.
 
