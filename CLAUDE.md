@@ -4281,3 +4281,22 @@ origem = 1.945 OK. DEFEITO CORRIGIDO NO GERADOR: o resumo omitia a origem modelo
 nao somava 1.945; agora lista todas e confere o total.
 Reclassificacoes duvidosas, para Mateus olhar: PNAD 2002 -> planejamento_politica_legislacao; Banco de Dados
 Integrados de Uberlandia 2005 -> infraestrutura_rodoviaria_pavimentos.
+
+## APERTUS 1.5 8B (ETH/EPFL), MEDIDO EM 26/11/2026 (pedido de Mateus)
+Acesso: modelo restrito no Hugging Face; Mateus aceitou os termos e gerou token de leitura, transferido cifrado
+(RSA-OAEP, digital 3c9c6b4421d5 conferida nas duas pontas, par descartavel destruido, hf_token.txt do Windows apagado),
+gravado como HF_TOKEN em ~/TransportMCP/.env. Ambiente ISOLADO /mnt/nvme_lexar/envs/apertus (torch 2.15 cu132 +
+transformers do fork swiss-ai, commit fixado pelo cartao). Nao roda no Ollama. Nao cabe em bf16 nos 16 GB: rodou
+em 8 bits (bitsandbytes), pico 10,8 GB. Servido por bench/apertus_servidor.py (so 127.0.0.1); bench.py ganhou o
+prefixo "hf:". Duas passadas por suite, resultados identicos nas duas:
+| suite | Apertus 8B (8 bits) | titular |
+| raciocinio | 3/8, 28 s | qwen3:30b-a3b 8/8 |
+| doc | 1/4 | qwen3:14b 4/4 |
+| visao | 4/5, 1,4 s (errou contagem de terminais) | qwen2.5vl:7b 5/5 |
+| codigo | 1/6 | qwen2.5-coder:14b-fast 5/6 |
+AUDIO (capacidade que o ecossistema NAO tinha): gravacao de Mateus de 13 s, celular, portugues, com numeros.
+Transcricao literal correta nas 3 repeticoes (inclusive "quatrocentos e dois", "trinta e oito", "quinze", "7h as
+8h", "Avenida 7 de Setembro"). MAS pedir a extracao estruturada DIRETO do audio errou (432 carros, sem onibus,
+"manha"); em DUAS ETAPAS (transcrever, depois extrair do texto) acertou tudo. Regra se for usado: transcrever
+primeiro, extrair do texto depois. Amostra de UM audio: nao e resultado, e indicio.
+Ressalva: comparado com os registros dos titulares, nao em rodada simultanea (a GPU nao comporta os dois juntos).

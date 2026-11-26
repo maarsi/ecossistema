@@ -151,6 +151,16 @@ def gerar(modelo, prompt, max_tokens, ctx=8192, imagem=None):
         except SystemExit as e:
             return f"[erro google: {e}]", time.time() - t
         return llm.limpar_raciocinio(txt), time.time() - t
+    if modelo.startswith("hf:"):
+        # modelo servido por bench/apertus_servidor.py (transformers, fora do Ollama), so em 127.0.0.1
+        j = {"prompt": prompt, "max_tokens": max_tokens}
+        if imagem:
+            j["imagem_b64"] = base64.b64encode(imagem).decode()
+        try:
+            r = requests.post("http://127.0.0.1:8765/gerar", json=j, timeout=900).json()
+        except Exception as e:
+            return f"[erro hf: {type(e).__name__}]", time.time() - t
+        return llm.limpar_raciocinio(r.get("texto", "")), time.time() - t
     if modelo.startswith("nuvem:"):
         try:
             txt, _, tout = llm.chamar_nuvem(modelo[6:], prompt, max_tokens, 0)
@@ -179,6 +189,8 @@ def identidade_modelo(m):
     prefixo = m.split(":", 1)[0] if ":" in m else ""
     if prefixo in ("nuvem", "google", "deepseek", "moonshot"):
         return f"{prefixo}/{m.split(':', 1)[1]}"
+    if prefixo == "hf":
+        return "hf/swiss-ai/Apertus-v1.5-8B (8 bits)"
     try:
         for mod in requests.get(f"{llm.OLLAMA}/api/tags", timeout=20).json().get("models", []):
             if m in (mod.get("name"), mod.get("model")):
