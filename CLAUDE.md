@@ -4349,3 +4349,11 @@ Botao "Cancelar" na faixa desfaz a mudanca ate essa data. Conferir em dezembro
 que nao houve nova cobranca de US$ 150. Conta de faturamento CITATIS: saldo
 R$ 0,00 em 26/11, Mateus optou por manter recarga automatica do AI Studio
 desligada e sem forma de pagamento alternativa.
+FORMAS DE PAGAMENTO (26/11/2026, 22h): a conta de faturamento CITATIS (Gemini/
+Argon, Google Maps) e o perfil de pagamentos Google foram consolidados no
+Mastercard final 7993, por pedido do Mateus. Removidos: Pix, Mastercard 0346 e
+uma entrada duplicada do 6683. O Mastercard 6683 CONTINUA cadastrado porque o
+Google bloqueia a exclusao enquanto ele estiver ligado a assinatura ja cancelada
+que ainda nao venceu (alteracao bloqueada pelo proprio Google); tentar de novo
+depois de 26/12/2026. O perfil de pagamentos e compartilhado com Google One e
+Google Play: excluir cartao ali afeta tudo da conta.
