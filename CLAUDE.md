@@ -4300,3 +4300,37 @@ Transcricao literal correta nas 3 repeticoes (inclusive "quatrocentos e dois", "
 "manha"); em DUAS ETAPAS (transcrever, depois extrair do texto) acertou tudo. Regra se for usado: transcrever
 primeiro, extrair do texto depois. Amostra de UM audio: nao e resultado, e indicio.
 Ressalva: comparado com os registros dos titulares, nao em rodada simultanea (a GPU nao comporta os dois juntos).
+
+================================================================================
+26/11/2026 - GOOGLE EARTH PROFESSIONAL ADVANCED: VE-SE, NAO SE EXPORTA
+================================================================================
+
+ASSINATURA. Plano Professional Advanced, conta Google do Mateus, US$ 150 por
+usuario por mes (US$ 75 Professional + US$ 75 da camada Advanced), mensal, sem
+rateio. Cobrado como dois itens de R$ 457,64 em 05/11 (R$ 915,27 no total), o
+que parecia cobranca duplicada e NAO e. Mesma conta de faturamento do Gemini
+(Argon) e do Google Maps, que estava com aviso de pagamento vencido em 26/11.
+Motivo declarado por Mateus: obter bases adicionais de Salvador.
+
+TESTE FEITO EM SALVADOR (Pituba/Itaigara, camera a ~3 km), no Chrome dele:
+  camada 'Plantas dos edificios' (Pro Avancado, Experimental) RENDERIZA sobre
+  Salvador, com atributos por poligono: altura em metros e area em m2 (exemplo:
+  8 m, 1.576,82 m2). COBERTURA PARCIAL a olho: parte dos predios tem planta,
+  boa parte nao. Nao medido.
+  EXPORTACAO: a camada nao tem opcao de exportar (menu: editar configuracoes,
+  estilo, ordem, zoom, excluir). O unico caminho, Arquivo > Exportar como KML,
+  foi testado: o KML tem 0 Placemark e 0 Polygon; a camada sai como
+  GroundOverlay com GIF transparente de 1x1 pixel cobrindo o globo inteiro.
+  Ou seja, exporta a REFERENCIA a camada, nao o dado.
+
+CONCLUSAO. As camadas do Earth Pro servem para VER e MEDIR na tela, nao para
+alimentar SIG ou modelo. Nao prometer a cliente base de edificios do Google
+Earth. Para dado vetorial de edificacoes em Salvador: Overture Maps (ja testado
+em bench/overture/teste_salvador.py), Open Buildings do Google pelo Earth
+Engine ou BigQuery (produtos SEPARADOS, outra cobranca), ou OSM. Camadas de
+transito, semaforo e placa sao so EUA. A assinatura so se justifica pelo uso
+visual (curvas de nivel, declividade, inundacao, apresentacao); se nao houver
+esse uso, cancelar antes da proxima renovacao mensal. Decisao do Mateus.
+
+RESIDUOS DO TESTE: projeto 'Projeto de mapa sem titulo' criado no Google Drive
+dele, e 'Projeto de mapa sem titulo.kml' (2,8 KB) em C:\Users\mateu\Downloads.
