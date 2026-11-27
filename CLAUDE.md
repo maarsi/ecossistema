@@ -4334,3 +4334,10 @@ esse uso, cancelar antes da proxima renovacao mensal. Decisao do Mateus.
 
 RESIDUOS DO TESTE: projeto 'Projeto de mapa sem titulo' criado no Google Drive
 dele, e 'Projeto de mapa sem titulo.kml' (2,8 KB) em C:\Users\mateu\Downloads.
+
+DECISAO (26/11/2026, 21h40): Mateus decidiu CANCELAR a assinatura Google Earth
+Professional Advanced, sem testar as demais camadas. Motivo: as camadas nao
+exportam dado; o unico dado sem substituto (viagens de bicicleta por celula)
+nao justificou o teste. O cancelamento e feito por ele em 'Gerenciar plano'. Para
+edificacoes, relevo e inundacao, usar fontes abertas (Overture, OSM, Open
+Buildings, Copernicus GLO-30). Nao reabrir sem caso concreto.
