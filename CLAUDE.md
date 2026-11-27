@@ -4382,3 +4382,17 @@ inactive e NAO significa servico parado. Conferir com 'systemctl is-active
 syncthing@mateus' ou porta 22000.
 O reinicio da Ubuntu derrubou a ponte do Claude Desktop no Windows: foi preciso
 reiniciar o aplicativo e rodar RefreshMcpTools para as ferramentas voltarem.
+
+27/11/2026 - ATUALIZACAO DOS NOTEBOOKS (Zurich/fedora e geneve)
+Feita da Ubuntu como root via 'tailscale ssh -- root@<host>' (a ACL em modo accept
+deixa entrar como root sem clique; nao precisa da senha do Mateus). Roteiro
+/root/atualizar.sh em cada um: dnf -y upgrade --refresh + flatpak, log em
+/root/atualizacao_<data>.txt. LANCAR DESACOPLADO (nohup setsid ... </dev/null &):
+o lote inclui o proprio tailscale e a sessao pode cair no meio.
+Zurich: 460 operacoes, DNF_CODIGO=0. geneve: 314, DNF_CODIGO=0. Ambos: 0 pendentes,
+kernel 7.3.3 -> 7.3.6 (o 7.3.3 fica de reserva), tailscale 1.104.7, Syncthing ativo,
+venv_lote importando numpy/geopandas/pyproj. Reiniciados pela Ubuntu.
+ATENCAO: o Zurich ficou ~9 min FORA do Tailscale depois do reinicio (o sistema subiu
+em ~2 min; quem demorou foi a reconexao, que voltou primeiro via relay "sao"). Nao
+concluir que travou antes de ~10 min. 'needs-restarting' nao existe nesses Fedora
+(pacote dnf-utils ausente); conferir reinicio por 'rpm -q kernel' contra 'uname -r'.
