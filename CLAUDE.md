@@ -4341,3 +4341,11 @@ exportam dado; o unico dado sem substituto (viagens de bicicleta por celula)
 nao justificou o teste. O cancelamento e feito por ele em 'Gerenciar plano'. Para
 edificacoes, relevo e inundacao, usar fontes abertas (Overture, OSM, Open
 Buildings, Copernicus GLO-30). Nao reabrir sem caso concreto.
+CANCELAMENTO EFETUADO (26/11/2026, 21h45): plano trocado para o Padrao (gratuito)
+no console do Google Cloud, projeto rcolne-mateus, Earth > Gerenciar plano.
+Faixa de confirmacao: "Sua conta vai mudar para o plano Padrao em 30/11/2026";
+o dialogo falava em ciclo comecando em 01/12/2026. Acesso Pro Avancado ate la.
+Botao "Cancelar" na faixa desfaz a mudanca ate essa data. Conferir em dezembro
+que nao houve nova cobranca de US$ 150. Conta de faturamento CITATIS: saldo
+R$ 0,00 em 26/11, Mateus optou por manter recarga automatica do AI Studio
+desligada e sem forma de pagamento alternativa.
