@@ -4357,3 +4357,28 @@ Google bloqueia a exclusao enquanto ele estiver ligado a assinatura ja cancelada
 que ainda nao venceu (alteracao bloqueada pelo proprio Google); tentar de novo
 depois de 26/12/2026. O perfil de pagamentos e compartilhado com Google One e
 Google Play: excluir cartao ali afeta tudo da conta.
+
+================================================================================
+27/11/2026 - ATUALIZACAO DO SISTEMA DA WORKSTATION
+================================================================================
+Roteiro novo: bin/atualizar_sistema.sh (snapshot Timeshift ANTES, para se o snapshot
+falhar; depois apt full-upgrade, snap refresh, flatpak update + uninstall --unused;
+regrava inventario; pergunta se reinicia). Precisa de sudo com senha: quem roda e o
+Mateus, no terminal da Ubuntu. Log em /mnt/nvme_lexar/logs/atualizacao_<data>.txt.
+Antes de rodar, simular com 'apt-get -s full-upgrade' (sem sudo) e conferir que nao ha
+remocao nem pacote de NVIDIA, CUDA, Docker ou kernel no lote.
+
+Rodada de 27/11 (15h44-15h50): ~80 pacotes apt (14 de seguranca), 0 removidos; snaps
+firmware-updater, gnome-46-2404 e snapd; flatpak removeu 3 runtimes GL NVIDIA velhos
+(fica so o 595.99.02). Reinicio no kernel 7.0.0-44 (antes 43). Conferido apos reinicio:
+driver 595.99.02 com a RTX 5060 Ti, ollama/docker/tailscaled/ssh ativos, 5 conteineres
+de pe, Syncthing ativo, apt pendentes 0, trava mcp<2 recusando mcp>=2.
+Ficou de fora de proposito: Docker, Ollama 0.34.0 e modelos, driver NVIDIA, venvs.
+Snap do Firefox nao atualizou porque o navegador estava aberto; atualiza sozinho
+quando fechar.
+ATENCAO DIAGNOSTICO: o Syncthing desta maquina roda pela unidade de SISTEMA
+syncthing@mateus, nao pela de usuario. 'systemctl --user is-active syncthing' diz
+inactive e NAO significa servico parado. Conferir com 'systemctl is-active
+syncthing@mateus' ou porta 22000.
+O reinicio da Ubuntu derrubou a ponte do Claude Desktop no Windows: foi preciso
+reiniciar o aplicativo e rodar RefreshMcpTools para as ferramentas voltarem.
