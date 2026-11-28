@@ -4414,3 +4414,14 @@ concluir que travou antes de ~10 min. 'needs-restarting' nao existe nesses Fedor
    app fechado via D:\95 - TEMP\trocar_kimi_mapa_20261128.bat (hash 652df6e0... conferido no destino,
    copia ollama_remote_server.antes_20261128.py). Provada pelo esquema novo E por chamada real pela
    ponte com imagem sintetica: descreveu corretamente as duas vias.
+
+28/11/2026 12h20 - CATALOGO NVIDIA REVISTO E BATERIA LANCADA NO CLAUDE CODE
+API de chat: 30 modelos (17/11: 32). Fora: google/gemma-4-31b-it e moonshotai/kimi-k3 (410).
+Pagina build.nvidia.com: 91 modelos. Novidades relevantes: nemotron-3.5-parse e nemotron-3.5-rerank-8b
+com endpoint gratuito (em 17/11 parse dava 404 e rerank 410), nemotron-3.5-embed-1b/8b, nemotron-ocr-v2
+(DL), nemotron-3.5-lightning-30b-a3b (DL), e LLMs kimi-k3.1-pro, mistral-large-4, step-5-preview,
+glm-5.3-flash, minimax-m3.1-flash, nemotron-3.5-super-vl-120b. Nenhum papel usa a NVIDIA hoje.
+Decisao do Mateus: medir parse+rerank no acervo DER-PR, lightning 30B local e os LLMs novos.
+Execucao delegada ao Claude Code da Ubuntu: /mnt/nvme_lexar/bench_nvidia_20261128/ (ESPECIFICACAO.md,
+rodar.sh, logs/diario.md, logs/RELATORIO.md). So mede e propoe; nao muda papel.
+Backup de 28/11 refeito as 12h05: 109.562 arquivos, 617,8 GiB lidos em 11:50, rc=0.
