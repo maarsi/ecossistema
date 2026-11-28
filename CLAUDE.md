@@ -4460,3 +4460,15 @@ Modelos e digests identicos antes e depois. Teste de carga: os 9 modelos respond
 qwen2.5-coder:14b-fast (ativo nao recuperavel); qwen3-embedding:4b devolve dimensao 2560.
 MUDANCA: qwen3:30b-a3b passou a ignorar "think": false. TODA medicao anterior foi em 0.34.0; as rodadas de
 28/11 foram relancadas para medir titulares e candidatos na MESMA versao.
+
+28/11/2026 - UPGRADE DE HARDWARE PLANEJADO (Mateus, aguardando entrega)
+Duebendorf (Dell XPS 8930, i5-9400, GTX 1650): RAM 32 -> 64 GB (4x16 GB Kingston KVR32N22S8/16, JEDEC).
+O i5-9400 limita a memoria a DDR4-2666: os modulos 3200 vao rodar a 2666, o que e esperado.
+mateus-ryzen: SEGUNDA RTX 5060 Ti 16 GB (PCYES) no slot x16 inferior da TUF B550M-PLUS, e fonte nova
+Corsair CX650 (650 W, Bronze). FATOS MEDIDOS 28/11 que pesam no plano: a CPU e Ryzen 5 5600GT (APU
+Cezanne): PCIe SO GERACAO 3 (nvidia-smi: pcie.link.gen.max 3). A placa atual roda Gen3 x8 (a 5060 Ti e
+x8 eletricamente). O slot inferior sai do CHIPSET B550 (Gen3 x4, banda dividida com o resto do chipset).
+O NVMe Lexar esta em 00:02.2 (linhas da CPU), nao no chipset. Limite de potencia de cada 5060 Ti: 180 W
+(padrao = maximo). Estimativa de pico: 2x180 + 65 (CPU) + ~60 (resto) ~ 485 W.
+Apos instalar: conferir link de cada placa (nvidia-smi -q, secao PCI), medir temperatura sob carga
+das duas, e refazer as linhas de base de VRAM e de offload (o que hoje roda parcialmente na CPU muda).
