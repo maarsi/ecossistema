@@ -1,0 +1,344 @@
+{
+ "gerado_em": "2026-11-28T13:47:58-03:00",
+ "corpus_sha256": "c19be5398997a7ae18117ac9cdd48ee866757a293652e5f4b26f7e689368649c",
+ "gabarito_sha256": "406d2d39738641a7a06e37207de252e1b2f0c0c4f8a5cd73e1d7f28d0d5d6914",
+ "texto_de_origem_sha256": {
+  "B_p1": "b0568d88bb3ba6bd1b6af5d8099ebb4d26cb83ea5b4738e7f2d50b5dc83ade4c",
+  "B_p2": "b0568d88bb3ba6bd1b6af5d8099ebb4d26cb83ea5b4738e7f2d50b5dc83ade4c",
+  "B_p3": "b0568d88bb3ba6bd1b6af5d8099ebb4d26cb83ea5b4738e7f2d50b5dc83ade4c"
+ },
+ "perguntas_pontuaveis": 28,
+ "ausentes": [
+  "D09",
+  "N20"
+ ],
+ "empate_tecnico_pontos": 3.57,
+ "prova_do_instrumento": "os 6 bracos do ADENDO_07 reproduzidos exatamente",
+ "bracos": {
+  "A": {
+   "status": "OK",
+   "nome": "Docling sem OCR",
+   "passadas": 3,
+   "acerto1": 17.9,
+   "acerto5": 39.3,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    17.9,
+    17.9,
+    17.9
+   ],
+   "acerto5_por_passada": [
+    39.3,
+    39.3,
+    39.3
+   ],
+   "pos_mediana": 8.0,
+   "pos_media": 16.28,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560,
+   "seg_indexacao": 9.11,
+   "seg_consulta": 6.29
+  },
+  "B": {
+   "status": "OK",
+   "nome": "Docling com OCR + qwen3-embedding:4b",
+   "passadas": 3,
+   "acerto1": 50.0,
+   "acerto5": 75.0,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    50.0,
+    50.0,
+    50.0
+   ],
+   "acerto5_por_passada": [
+    75.0,
+    75.0,
+    75.0
+   ],
+   "pos_mediana": 1.5,
+   "pos_media": 6.5,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560,
+   "seg_indexacao": 16.21,
+   "seg_consulta": 6.29
+  },
+  "C": {
+   "status": "OK",
+   "nome": "ColQwen2.5 (interacao tardia)",
+   "passadas": 3,
+   "acerto1": 17.9,
+   "acerto5": 64.3,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    17.9,
+    17.9,
+    17.9
+   ],
+   "acerto5_por_passada": [
+    64.3,
+    64.3,
+    64.3
+   ],
+   "pos_mediana": 5.0,
+   "pos_media": 10.43,
+   "rankings_identicos_entre_passadas": true,
+   "dim": 128,
+   "seg_indexacao": 21.35,
+   "seg_consulta": 205.56
+  },
+  "D": {
+   "status": "OK",
+   "nome": "nemotron embed-vl (denso)",
+   "passadas": 3,
+   "acerto1": 32.1,
+   "acerto5": 71.4,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    32.1,
+    32.1,
+    32.1
+   ],
+   "acerto5_por_passada": [
+    71.4,
+    71.4,
+    71.4
+   ],
+   "pos_mediana": 3.0,
+   "pos_media": 7.25,
+   "rankings_identicos_entre_passadas": true,
+   "dim": 2048,
+   "seg_indexacao": 23.85,
+   "seg_consulta": 17.88
+  },
+  "E": {
+   "status": "OK",
+   "nome": "D + reordenador VL (local)",
+   "passadas": 3,
+   "acerto1": 17.9,
+   "acerto5": 71.4,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    17.9,
+    17.9,
+    17.9
+   ],
+   "acerto5_por_passada": [
+    71.4,
+    71.4,
+    71.4
+   ],
+   "pos_mediana": 4.0,
+   "pos_media": 7.43,
+   "rankings_identicos_entre_passadas": true,
+   "dim": 2048,
+   "seg_indexacao": 23.85,
+   "seg_consulta": 126.71
+  },
+  "G": {
+   "status": "OK",
+   "nome": "Nemotron-3.5-Parse (pesos locais)",
+   "passadas": 3,
+   "acerto1": 35.7,
+   "acerto5": 66.7,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 2.1,
+   "acerto1_por_passada": [
+    35.7,
+    35.7,
+    35.7
+   ],
+   "acerto5_por_passada": [
+    67.9,
+    67.9,
+    64.3
+   ],
+   "pos_mediana": 2.0,
+   "pos_media": 8.5,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560,
+   "seg_indexacao": 15.45,
+   "seg_consulta": 6.29
+  },
+  "H": {
+   "status": "OK",
+   "nome": "nemotron-ocr-v2 (ingles)",
+   "passadas": 3,
+   "acerto1": 39.3,
+   "acerto5": 71.4,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    39.3,
+    39.3,
+    39.3
+   ],
+   "acerto5_por_passada": [
+    71.4,
+    71.4,
+    71.4
+   ],
+   "pos_mediana": 2.5,
+   "pos_media": 5.73,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560,
+   "seg_indexacao": 37.51,
+   "seg_consulta": 15.47
+  },
+  "I": {
+   "status": "OK",
+   "nome": "OCRmyPDF por+eng -> PyMuPDF",
+   "passadas": 3,
+   "acerto1": 32.1,
+   "acerto5": 67.9,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    32.1,
+    32.1,
+    32.1
+   ],
+   "acerto5_por_passada": [
+    67.9,
+    67.9,
+    67.9
+   ],
+   "pos_mediana": 3.0,
+   "pos_media": 5.77,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560
+  },
+  "J": {
+   "status": "OK",
+   "nome": "B + rerank-8b da nuvem (top-20)",
+   "passadas": 3,
+   "acerto1": 57.1,
+   "acerto5": 85.7,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    57.1,
+    57.1,
+    57.1
+   ],
+   "acerto5_por_passada": [
+    85.7,
+    85.7,
+    85.7
+   ],
+   "pos_mediana": 1.0,
+   "pos_media": 5.61,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560,
+   "seg_indexacao": 16.21,
+   "seg_consulta": 6.29
+  },
+  "K": {
+   "status": "OK",
+   "nome": "nemotron-3.5-parse da nuvem",
+   "passadas": 3,
+   "acerto1": 46.4,
+   "acerto5": 76.2,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 2.1,
+   "acerto1_por_passada": [
+    46.4,
+    46.4,
+    46.4
+   ],
+   "acerto5_por_passada": [
+    78.6,
+    75.0,
+    75.0
+   ],
+   "pos_mediana": 2.0,
+   "pos_media": 5.68,
+   "rankings_identicos_entre_passadas": false,
+   "dim": 2560,
+   "seg_indexacao": 16.88,
+   "seg_consulta": 4.18
+  },
+  "L": {
+   "status": "OK",
+   "nome": "texto de B + embeddinggemma-2 (query/document)",
+   "passadas": 3,
+   "acerto1": 39.3,
+   "acerto5": 57.1,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    39.3,
+    39.3,
+    39.3
+   ],
+   "acerto5_por_passada": [
+    57.1,
+    57.1,
+    57.1
+   ],
+   "pos_mediana": 4.5,
+   "pos_media": 12.07,
+   "rankings_identicos_entre_passadas": true,
+   "embedder": "google/embeddinggemma-2",
+   "dim": 768,
+   "revisao": "f9972ac22e696a105c482202646979e33e4b5a1e",
+   "runtime": "sentence-transformers (fora do Ollama)",
+   "prompt_nome_consulta": "query",
+   "prompt_nome_documento": "document",
+   "seg_indexacao": 0.92,
+   "seg_consulta": 1.56,
+   "vram_pico_torch_MB": 2099
+  },
+  "N": {
+   "status": "OK",
+   "nome": "texto de B + embeddinggemma-2 (QuestionAnswering/Document)",
+   "passadas": 3,
+   "acerto1": 35.7,
+   "acerto5": 57.1,
+   "acerto1_desvio": 0.0,
+   "acerto5_desvio": 0.0,
+   "acerto1_por_passada": [
+    35.7,
+    35.7,
+    35.7
+   ],
+   "acerto5_por_passada": [
+    57.1,
+    57.1,
+    57.1
+   ],
+   "pos_mediana": 2.5,
+   "pos_media": 12.04,
+   "rankings_identicos_entre_passadas": true,
+   "embedder": "google/embeddinggemma-2",
+   "dim": 768,
+   "revisao": "f9972ac22e696a105c482202646979e33e4b5a1e",
+   "runtime": "sentence-transformers (fora do Ollama)",
+   "prompt_nome_consulta": "QuestionAnswering",
+   "prompt_nome_documento": "Document",
+   "seg_indexacao": 0.9,
+   "seg_consulta": 0.55,
+   "vram_pico_torch_MB": 2099
+  }
+ },
+ "veredito_L": {
+  "criterio": "L (principal) supera B no acerto@5 por mais que o empate tecnico de 1 pergunta (na pratica 3 perguntas, conforme o criterio de 'vencer por 2 itens ou mais' do pre-registro aplicado a esta amostra) E nao perde para B no acerto@1 por mais que 1 pergunta",
+  "delta_acerto5": -17.9,
+  "delta_acerto1": -10.7,
+  "supera_no_5": false,
+  "nao_perde_no_1": false,
+  "atendido": false
+ },
+ "exploratorio_N": {
+  "papel": "EXPLORATORIO, nao decide veredito (ADENDO 01 ao pre-registro)",
+  "delta_acerto5_contra_B": -17.9,
+  "delta_acerto1_contra_B": -14.3,
+  "delta_acerto5_contra_L": 0.0,
+  "delta_acerto1_contra_L": -3.6
+ }
+}
