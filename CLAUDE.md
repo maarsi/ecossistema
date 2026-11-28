@@ -4396,3 +4396,21 @@ ATENCAO: o Zurich ficou ~9 min FORA do Tailscale depois do reinicio (o sistema s
 em ~2 min; quem demorou foi a reconexao, que voltou primeiro via relay "sao"). Nao
 concluir que travou antes de ~10 min. 'needs-restarting' nao existe nesses Fedora
 (pacote dnf-utils ausente); conferir reinicio por 'rpm -q kernel' contra 'uname -r'.
+
+28/11/2026 - CHECAGEM GERAL E TRES CORRECOES
+1. BACKUP VAZIO REGISTRADO COMO SUCESSO. Ubuntu desligada 27/11 17h38, religada 28/11 09h26; o timer
+   persistente do restic disparou 1 min apos o boot, com o CIFS do D: aparecendo montado mas ilegivel
+   ("lstat ... no such device"). Resultado: snapshot fe819e96 com 0 arquivos, rc=3, registrado SUCESSO.
+   Snapshot apagado (restic forget). ~/.local/bin/restic-backup.sh agora espera ate 10 min o D: ficar
+   LEGIVEL (ls -A nao vazio) e trata rc=3 com "processed 0 files" como FALHOU. Copia do anterior em
+   restic-backup.sh.bak_20261128. Backup refeito as 12h05.
+2. saude.py com dois falsos alarmes: a sonda da NVIDIA usava google/gemma-4-31b-it, que saiu do
+   catalogo (410), e o rotulo citava o modelo errado (variavel que sobrou do laco); e a checagem de
+   ferramentas lia modelos de funcoes APOSENTADAS. Agora sonda nemotron-3-ultra e so le funcoes com
+   decorador @mcp.tool (via ast). A NVIDIA em si responde (nemotron 200).
+3. analisar_mapa_kimi_k3 estava quebrada de verdade (kimi-k3 fora da NVIDIA, 410). Reescrita para a
+   Moonshot direto, mesmo nome e parametros, chave lida no .env da Ubuntu (antes a chave NGC ia do
+   Windows embutida no script). Esforco validado localmente (low/high/max). Instalada no Windows com o
+   app fechado via D:\95 - TEMP\trocar_kimi_mapa_20261128.bat (hash 652df6e0... conferido no destino,
+   copia ollama_remote_server.antes_20261128.py). Provada pelo esquema novo E por chamada real pela
+   ponte com imagem sintetica: descreveu corretamente as duas vias.
