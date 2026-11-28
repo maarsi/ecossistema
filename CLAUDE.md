@@ -4472,3 +4472,10 @@ O NVMe Lexar esta em 00:02.2 (linhas da CPU), nao no chipset. Limite de potencia
 (padrao = maximo). Estimativa de pico: 2x180 + 65 (CPU) + ~60 (resto) ~ 485 W.
 Apos instalar: conferir link de cada placa (nvidia-smi -q, secao PCI), medir temperatura sob carga
 das duas, e refazer as linhas de base de VRAM e de offload (o que hoje roda parcialmente na CPU muda).
+DECISAO DO MATEUS (28/11 15h25) sobre o upgrade: na Ubuntu, o CLAUDE EXECUTA a configuracao (limite de
+potencia, servico do Ollama, medicoes de base) e registra aqui; a outra IA que acompanha o plano so REVISA,
+lendo este registro. Pontos ja fixados: divisao por camadas, nunca split-mode row (slot x4 Gen3 do chipset);
+limite de 150 W por placa tornado PERMANENTE por servico systemd (nvidia-smi -pl nao sobrevive a reinicio)
+mais modo persistente; qwen3:30b-a3b (19 GB + contexto) ocupa as DUAS placas, entao "modelo grande inteiro"
+e "dois trabalhos em paralelo" nao ocorrem ao mesmo tempo; foto do interior antes de montar (5 aberturas,
+conectores da borda inferior da B550M).
