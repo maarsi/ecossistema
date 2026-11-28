@@ -231,7 +231,7 @@ def c_nuvem_leve():
     a listagem dela respondia em 0,4 s."""
     alvos = [
         ("nvidia", "NVIDIA_API_KEY", "https://integrate.api.nvidia.com/v1/chat/completions",
-         "google/gemma-4-31b-it"),
+         "nvidia/nemotron-3-ultra-550b-a55b"),  # 28/11: gemma-4-31b-it saiu do catalogo (410)
         ("deepseek", "DEEPSEEK_API_KEY", "https://api.deepseek.com/v1/chat/completions",
          "deepseek-chat"),
         ("moonshot", "MOONSHOT_API_KEY", "https://api.moonshot.ai/v1/chat/completions",
@@ -269,7 +269,7 @@ def c_nuvem_leve():
             anota("nuvem", prov, QUEBRADO, "HTTP 403: credencial, ou chave com organizacao errada",
                   "conferir a chave e a organizacao no portal do provedor")
         elif tipo == "http" and cod in (404, 410):
-            anota("nuvem", prov, QUEBRADO, "HTTP %d: modelo '%s' descontinuado" % (cod, modelo),
+            anota("nuvem", prov, QUEBRADO, "HTTP %d: modelo '%s' descontinuado" % (cod, dict((x[0], x[3]) for x in alvos)[prov]),
                   "saude.py --completo  (confere o catalogo e sugere substituto)")
         elif tipo == "http" and cod == 429:
             anota("nuvem", prov, AVISO, "HTTP 429: cota ou modelo nao liberado para a chave",
@@ -501,7 +501,14 @@ def c_ferramentas_mcp():
         anota("ferramentas", "fonte do servidor", AVISO, "nao encontrada", "")
         return
     txt = srv.read_text(encoding="utf-8", errors="replace")
-    pedidos = sorted(set(re.findall(r'"model"\s*:\s*"([^"]+/[^"]+)"', txt)))
+    # 28/11: so conta funcao EXPOSTA (@mcp.tool). Funcao aposentada fica no arquivo como
+    # historico e gerava falso QUEBRADO (deplot e llama-3.3-70b).
+    import ast
+    arv = ast.parse(txt)
+    vivos_txt = "\n".join(ast.get_source_segment(txt, f) or "" for f in ast.walk(arv)
+                          if isinstance(f, ast.FunctionDef)
+                          and any("tool" in ast.unparse(d) for d in f.decorator_list))
+    pedidos = sorted(set(re.findall(r'"model"\s*:\s*"([^"]+/[^"]+)"', vivos_txt)))
     if not pedidos:
         anota("ferramentas", "modelos citados", AVISO, "nenhum modelo de nuvem citado", "")
         return
