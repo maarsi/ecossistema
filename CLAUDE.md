@@ -4425,3 +4425,9 @@ Decisao do Mateus: medir parse+rerank no acervo DER-PR, lightning 30B local e os
 Execucao delegada ao Claude Code da Ubuntu: /mnt/nvme_lexar/bench_nvidia_20261128/ (ESPECIFICACAO.md,
 rodar.sh, logs/diario.md, logs/RELATORIO.md). So mede e propoe; nao muda papel.
 Backup de 28/11 refeito as 12h05: 109.562 arquivos, 617,8 GiB lidos em 11:50, rc=0.
+28/11/2026 - PAGINA DE MODELOS ABERTOS DA AMD (amd.com/pt/developer/resources/open-source-models.html)
+Avaliada e DESCARTADA sem bateria: pagina atualizada em 28/08/2025; modelos pequenos e de pesquisa
+(Instella-3B, Instella-Long 3B/128K, Instella-Math, Instella-VL-1B, AMD-OLMo 1B, AMD-135M, geradores de
+imagem e video Nitro/Hummingbird). Pesos no Hugging Face rodam em NVIDIA tambem, mas nenhum e
+competitivo com o que ja roda aqui (qwen3:14b/30b, gemma4:12b, qwen2.5vl:7b 5/5 em visao). Reabrir so
+se a AMD publicar modelo de porte comparavel.
