@@ -4431,3 +4431,10 @@ Avaliada e DESCARTADA sem bateria: pagina atualizada em 28/08/2025; modelos pequ
 imagem e video Nitro/Hummingbird). Pesos no Hugging Face rodam em NVIDIA tambem, mas nenhum e
 competitivo com o que ja roda aqui (qwen3:14b/30b, gemma4:12b, qwen2.5vl:7b 5/5 em visao). Reabrir so
 se a AMD publicar modelo de porte comparavel.
+28/11/2026 12h26 - RODADA LOCAL ENCADEADA: /mnt/nvme_lexar/bench_locais_20261128/ (ESPECIFICACAO.md,
+rodar.sh). Espera a bateria NVIDIA gravar 'fim:' e entao mede, via Claude Code: gemma4:26b-a4b e
+gpt-oss:20b (raciocinio/doc), embeddinggemma-2 (indice DER-PR), mimo-v2.6:9b (visao), Inkling 2 Mini e
+Devstral Small 2 24B (codigo). Escolha do Mateus a partir de levantamento web de 28/11 (numeros de
+terceiros, nao medidos). Sem atualizar o Ollama 0.34.0; modelo novo que perder e removido.
+OBS: o diario da bateria NVIDIA registrou horarios a frente do relogio (12:30 e 12:33 escritos antes
+das 12:27). Conferir na revisao; diario com hora inventada nao serve de auditoria.
