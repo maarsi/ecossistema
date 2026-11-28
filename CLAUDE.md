@@ -4479,3 +4479,7 @@ limite de 150 W por placa tornado PERMANENTE por servico systemd (nvidia-smi -pl
 mais modo persistente; qwen3:30b-a3b (19 GB + contexto) ocupa as DUAS placas, entao "modelo grande inteiro"
 e "dois trabalhos em paralelo" nao ocorrem ao mesmo tempo; foto do interior antes de montar (5 aberturas,
 conectores da borda inferior da B550M).
+28/11/2026 15h30 - SEGUNDA MAQUINA UBUNTU: ADIADA (decisao do Mateus). Segue o plano A (duas 5060 Ti na
+mateus-ryzen). Reavaliar a segunda maquina so com medicao de uso apos o upgrade (fila de GPU atrasando
+entrega, ou necessidade de redundancia), e com proposito definido (ex.: no de OCR/acervo em lote), nao por
+reaproveitamento de pecas. Os 4x8 GB DDR4 da Dell ficam de reserva ou venda.
