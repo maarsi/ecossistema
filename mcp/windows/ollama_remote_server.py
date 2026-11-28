@@ -694,15 +694,15 @@ def consultar_ngc_llama33_70b(prompt: str, system_prompt: str = "") -> str:
 
 @mcp.tool()
 def analisar_mapa_kimi_k3(caminho_imagem: str, prompt_analise: str = "", reasoning_effort: str = "high") -> str:
-    """Analisa imagens de mapas, plantas e traçados usando o Moonshot Kimi-k3 na API NVIDIA NGC.
-    Combina visão em alta resolução com esforço analítico profundo (Chain of Thought).
+    """Analisa imagens de mapas, plantas e traçados usando o Kimi-k3, chamado DIRETO na Moonshot.
+    (28/11/2026: a NVIDIA retirou o kimi-k3 do catalogo, HTTP 410; o nome da ferramenta foi mantido.)
+    reasoning_effort: low, high ou max (a API aceita valor invalido em silencio, por isso a checagem e local).
 
     ATENÇÃO: a imagem é enviada para API externa. Para mapa de projeto sob NDA,
     usar 'analisar_mapa_local_visao' (100% offline).
     """
-    erro = _ngc_indisponivel()
-    if erro:
-        return erro
+    if reasoning_effort not in ("low", "high", "max"):
+        return "Erro: reasoning_effort deve ser low, high ou max."
     caminho_limpo = caminho_imagem.replace("\\", "/")
     if caminho_limpo.lower().startswith("d:/"):
         caminho_ubuntu = "/media/mateus/DADOS_01/" + caminho_limpo[3:]
@@ -716,14 +716,24 @@ def analisar_mapa_kimi_k3(caminho_imagem: str, prompt_analise: str = "", reasoni
             "de circulação, examine sobreposições de bacias de captação e apresente deduções técnicas fundamentadas."
         )
 
+    # A chave NAO sai do Windows: o script le MOONSHOT_API_KEY do .env da propria Ubuntu.
     script_py = f"""
-import base64, io, os, sys, requests
+import base64, io, os, re, sys, requests
 from PIL import Image
 
 caminho = {repr(caminho_ubuntu)}
 prompt = {repr(prompt_analise)}
 effort = {repr(reasoning_effort)}
-ngc_key = {repr(NGC_KEY)}
+
+chave = ""
+for env in (os.path.expanduser("~/TransportMCP/.env"),):
+    if os.path.exists(env):
+        for linha in open(env, encoding="utf-8"):
+            if linha.startswith("MOONSHOT_API_KEY="):
+                chave = linha.split("=", 1)[1].strip().strip('"').strip("'")
+if not chave:
+    print("Erro: MOONSHOT_API_KEY ausente em ~/TransportMCP/.env na Ubuntu.")
+    sys.exit(1)
 
 if not os.path.exists(caminho):
     print(f"Erro: Arquivo '{{caminho}}' não encontrado.")
@@ -740,37 +750,31 @@ with Image.open(caminho) as img:
     img.save(buf, format="JPEG", quality=88, optimize=True)
     img_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
+# kimi-k3 recusa temperatura diferente de 1: o campo e omitido.
 payload = {{
-    "model": "moonshotai/kimi-k3",
-    "messages": [
-        {{
-            "role": "user",
-            "content": [
-                {{"type": "text", "text": prompt}},
-                {{"type": "image_url", "image_url": {{"url": f"data:image/jpeg;base64,{{img_b64}}"}} }}
-            ]
-        }}
-    ],
+    "model": "kimi-k3",
+    "messages": [{{"role": "user", "content": [
+        {{"type": "text", "text": prompt}},
+        {{"type": "image_url", "image_url": {{"url": f"data:image/jpeg;base64,{{img_b64}}"}} }}
+    ]}}],
     "max_tokens": 8192,
-    "temperature": 0.3,
     "reasoning_effort": effort,
     "stream": False
 }}
-
-headers = {{
-    "Authorization": f"Bearer {{ngc_key}}",
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}}
-
 try:
-    resp = requests.post("https://integrate.api.nvidia.com/v1/chat/completions", headers=headers, json=payload, timeout=220)
+    resp = requests.post("https://api.moonshot.ai/v1/chat/completions",
+                         headers={{"Authorization": f"Bearer {{chave}}", "Content-Type": "application/json"}},
+                         json=payload, timeout=190)
     resp.raise_for_status()
-    print(resp.json()["choices"][0]["message"]["content"])
+    msg = resp.json()["choices"][0]["message"]
+    txt = (msg.get("content") or "").strip()
+    if not txt:
+        print("Aviso: resposta vazia (orcamento de saida gasto raciocinando). Tente reasoning_effort=low.")
+    else:
+        print(txt)
 except Exception as e:
-    print(f"Falha na API Kimi-k3: {{str(e)}}")
-    if 'resp' in locals() and resp.text:
-        print(f"Detalhes: {{resp.text}}")
+    corpo = resp.text[:400] if 'resp' in locals() else ""
+    print("Falha na API Moonshot (kimi-k3): " + re.sub(r"(Bearer|key=)\\s*\\S+", r"\\1 ***", str(e) + " " + corpo))
 """
     b64 = base64.b64encode(script_py.encode("utf-8")).decode("ascii")
     cmd = f"/usr/bin/python3 -c \"import base64; exec(compile(base64.b64decode('{b64}').decode('utf-8'), '<string>', 'exec'))\""
