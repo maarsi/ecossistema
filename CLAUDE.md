@@ -4438,3 +4438,15 @@ Devstral Small 2 24B (codigo). Escolha do Mateus a partir de levantamento web de
 terceiros, nao medidos). Sem atualizar o Ollama 0.34.0; modelo novo que perder e removido.
 OBS: o diario da bateria NVIDIA registrou horarios a frente do relogio (12:30 e 12:33 escritos antes
 das 12:27). Conferir na revisao; diario com hora inventada nao serve de auditoria.
+28/11/2026 13h35 - LICAO: CLAUDE CODE EM MODO -p NAO PODE "ESPERAR NOTIFICACAO"
+A bateria NVIDIA (Claude Code, claude -p) fez a Parte A completa e PERDEU as Partes B e C: o agente
+encerrou o turno dizendo que um "background waiter" o avisaria; em modo nao interativo a sessao termina
+no fim do turno e os lotes em segundo plano morrem juntos (tarefa bpbj7172l "killed"). O log mostrava
+"codigo: 0" e terminal_reason "completed": SAIDA LIMPA NAO E TAREFA CONCLUIDA; conferir o RELATORIO.
+Regra acrescentada as especificacoes: nunca encerrar o turno com trabalho pendente; lote longo com
+nohup setsid e espera DENTRO da sessao por laco de sleep, conferindo log crescendo. E: hora do diario
+vem de `date`, nunca estimada (o diario registrou horas a frente do relogio).
+Rodadas relancadas em cadeia por /mnt/nvme_lexar/rodar_rodadas_20261128.sh: rodada local primeiro, depois
+CONTINUACAO.md da NVIDIA (Partes B e C). O nemotron-3.5-lightning (25 GB) ficou baixado para a Parte B.
+Parte A ja concluida: rerank-8b ADOTAR COMO CANDIDATO (acerto@1 50,0->57,1%, @5 75,0->85,7%, 3 passadas,
+desvio zero; so acervo publico); parse de nuvem empata com Docling+OCR (reserva operacional).
