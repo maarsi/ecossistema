@@ -4450,3 +4450,13 @@ Rodadas relancadas em cadeia por /mnt/nvme_lexar/rodar_rodadas_20261128.sh: roda
 CONTINUACAO.md da NVIDIA (Partes B e C). O nemotron-3.5-lightning (25 GB) ficou baixado para a Parte B.
 Parte A ja concluida: rerank-8b ADOTAR COMO CANDIDATO (acerto@1 50,0->57,1%, @5 75,0->85,7%, 3 passadas,
 desvio zero; so acervo publico); parse de nuvem empata com Docling+OCR (reserva operacional).
+
+28/11/2026 14h - OLLAMA ATUALIZADO 0.34.0 -> 0.40.19 (decisao do Mateus)
+Motivo: o registro passou a recusar modelos novos (gemma4:26b, mimo-v2.6, embeddinggemma-2, inkling-2-mini
+exigem >= 0.40.18). Feito por bin/atualizar_ollama.sh (instalador oficial, sudo do Mateus). Binario antigo
+em /usr/local/bin/ollama.0.34.0.bak (para voltar: parar o servico, copiar por cima, reiniciar). Drop-ins
+override.conf e 10-desempenho.conf preservados (OLLAMA_MODELS, HOST, FLASH_ATTENTION, KV q8_0, KEEP_ALIVE).
+Modelos e digests identicos antes e depois. Teste de carga: os 9 modelos responderam 42 a 7*6, inclusive
+qwen2.5-coder:14b-fast (ativo nao recuperavel); qwen3-embedding:4b devolve dimensao 2560.
+MUDANCA: qwen3:30b-a3b passou a ignorar "think": false. TODA medicao anterior foi em 0.34.0; as rodadas de
+28/11 foram relancadas para medir titulares e candidatos na MESMA versao.
